@@ -117,8 +117,36 @@ export function BlogListView() {
 
 - API와 도메인 모델을 연결하는 계층이다.
 - 도메인별 데이터 접근, 요청/응답 모델, 비즈니스 단위의 연결 로직을 둔다.
-- 현재 단계에서는 역할과 위치만 정의한다.
-- 세부 설계와 운영 방식은 추후 별도로 고도화한다.
+- `trpc`의 실제 도메인 절차와 도메인 전용 client hook은 이 계층에서 관리한다.
+
+권장 구조 예시:
+
+```text
+src/domain/blog/
+  procedure/
+    get-list-posts/
+      index.ts
+      schema.ts
+      fixture.ts
+    post-create-draft/
+      index.ts
+      schema.ts
+      fixture.ts
+    router.ts
+  hook/
+    use-list-posts.ts
+    use-create-draft.ts
+```
+
+세부 규칙:
+
+- `src/core/trpc`는 `init`, `context`, base procedure, 최상위 router 합성 같은 기술 기반만 둔다.
+- 실제 도메인 procedure는 `src/domain/<domain>/procedure` 아래에 둔다.
+- 개별 procedure 폴더는 `get-*`, `post-*` 같은 읽기/변경 의도를 이름에 드러낸다.
+- `schema.ts`에는 Zod 기반 `input`과 `output` 스키마를 둔다.
+- `fixture.ts`에는 해당 Zod 스키마를 만족하는 대표 입력/출력 값을 둔다.
+- `hook/`에는 TanStack Query + tRPC 기반의 재사용 가능한 도메인 hook을 둔다.
+- 페이지에만 종속되는 hook은 `src/views`에 두고, 여러 view에서 재사용되는 도메인 hook만 `src/domain`에 둔다.
 
 ## 의존 방향 규칙
 
@@ -147,6 +175,7 @@ export function BlogListView() {
 - 범용 util과 공용 UI는 `src/shared`에 둔다.
 - 기술 스택 초기화와 인프라 설정은 `src/core`에 둔다.
 - API 연결과 도메인 단위 데이터 로직은 `src/domain`에 둔다.
+- 도메인별 tRPC procedure, Zod schema, fixture, 재사용 hook은 `src/domain/<domain>` 아래에 둔다.
 
 ### Don't
 
@@ -155,10 +184,12 @@ export function BlogListView() {
 - `src/app`에 세부 UI 구현을 계속 누적하지 않는다.
 - 한 view에서만 쓰이는 구현을 바로 `src/widgets`나 `src/shared`로 올리지 않는다.
 - `src/domain`에 페이지 렌더링 책임을 두지 않는다.
+- `src/core`에 도메인별 procedure와 schema를 넣지 않는다.
+- `src/views`에 재사용 가능한 tRPC domain hook을 흩뿌리지 않는다.
 
 ## 운영 메모
 
 - 새로운 페이지를 만들 때는 먼저 `src/views/<page-name>`를 기준으로 구조를 잡는다.
 - `src/app`은 해당 view를 import해 route와 연결하는 얇은 진입 계층으로 유지한다.
 - 공용화 여부가 애매할 때는 우선 더 좁은 범위인 `views`에 두고, 반복이 확인되면 `widgets` 또는 `shared`로 이동한다.
-- `src/domain`은 추후 고도화 예정이므로 현재는 역할을 과도하게 확장하지 않는다.
+- `src/domain` 내부에서는 도메인 기준으로 procedure와 hook을 묶고, procedure별 Zod schema와 fixture를 함께 둔다.
