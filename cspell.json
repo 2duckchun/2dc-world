@@ -1,0 +1,29 @@
+{
+  "version": "0.2",
+  "language": "en",
+  "useGitignore": true,
+  "ignorePaths": [
+    ".git",
+    ".husky/_",
+    ".next",
+    "node_modules",
+    "package-lock.json",
+    "pnpm-lock.yaml"
+  ],
+  "words": [
+    "2dc",
+    "baseui",
+    "biomejs",
+    "clsx",
+    "cspell",
+    "Geist",
+    "husky",
+    "jsonc",
+    "lucide",
+    "pnpm",
+    "postcss",
+    "shadcn",
+    "tailwindcss",
+    "Vercel"
+  ]
+}

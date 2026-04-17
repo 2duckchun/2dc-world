@@ -7,7 +7,18 @@
     "build": "next build",
     "start": "next start",
     "lint": "biome check",
-    "format": "biome format --write"
+    "format": "biome format --write",
+    "spellcheck": "cspell lint . --no-progress",
+    "lint:staged": "lint-staged",
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx,cjs,mjs,cts,mts,json,jsonc,css}": [
+      "biome check --no-errors-on-unmatched --files-ignore-unknown=true"
+    ],
+    "*.{js,jsx,ts,tsx,cjs,mjs,cts,mts,json,jsonc,css,md,mdx,txt,yml,yaml}": [
+      "cspell lint --no-summary --no-progress --no-must-find-files"
+    ]
   },
   "dependencies": {
     "@base-ui/react": "^1.4.0",
@@ -27,6 +38,9 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "cspell": "9.2.1",
+    "husky": "9.1.7",
+    "lint-staged": "16.1.2",
     "tailwindcss": "^4",
     "typescript": "^5"
   }
