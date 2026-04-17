@@ -3,3 +3,7 @@
 
 This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` before writing any code. Heed deprecation notices.
 <!-- END:nextjs-agent-rules -->
+
+# Architecture
+
+Before adding or moving frontend code, read [docs/architecture.md](docs/architecture.md) and follow the documented layer responsibilities and import direction rules.
