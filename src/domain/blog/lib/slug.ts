@@ -5,10 +5,10 @@ import type { PostType } from "./model"
 
 function slugify(value: string) {
   return value
-    .normalize("NFKC")
+    .normalize("NFKD")
     .toLowerCase()
     .trim()
-    .replace(/[^\p{Letter}\p{Number}\s-]/gu, "")
+    .replace(/[^a-z0-9\s-]/g, "")
     .replace(/\s+/g, "-")
     .replace(/-+/g, "-")
     .replace(/^-|-$/g, "")
@@ -24,7 +24,11 @@ export async function resolveUniquePostSlug(input: {
   requestedSlug?: string | null
   excludePostId?: string
 }) {
-  const baseSlug = slugify(input.requestedSlug ?? input.title) || "post"
+  const baseSlug = slugify(input.requestedSlug ?? input.title)
+
+  if (!baseSlug) {
+    throw new Error("Unable to derive a slug from the provided value.")
+  }
 
   let candidate = baseSlug
   let suffix = 1
@@ -48,7 +52,11 @@ export async function resolveUniqueSeriesSlug(input: {
   requestedSlug?: string | null
   excludeSeriesId?: string
 }) {
-  const baseSlug = slugify(input.requestedSlug ?? input.title) || "series"
+  const baseSlug = slugify(input.requestedSlug ?? input.title)
+
+  if (!baseSlug) {
+    throw new Error("Unable to derive a series slug from the provided value.")
+  }
 
   let candidate = baseSlug
   let suffix = 1

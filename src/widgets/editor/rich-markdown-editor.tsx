@@ -1,6 +1,6 @@
 "use client"
 
-import { $createCodeNode, CodeNode } from "@lexical/code"
+import { $createCodeNode } from "@lexical/code"
 import { LinkNode, TOGGLE_LINK_COMMAND } from "@lexical/link"
 import {
   INSERT_ORDERED_LIST_COMMAND,
@@ -242,7 +242,6 @@ export function RichMarkdownEditor({
           TableNode,
           TableCellNode,
           TableRowNode,
-          CodeNode,
         ],
         editorState: () => {
           $convertFromMarkdownString(markdown, TRANSFORMERS, undefined, true)
