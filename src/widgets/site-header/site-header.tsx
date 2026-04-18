@@ -25,7 +25,7 @@ export function SiteHeader({ session }: SiteHeaderProps) {
               <span>2dc world</span>
             </Link>
             <p className="text-sm text-muted-foreground">
-              Phase 0 foundation for blog, memo, and booklog experiences.
+              Public reading across blog, memo, and booklog is now live.
             </p>
           </div>
 
