@@ -19,34 +19,18 @@ type ThemeContextValue = {
 
 const ThemeContext = createContext<ThemeContextValue | null>(null)
 
-function getPreferredTheme(): Theme {
-  if (typeof window === "undefined") {
-    return "light"
-  }
-
-  const savedTheme = localStorage.getItem(THEME_STORAGE_KEY)
-
-  if (savedTheme === "light" || savedTheme === "dark") {
-    return savedTheme
-  }
-
-  return window.matchMedia("(prefers-color-scheme: dark)").matches
-    ? "dark"
-    : "light"
-}
-
-function applyTheme(nextTheme: Theme) {
-  const root = document.documentElement
-
-  root.dataset.theme = nextTheme
-  root.classList.toggle("dark", nextTheme === "dark")
+function getDocumentTheme(): Theme {
+  return document.documentElement.classList.contains("dark") ? "dark" : "light"
 }
 
 export function ThemeProvider({ children }: PropsWithChildren) {
   const [theme, setThemeState] = useState<Theme>("light")
 
   const setTheme = useCallback((nextTheme: Theme) => {
-    applyTheme(nextTheme)
+    const root = document.documentElement
+
+    root.dataset.theme = nextTheme
+    root.classList.toggle("dark", nextTheme === "dark")
     localStorage.setItem(THEME_STORAGE_KEY, nextTheme)
     setThemeState(nextTheme)
   }, [])
@@ -56,9 +40,7 @@ export function ThemeProvider({ children }: PropsWithChildren) {
   }, [setTheme, theme])
 
   useEffect(() => {
-    const nextTheme = getPreferredTheme()
-    applyTheme(nextTheme)
-    setThemeState(nextTheme)
+    setThemeState(getDocumentTheme())
   }, [])
 
   const value = useMemo(

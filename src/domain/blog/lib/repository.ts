@@ -17,7 +17,6 @@ import {
   type PublishedSeriesSummary,
   type TagResults,
 } from "./model"
-import { normalizeStoredSlug } from "./slug"
 
 function toIsoString(value: Date | null) {
   return value ? value.toISOString() : null
@@ -141,7 +140,7 @@ export async function getPublishedPostBySlug(input: {
   const post = await db.query.posts.findFirst({
     where: and(
       eq(posts.type, input.type),
-      eq(posts.slug, normalizeStoredSlug(input.slug)),
+      eq(posts.slug, input.slug),
       eq(posts.status, "PUBLISHED"),
     ),
   })
@@ -194,7 +193,7 @@ export async function listBooklogSeries() {
 
 export async function getSeriesBySlug(seriesSlug: string) {
   const series = await db.query.booklogSeries.findFirst({
-    where: eq(booklogSeries.slug, normalizeStoredSlug(seriesSlug)),
+    where: eq(booklogSeries.slug, seriesSlug),
   })
 
   if (!series) {

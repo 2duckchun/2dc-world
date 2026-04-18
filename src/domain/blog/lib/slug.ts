@@ -5,7 +5,7 @@ import type { PostType } from "./model"
 
 function slugify(value: string) {
   return value
-    .normalize("NFC")
+    .normalize("NFKC")
     .toLowerCase()
     .trim()
     .replace(/[^\p{Letter}\p{Number}\s-]/gu, "")
@@ -16,10 +16,6 @@ function slugify(value: string) {
 
 export function normalizeRequestedSlug(value: string) {
   return slugify(value)
-}
-
-export function normalizeStoredSlug(value: string) {
-  return value.normalize("NFC")
 }
 
 export async function resolveUniquePostSlug(input: {
