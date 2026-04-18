@@ -1,13 +1,6 @@
 "use client"
 
-import {
-  LogInIcon,
-  LogOutIcon,
-  PencilLineIcon,
-  ShieldCheckIcon,
-  UserIcon,
-} from "lucide-react"
-import Link from "next/link"
+import { LogInIcon, LogOutIcon, ShieldCheckIcon, UserIcon } from "lucide-react"
 import { signIn, signOut } from "next-auth/react"
 import type { ViewerSession } from "@/core/auth"
 import { Button } from "@/shared/ui/button"
@@ -43,15 +36,6 @@ export function AuthStatusControls({ session }: AuthStatusControlsProps) {
           {session.user?.name ?? session.user?.email}
         </span>
       </div>
-      {session.isOwner ? (
-        <Link
-          href="/write"
-          className="inline-flex h-7 items-center justify-center gap-1 rounded-[min(var(--radius-md),12px)] border border-border bg-background px-2.5 text-[0.8rem] font-medium transition-all hover:bg-muted hover:text-foreground"
-        >
-          <PencilLineIcon className="size-3.5" />
-          <span>Write</span>
-        </Link>
-      ) : null}
       <Button
         type="button"
         variant="outline"
