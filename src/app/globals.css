@@ -206,13 +206,3 @@
     @apply bg-muted font-medium;
   }
 }
-
-@layer components {
-  .lexical-editor-shell {
-    @apply overflow-hidden rounded-3xl border border-border bg-card shadow-sm;
-  }
-
-  .lexical-editor-input {
-    @apply min-h-[420px] px-4 py-4 outline-none;
-  }
-}
