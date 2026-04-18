@@ -1,7 +1,5 @@
 import Link from "next/link"
 import type { ViewerSession } from "@/core/auth"
-import { primaryNavigationItems } from "@/shared/config/navigation"
-import { cn } from "@/shared/lib/utils"
 import { AuthStatusControls } from "@/widgets/auth/auth-status-controls"
 import { ThemeToggle } from "@/widgets/theme/theme-toggle"
 
@@ -24,9 +22,6 @@ export function SiteHeader({ session }: SiteHeaderProps) {
               </span>
               <span>2dc world</span>
             </Link>
-            <p className="text-sm text-muted-foreground">
-              Phase 0 foundation for blog, memo, and booklog experiences.
-            </p>
           </div>
 
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between lg:justify-end">
@@ -34,21 +29,6 @@ export function SiteHeader({ session }: SiteHeaderProps) {
             <AuthStatusControls session={session} />
           </div>
         </div>
-
-        <nav aria-label="Primary" className="flex flex-wrap gap-2">
-          {primaryNavigationItems.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={cn(
-                "rounded-full border border-border px-3 py-2 text-sm font-medium transition-colors",
-                "hover:border-primary/50 hover:text-primary",
-              )}
-            >
-              {item.label}
-            </Link>
-          ))}
-        </nav>
       </div>
     </header>
   )
