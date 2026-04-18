@@ -2,7 +2,10 @@ export const readingCollections = ["blog", "memo", "booklog"] as const
 export type ReadingCollection = (typeof readingCollections)[number]
 
 export const postTypes = ["BLOG", "MEMO", "BOOKLOG"] as const
+export const postStatuses = ["DRAFT", "PUBLISHED"] as const
+
 export type PostType = (typeof postTypes)[number]
+export type PostStatus = (typeof postStatuses)[number]
 
 export type PublishedTag = {
   id: string
@@ -53,6 +56,55 @@ export type PublishedSeriesDetail = PublishedSeriesSummary & {
 export type TagResults = {
   tagName: string
   items: PublishedPostSummary[]
+}
+
+export type EditableSeriesSelection = {
+  seriesId: string
+  title: string
+  slug: string
+  coverImageUrl: string | null
+  orderIndex: number
+  chapterLabel: string | null
+}
+
+export type EditablePost = {
+  id: string
+  type: PostType
+  status: PostStatus
+  title: string
+  slug: string
+  summary: string | null
+  contentMarkdown: string
+  publishedAt: string | null
+  updatedAt: string
+  tagNames: string[]
+  series: EditableSeriesSelection | null
+}
+
+export type DraftListItem = {
+  id: string
+  type: PostType
+  status: PostStatus
+  title: string
+  slug: string
+  summary: string | null
+  updatedAt: string
+  publishedAt: string | null
+}
+
+export type AuthoringSeries = {
+  id: string
+  slug: string
+  title: string
+  description: string | null
+  coverImageUrl: string | null
+  createdAt: string
+  updatedAt: string
+}
+
+export type SyncTagsResult = {
+  postId: string
+  tagNames: string[]
 }
 
 export function postTypeToCollection(type: PostType): ReadingCollection {
