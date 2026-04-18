@@ -1,7 +1,6 @@
 import type { Metadata } from "next"
 import { getAuthSession, getViewerSessionFromSession } from "@/core/auth"
 import { AppProviders } from "@/core/providers/app-providers"
-import { ThemeScript } from "@/core/theme/theme-script"
 import { AppShell } from "@/widgets/app-shell/app-shell"
 import "./globals.css"
 
@@ -22,7 +21,6 @@ export default async function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning className="h-full antialiased">
       <body className="min-h-full font-sans">
-        <ThemeScript />
         <AppProviders session={session}>
           <AppShell session={viewerSession}>{children}</AppShell>
         </AppProviders>

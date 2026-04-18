@@ -15,7 +15,11 @@ import type {
   PostType,
   SyncTagsResult,
 } from "./model"
-import { resolveUniquePostSlug, resolveUniqueSeriesSlug } from "./slug"
+import {
+  normalizeStoredSlug,
+  resolveUniquePostSlug,
+  resolveUniqueSeriesSlug,
+} from "./slug"
 import { normalizeTagNames } from "./tags"
 
 function toIsoString(value: Date | null) {
@@ -209,7 +213,10 @@ export async function getEditablePost(input: {
   const ownerId = ensureOwnerUserId(input.userId)
 
   const post = await db.query.posts.findFirst({
-    where: and(eq(posts.type, input.type), eq(posts.slug, input.slug)),
+    where: and(
+      eq(posts.type, input.type),
+      eq(posts.slug, normalizeStoredSlug(input.slug)),
+    ),
   })
 
   if (!post) {
