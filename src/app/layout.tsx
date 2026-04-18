@@ -7,8 +7,7 @@ import "./globals.css"
 
 export const metadata: Metadata = {
   title: "2dc world",
-  description:
-    "Public reading and publishing for the 2dc world writing platform",
+  description: "Phase 0 foundation for the 2dc world publishing platform",
 }
 
 export default async function RootLayout({

@@ -1,22 +1,10 @@
-import type { Metadata } from "next"
-import { getServerCaller } from "@/core/trpc/server"
-import { ReadingListView } from "@/views/public-reading"
+import { ContentTypePlaceholderView } from "@/views/content-type-placeholder"
 
-export const metadata: Metadata = {
-  title: "MEMO | 2dc world",
-  description: "Short notes, references, and ongoing engineering memos.",
-}
-
-export default async function MemoPage() {
-  const caller = await getServerCaller()
-  const items = await caller.blog.getListPublished({ type: "MEMO" })
-
+export default function MemoPage() {
   return (
-    <ReadingListView
-      collection="memo"
+    <ContentTypePlaceholderView
       title="MEMO"
-      description="Short-form notes, references, and learnings that are meant to be scanned quickly."
-      items={items}
+      description="Short-form note browsing is reserved for the public reading phase after the shared foundation is in place."
     />
   )
 }

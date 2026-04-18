@@ -1,26 +1,10 @@
-import type { Metadata } from "next"
-import { getServerCaller } from "@/core/trpc/server"
-import { ReadingListView } from "@/views/public-reading"
+import { ContentTypePlaceholderView } from "@/views/content-type-placeholder"
 
-export const metadata: Metadata = {
-  title: "BOOKLOG | 2dc world",
-  description: "Book-driven notes, chapter logs, and ordered reading series.",
-}
-
-export default async function BooklogPage() {
-  const caller = await getServerCaller()
-  const [items, series] = await Promise.all([
-    caller.blog.getListPublished({ type: "BOOKLOG" }),
-    caller.blog.getSeriesList(),
-  ])
-
+export default function BooklogPage() {
   return (
-    <ReadingListView
-      collection="booklog"
+    <ContentTypePlaceholderView
       title="BOOKLOG"
-      description="Reading logs and series-based notes that keep sequence and context visible while you browse."
-      items={items}
-      series={series}
+      description="Series browsing and ordered reading will be layered on top of this shell in the next phase."
     />
   )
 }

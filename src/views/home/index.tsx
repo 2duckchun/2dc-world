@@ -6,12 +6,12 @@ type HomeViewProps = {
   capabilities: ViewerCapabilities
 }
 
-const phaseOneChecklist = [
-  "Neon + Drizzle schema now includes public reading models",
-  "GitHub OAuth owner detection is still active for authoring phases",
-  "TanStack Query + tRPC power both server and client reads",
-  "Markdown-based public reading routes are wired for blog, memo, booklog, tags, and series",
-  "Shared app shell continues to host the public reading experience",
+const phaseZeroChecklist = [
+  "Neon + Drizzle database foundation and migration pipeline",
+  "GitHub OAuth authentication with owner capability detection",
+  "TanStack Query + tRPC providers and server caller structure",
+  "Persistent light/dark theme toggle built on the html.dark convention",
+  "Shared app shell with BLOG, MEMO, and BOOKLOG navigation",
 ]
 
 export function HomeView({ session, capabilities }: HomeViewProps) {
@@ -20,21 +20,21 @@ export function HomeView({ session, capabilities }: HomeViewProps) {
       <section className="grid gap-6 lg:grid-cols-[minmax(0,1.4fr)_minmax(320px,1fr)]">
         <div className="space-y-4 rounded-3xl border border-border bg-card p-6 shadow-sm sm:p-8">
           <span className="inline-flex rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold tracking-wide text-primary">
-            Blog Phase 1
+            Blog Phase 0
           </span>
           <div className="space-y-3">
             <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">
-              Public reading is ready to grow on top of the shared foundation.
+              Foundation work is wired into the app shell.
             </h1>
             <p className="max-w-2xl text-base leading-7 text-muted-foreground sm:text-lg">
-              The app now has a real read model for blog, memo, booklog, tags,
-              and series pages while preserving the owner-aware infrastructure
-              needed for authoring in the next phase.
+              This page proves the baseline architecture for auth, data access,
+              theme persistence, and future blog routes before Phase 1 public
+              reading features land.
             </p>
           </div>
 
           <ul className="grid gap-3 text-sm text-muted-foreground sm:grid-cols-2">
-            {phaseOneChecklist.map((item) => (
+            {phaseZeroChecklist.map((item) => (
               <li
                 key={item}
                 className="rounded-2xl border border-border bg-background px-4 py-3"
@@ -51,8 +51,8 @@ export function HomeView({ session, capabilities }: HomeViewProps) {
               Server-side viewer context
             </h2>
             <p className="mt-1 text-sm text-muted-foreground">
-              Viewer capabilities remain available so owner-only authoring can
-              build on the same context in the next phase.
+              Loaded through a server caller so Phase 1 pages can reuse the same
+              context.
             </p>
           </div>
 

@@ -1,22 +1,10 @@
-import type { Metadata } from "next"
-import { getServerCaller } from "@/core/trpc/server"
-import { ReadingListView } from "@/views/public-reading"
+import { ContentTypePlaceholderView } from "@/views/content-type-placeholder"
 
-export const metadata: Metadata = {
-  title: "BLOG | 2dc world",
-  description: "Long-form posts and polished write-ups from 2dc world.",
-}
-
-export default async function BlogPage() {
-  const caller = await getServerCaller()
-  const items = await caller.blog.getListPublished({ type: "BLOG" })
-
+export default function BlogPage() {
   return (
-    <ReadingListView
-      collection="blog"
+    <ContentTypePlaceholderView
       title="BLOG"
-      description="Long-form writing, polished notes, and essays intended to be read end-to-end."
-      items={items}
+      description="Long-form publishing routes will arrive in Phase 1 once public reading flows are implemented."
     />
   )
 }
