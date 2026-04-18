@@ -206,7 +206,7 @@ export async function getEditablePost(input: {
   type: PostType
   slug: string
 }) {
-  ensureOwnerUserId(input.userId)
+  const ownerId = ensureOwnerUserId(input.userId)
 
   const post = await db.query.posts.findFirst({
     where: and(eq(posts.type, input.type), eq(posts.slug, input.slug)),
@@ -214,6 +214,10 @@ export async function getEditablePost(input: {
 
   if (!post) {
     throw new TRPCError({ code: "NOT_FOUND" })
+  }
+
+  if (post.authorId !== ownerId) {
+    throw new TRPCError({ code: "FORBIDDEN" })
   }
 
   return toEditablePost(post.id)
@@ -278,7 +282,7 @@ export async function updateDraft(input: {
     chapterLabel?: string | null
   } | null
 }) {
-  ensureOwnerUserId(input.userId)
+  const ownerId = ensureOwnerUserId(input.userId)
 
   const existing = await db.query.posts.findFirst({
     where: eq(posts.id, input.postId),
@@ -286,6 +290,10 @@ export async function updateDraft(input: {
 
   if (!existing) {
     throw new TRPCError({ code: "NOT_FOUND" })
+  }
+
+  if (existing.authorId !== ownerId) {
+    throw new TRPCError({ code: "FORBIDDEN" })
   }
 
   const slug = await resolveUniquePostSlug({
@@ -320,7 +328,7 @@ export async function publishPost(input: {
   userId: string | undefined
   postId: string
 }) {
-  ensureOwnerUserId(input.userId)
+  const ownerId = ensureOwnerUserId(input.userId)
 
   const existing = await db.query.posts.findFirst({
     where: eq(posts.id, input.postId),
@@ -328,6 +336,10 @@ export async function publishPost(input: {
 
   if (!existing) {
     throw new TRPCError({ code: "NOT_FOUND" })
+  }
+
+  if (existing.authorId !== ownerId) {
+    throw new TRPCError({ code: "FORBIDDEN" })
   }
 
   await db
@@ -383,7 +395,7 @@ export async function syncTagsForPost(input: {
   postId: string
   tagNames: string[]
 }) {
-  ensureOwnerUserId(input.userId)
+  const ownerId = ensureOwnerUserId(input.userId)
 
   const existing = await db.query.posts.findFirst({
     where: eq(posts.id, input.postId),
@@ -391,6 +403,10 @@ export async function syncTagsForPost(input: {
 
   if (!existing) {
     throw new TRPCError({ code: "NOT_FOUND" })
+  }
+
+  if (existing.authorId !== ownerId) {
+    throw new TRPCError({ code: "FORBIDDEN" })
   }
 
   await db
