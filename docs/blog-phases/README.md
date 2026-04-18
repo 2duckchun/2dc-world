@@ -11,6 +11,7 @@
 
 1. [blog-plan.md](../blog-plan.md)
 2. [Phase 0 - Foundation](./phase-0-foundation.md)
+   - [Phase 0 - Temporary Verification Notes](./phase-0-temporary-verification-notes.md)
 3. [Phase 1 - Public Reading](./phase-1-public-reading.md)
 4. [Phase 2 - Owner Authoring](./phase-2-owner-authoring.md)
 5. [Phase 3 - Engagement](./phase-3-engagement.md)

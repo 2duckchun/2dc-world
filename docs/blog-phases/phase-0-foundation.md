@@ -195,6 +195,12 @@ owner 판별은 다음 규칙으로 고정한다.
 - theme toggle이 라이트/다크를 정상 전환하고 새로고침 후 유지되는지 확인한다.
 - 공용 셸에서 `/blog`, `/memo`, `/booklog` 진입 링크가 노출되는지 확인한다.
 
+## 임시 검증 메모
+
+실제 환경에서 아직 끝까지 검증하지 못한 항목은 별도 임시 문서로 남긴다.
+
+- [Phase 0 - Temporary Verification Notes](./phase-0-temporary-verification-notes.md)
+
 ## 완료 조건
 
 - 인프라 스택이 프로젝트 안에서 실행 가능한 상태다.
