@@ -6,8 +6,12 @@ import { AppShell } from "@/widgets/app-shell/app-shell"
 import "./globals.css"
 
 export const metadata: Metadata = {
-  title: "2dc world",
-  description: "Phase 0 foundation for the 2dc world publishing platform",
+  title: {
+    default: "2dc world",
+    template: "%s | 2dc world",
+  },
+  description:
+    "A reading-first publishing space for essays, memos, and ordered booklogs.",
 }
 
 export default async function RootLayout({

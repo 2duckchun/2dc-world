@@ -41,3 +41,7 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 .omx/
+
+# drizzle pull artifacts
+drizzle/schema.ts
+drizzle/relations.ts

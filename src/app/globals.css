@@ -1,6 +1,7 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
+@plugin "@tailwindcss/typography";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -127,10 +128,26 @@
   * {
     @apply border-border outline-ring/50;
   }
+
+  html {
+    @apply font-sans;
+  }
+
   body {
     @apply bg-background text-foreground;
   }
-  html {
-    @apply font-sans;
+}
+
+@layer components {
+  .markdown-content {
+    @apply prose prose-slate max-w-none text-base leading-8 dark:prose-invert sm:prose-lg prose-headings:font-semibold prose-headings:tracking-tight prose-headings:text-balance prose-p:text-foreground/95 prose-p:text-pretty prose-a:text-primary prose-a:decoration-primary/30 prose-a:underline-offset-4 prose-blockquote:rounded-[1.5rem] prose-blockquote:border prose-blockquote:border-border/70 prose-blockquote:bg-muted/50 prose-blockquote:px-5 prose-blockquote:py-4 prose-blockquote:text-muted-foreground prose-blockquote:not-italic prose-img:rounded-[1.25rem] prose-img:border prose-img:border-border/70 prose-img:shadow-sm prose-pre:rounded-[1.6rem] prose-pre:border prose-pre:border-border/70 prose-pre:shadow-sm prose-th:text-foreground prose-td:text-muted-foreground;
+  }
+
+  .markdown-content :where(pre) {
+    @apply overflow-x-auto;
+  }
+
+  .markdown-content :where(table) {
+    @apply min-w-[32rem];
   }
 }
