@@ -8,6 +8,13 @@
       "when": 1776950139405,
       "tag": "0000_late_genesis",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1776951140439,
+      "tag": "0001_deep_nighthawk",
+      "breakpoints": true
     }
   ]
 }

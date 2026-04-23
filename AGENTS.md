@@ -7,3 +7,10 @@ This version has breaking changes — APIs, conventions, and file structure may 
 # Architecture
 
 Before adding or moving frontend code, read [docs/architecture.md](docs/architecture.md) and follow the documented layer responsibilities and import direction rules.
+
+# Database
+
+Before changing Drizzle schemas, migrations, auth persistence, posts, series, or tags, read the DB design docs:
+
+- [docs/db/auth-schema.md](docs/db/auth-schema.md)
+- [docs/db/content-schema.md](docs/db/content-schema.md)
