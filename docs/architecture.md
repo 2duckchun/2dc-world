@@ -41,11 +41,11 @@
 예시:
 
 ```tsx
-// src/app/blog/page.tsx
-import { BlogListView } from "@/views/blog-list"
+// src/app/example/page.tsx
+import { ExampleView } from "@/views/example-page"
 
-export default function BlogPage() {
-  return <BlogListView />
+export default function ExamplePage() {
+  return <ExampleView />
 }
 ```
 
@@ -60,20 +60,20 @@ export default function BlogPage() {
 예시 구조:
 
 ```text
-src/views/blog-list/
+src/views/example-page/
   index.tsx
   sections/
     hero-section.tsx
-    blog-list-section.tsx
+    content-section.tsx
   hooks/
-    use-blog-filter.ts
+    use-example-filter.ts
 ```
 
 예시 export:
 
 ```tsx
-// src/views/blog-list/index.tsx
-export function BlogListView() {
+// src/views/example-page/index.tsx
+export function ExampleView() {
   return (
     <>
       {/* sections 조합 */}
@@ -122,20 +122,20 @@ export function BlogListView() {
 권장 구조 예시:
 
 ```text
-src/domain/blog/
+src/domain/example/
   procedure/
-    get-list-posts/
+    get-list-items/
       index.ts
       schema.ts
       fixture.ts
-    post-create-draft/
+    post-create-item/
       index.ts
       schema.ts
       fixture.ts
     router.ts
   hook/
-    use-list-posts.ts
-    use-create-draft.ts
+    use-list-items.ts
+    use-create-item.ts
 ```
 
 세부 규칙:
