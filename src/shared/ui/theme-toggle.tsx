@@ -2,6 +2,7 @@
 
 import { Moon, Sun } from "lucide-react"
 import { useEffect, useState } from "react"
+import { cn } from "@/shared/lib/utils"
 import { Button } from "@/shared/ui/button"
 
 type Theme = "light" | "dark"
@@ -19,7 +20,11 @@ function applyTheme(theme: Theme) {
   document.documentElement.style.colorScheme = theme
 }
 
-export function ThemeToggle() {
+type ThemeToggleProps = {
+  className?: string
+}
+
+export function ThemeToggle({ className }: ThemeToggleProps) {
   const [theme, setTheme] = useState<Theme>("light")
 
   useEffect(() => {
@@ -42,7 +47,10 @@ export function ThemeToggle() {
       size="icon-lg"
       aria-label={isDark ? "라이트 모드로 전환" : "다크 모드로 전환"}
       aria-pressed={isDark}
-      className="relative border border-border bg-background/75 shadow-sm backdrop-blur hover:bg-muted/80"
+      className={cn(
+        "relative border border-border bg-background/75 shadow-sm backdrop-blur hover:bg-muted/80",
+        className,
+      )}
       onClick={() => {
         const nextTheme = isDark ? "light" : "dark"
         setTheme(nextTheme)

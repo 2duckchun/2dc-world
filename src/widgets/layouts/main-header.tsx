@@ -1,7 +1,7 @@
 import { Home, LogIn } from "lucide-react"
 import { cn } from "@/shared/lib/utils"
 import { buttonVariants } from "@/shared/ui/button"
-import { ThemeToggle } from "@/views/home/theme-toggle"
+import { ThemeToggle } from "@/shared/ui/theme-toggle"
 
 export const MainHeader = () => {
   return (
