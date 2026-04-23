@@ -11,6 +11,8 @@ The content model has three product rules:
 - GitHub OAuth users can sign in through Auth.js.
 - Only users with `admin` role may create or edit posts at the application
   layer.
+- Posts are classified as `post`, `log`, or `series` content so publishing
+  flows can route them into separate editorial surfaces.
 - A post may belong to zero or one series, never multiple series.
 
 ## Account Tables
@@ -45,6 +47,20 @@ lookups.
 | `published` | Publicly visible. |
 | `archived` | Hidden from normal publishing flows without deleting history. |
 
+## Post Kind
+
+`post_kind` is an enum with these values:
+
+| Value | Meaning |
+| --- | --- |
+| `post` | Standard article content. |
+| `log` | Short-form or journal-style writing. |
+| `series` | An article intended to appear in a series flow. |
+
+The kind identifies the editorial surface for the post. It is separate from
+`series_id`, which points to the optional parent series record used for ordered
+reading sequences.
+
 ## Posts
 
 `posts` stores the markdown source for each article.
@@ -57,6 +73,7 @@ lookups.
 | `subtitle` | yes | Optional short supporting title. |
 | `thumbnail` | yes | Optional thumbnail URL/path. |
 | `content` | no | Markdown source. |
+| `kind` | no | Editorial content kind. Defaults to `post`. |
 | `status` | no | Publication state. Defaults to `draft`. |
 | `author_id` | no | Authoring user. References `users.id`. |
 | `series_id` | yes | Optional parent series. References `series.id`. |

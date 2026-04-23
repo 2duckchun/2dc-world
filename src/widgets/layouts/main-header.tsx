@@ -1,4 +1,4 @@
-import { Home, LogIn, LogOut, ShieldCheck, User } from "lucide-react"
+import { Home, LogIn, LogOut, PenLine, ShieldCheck, User } from "lucide-react"
 import { auth } from "@/auth"
 import { signInWithGitHub, signOutCurrentUser } from "@/core/auth/actions"
 import { cn } from "@/shared/lib/utils"
@@ -25,6 +25,19 @@ export const MainHeader = async () => {
           <ThemeToggle />
           {session?.user ? (
             <>
+              {session.user.role === "admin" ? (
+                <a
+                  href="/admin/posts/new"
+                  className={cn(
+                    buttonVariants({ variant: "ghost", size: "icon" }),
+                    "border border-border bg-background/75 shadow-sm backdrop-blur hover:bg-muted/80",
+                  )}
+                  aria-label="새 글 작성"
+                  title="새 글 작성"
+                >
+                  <PenLine className="size-4" />
+                </a>
+              ) : null}
               <span
                 className={cn(
                   buttonVariants({ variant: "ghost" }),

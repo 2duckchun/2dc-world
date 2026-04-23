@@ -15,6 +15,13 @@
       "when": 1776951140439,
       "tag": "0001_deep_nighthawk",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1776951985365,
+      "tag": "0002_sad_dust",
+      "breakpoints": true
     }
   ]
 }

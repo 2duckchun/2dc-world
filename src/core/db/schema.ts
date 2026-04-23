@@ -12,6 +12,7 @@ import {
 } from "drizzle-orm/pg-core"
 
 export const userRole = pgEnum("user_role", ["user", "admin"])
+export const postKind = pgEnum("post_kind", ["post", "log", "series"])
 export const postStatus = pgEnum("post_status", [
   "draft",
   "published",
@@ -123,6 +124,7 @@ export const posts = pgTable(
     subtitle: text("subtitle"),
     thumbnail: text("thumbnail"),
     content: text("content").notNull(),
+    kind: postKind("kind").notNull().default("post"),
     status: postStatus("status").notNull().default("draft"),
     authorId: text("author_id")
       .notNull()
