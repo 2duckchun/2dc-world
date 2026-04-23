@@ -1,3 +1,5 @@
+import { HomeView } from "@/views/home"
+
 export default function HomePage() {
-  return <main className="min-h-svh bg-background" />
+  return <HomeView />
 }

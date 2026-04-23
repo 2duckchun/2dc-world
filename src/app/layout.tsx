@@ -6,7 +6,7 @@ export const metadata: Metadata = {
     default: "2dc world",
     template: "%s | 2dc world",
   },
-  description: "A blank architecture shell for 2dc world.",
+  description: "Tech, log, and series archive for 2dc world.",
 }
 
 export default function RootLayout({
@@ -15,7 +15,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className="h-full antialiased">
+    <html lang="ko" className="h-full antialiased" suppressHydrationWarning>
       <body className="min-h-full font-sans">{children}</body>
     </html>
   )
