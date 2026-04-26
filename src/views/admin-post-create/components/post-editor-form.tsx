@@ -5,7 +5,7 @@ import { useMutation } from "@tanstack/react-query"
 import { AlertCircle, Save, UploadCloud } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useEffect } from "react"
-import { Controller, type Resolver, useForm } from "react-hook-form"
+import { Controller, useForm } from "react-hook-form"
 import { toast } from "sonner"
 import { useTRPC } from "@/core/trpc/client/providers/trpc-tanstack-query-provider"
 import { sanitizeSlugInput } from "@/domain/content/slug"
@@ -53,17 +53,11 @@ const defaultMarkdown = `# 제목
 본문을 작성하세요.
 `
 
-// pnpm keeps a secondary zod copy for transitive tooling, so the resolver
-// package's Zod v4 type identity differs from the app schema's type identity.
-const postCreatePostResolver = zodResolver(
-  postCreatePostInputSchema as never,
-) as Resolver<PostCreatePostInput>
-
 export function PostEditorForm({ seriesOptions }: PostEditorFormProps) {
   const router = useRouter()
   const trpc = useTRPC()
   const form = useForm<PostCreatePostInput>({
-    resolver: postCreatePostResolver,
+    resolver: zodResolver(postCreatePostInputSchema),
     defaultValues: {
       title: "",
       slug: "",

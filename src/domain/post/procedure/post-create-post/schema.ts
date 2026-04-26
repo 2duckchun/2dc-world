@@ -1,4 +1,4 @@
-import { z } from "zod/v4"
+import { z } from "zod"
 import { normalizeSlug, slugPattern } from "@/domain/content/slug"
 import { postKindValues, postStatusValues } from "@/domain/content/types"
 
