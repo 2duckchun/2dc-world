@@ -1,4 +1,5 @@
 import { z } from "zod"
+import { postKindValues } from "@/domain/content/types"
 
 export const getLatestPostsInputSchema = z
   .object({
@@ -14,6 +15,7 @@ export const getLatestPostsOutputSchema = z.array(
     slug: z.string(),
     subtitle: z.string().nullable(),
     thumbnail: z.string().nullable(),
+    kind: z.enum(postKindValues),
     publishedAt: z.date().nullable(),
     createdAt: z.date(),
   }),

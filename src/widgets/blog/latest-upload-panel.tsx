@@ -1,19 +1,14 @@
-import { ArrowUpRight, Braces, Clock3 } from "lucide-react"
+import { ArrowUpRight, Clock3 } from "lucide-react"
 import type { CSSProperties } from "react"
 import { cn } from "@/shared/lib/utils"
 import { buttonVariants } from "@/shared/ui/button"
 
 export type LatestUploadItem = {
   title: string
+  href: string
   category: string
   summary: string
   meta: string
-}
-
-type FeaturedUpload = {
-  label: string
-  title: string
-  description: string
 }
 
 type LatestUploadPanelProps = {
@@ -22,7 +17,7 @@ type LatestUploadPanelProps = {
   titleId: string
   href: string
   actionLabel: string
-  featured: FeaturedUpload
+  spotlight: LatestUploadItem | null
   posts: readonly LatestUploadItem[]
   className?: string
   style?: CSSProperties
@@ -34,7 +29,7 @@ export function LatestUploadPanel({
   titleId,
   href,
   actionLabel,
-  featured,
+  spotlight,
   posts,
   className,
   style,
@@ -69,48 +64,77 @@ export function LatestUploadPanel({
             </a>
           </div>
 
-          <article className="space-y-5">
-            <div className="flex w-fit items-center gap-2 rounded-lg border border-border bg-background px-3 py-1 text-sm">
-              <Braces className="size-4 text-chart-1" />
-              {featured.label}
+          {spotlight ? (
+            <a href={spotlight.href} className="group block">
+              <article className="space-y-5">
+                <div className="flex flex-wrap items-center gap-3 text-sm">
+                  <span className="rounded-lg bg-chart-2/12 px-2.5 py-1 font-medium text-chart-2">
+                    {spotlight.category}
+                  </span>
+                  <span className="inline-flex items-center gap-1.5 text-muted-foreground">
+                    <Clock3 className="size-4" />
+                    {spotlight.meta}
+                  </span>
+                </div>
+                <div className="flex items-start justify-between gap-4">
+                  <div className="space-y-3">
+                    <h3 className="max-w-xl text-balance font-black text-3xl leading-tight transition-colors group-hover:text-chart-2 sm:text-4xl">
+                      {spotlight.title}
+                    </h3>
+                    <p className="max-w-2xl text-muted-foreground leading-7">
+                      {spotlight.summary}
+                    </p>
+                  </div>
+                  <ArrowUpRight className="mt-2 size-6 shrink-0 text-muted-foreground transition-transform group-hover:-translate-y-1 group-hover:translate-x-1 group-hover:text-foreground" />
+                </div>
+              </article>
+            </a>
+          ) : (
+            <div className="flex min-h-40 items-center text-muted-foreground">
+              아직 공개된 글이 없습니다.
             </div>
-            <h3 className="max-w-xl text-balance font-black text-3xl leading-tight sm:text-4xl">
-              {featured.title}
-            </h3>
-            <p className="max-w-2xl text-muted-foreground leading-7">
-              {featured.description}
-            </p>
-          </article>
+          )}
         </div>
 
         <div className="divide-y divide-border/80">
-          {posts.map((post) => (
-            <article
-              key={post.title}
-              className="group p-5 transition-colors hover:bg-muted/45 sm:p-7"
-            >
-              <div className="mb-4 flex flex-wrap items-center gap-3 text-sm">
-                <span className="rounded-lg bg-chart-2/12 px-2.5 py-1 font-medium text-chart-2">
-                  {post.category}
-                </span>
-                <span className="inline-flex items-center gap-1.5 text-muted-foreground">
-                  <Clock3 className="size-4" />
-                  {post.meta}
-                </span>
-              </div>
-              <div className="flex items-start justify-between gap-4">
-                <div className="space-y-2">
-                  <h3 className="font-bold text-xl leading-snug">
-                    {post.title}
-                  </h3>
-                  <p className="max-w-xl text-muted-foreground leading-7">
-                    {post.summary}
-                  </p>
-                </div>
-                <ArrowUpRight className="mt-1 size-5 text-muted-foreground transition-transform group-hover:-translate-y-1 group-hover:translate-x-1 group-hover:text-foreground" />
-              </div>
-            </article>
-          ))}
+          {posts.length > 0 ? (
+            posts.map((post) => (
+              <a
+                key={post.href}
+                href={post.href}
+                className="group block p-5 transition-colors hover:bg-muted/45 sm:p-7"
+              >
+                <article>
+                  <div className="mb-4 flex flex-wrap items-center gap-3 text-sm">
+                    <span className="rounded-lg bg-chart-2/12 px-2.5 py-1 font-medium text-chart-2">
+                      {post.category}
+                    </span>
+                    <span className="inline-flex items-center gap-1.5 text-muted-foreground">
+                      <Clock3 className="size-4" />
+                      {post.meta}
+                    </span>
+                  </div>
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="space-y-2">
+                      <h3 className="font-bold text-xl leading-snug">
+                        {post.title}
+                      </h3>
+                      <p className="max-w-xl text-muted-foreground leading-7">
+                        {post.summary}
+                      </p>
+                    </div>
+                    <ArrowUpRight className="mt-1 size-5 shrink-0 text-muted-foreground transition-transform group-hover:-translate-y-1 group-hover:translate-x-1 group-hover:text-foreground" />
+                  </div>
+                </article>
+              </a>
+            ))
+          ) : (
+            <div className="flex min-h-56 items-center p-5 text-muted-foreground sm:p-7">
+              {spotlight
+                ? "다음 글이 올라오면 여기에 표시됩니다."
+                : "공개된 글이 생기면 여기에 표시됩니다."}
+            </div>
+          )}
         </div>
       </div>
     </section>

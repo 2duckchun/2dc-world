@@ -14,6 +14,7 @@ export const getLatestPostsProcedure = publicProcedure
         slug: true,
         subtitle: true,
         thumbnail: true,
+        kind: true,
         publishedAt: true,
         createdAt: true,
       },
