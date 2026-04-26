@@ -140,13 +140,27 @@ src/domain/example/
 
 세부 규칙:
 
-- `src/core/trpc`는 `init`, `context`, base procedure, 최상위 router 합성 같은 기술 기반만 둔다.
+- `src/core/trpc/base`는 `init`, middleware, preset procedure 같은 tRPC 공통 기반만 둔다.
+- `src/core/trpc/client`는 tRPC + TanStack Query provider처럼 브라우저 클라이언트에서 쓰는 연결 계층만 둔다.
+- `src/core/trpc/server`는 context, server caller, server proxy처럼 서버에서만 쓰는 연결 계층만 둔다.
+- `src/core/trpc/router.ts`는 도메인 router를 모아 최상위 `appRouter`를 합성한다.
 - 실제 도메인 procedure는 `src/domain/<domain>/procedure` 아래에 둔다.
 - 개별 procedure 폴더는 `get-*`, `post-*` 같은 읽기/변경 의도를 이름에 드러낸다.
 - `schema.ts`에는 Zod 기반 `input`과 `output` 스키마를 둔다.
 - `fixture.ts`에는 해당 Zod 스키마를 만족하는 대표 입력/출력 값을 둔다.
 - `hook/`에는 TanStack Query + tRPC 기반의 재사용 가능한 도메인 hook을 둔다.
 - 페이지에만 종속되는 hook은 `src/views`에 두고, 여러 view에서 재사용되는 도메인 hook만 `src/domain`에 둔다.
+
+### tRPC Procedure Convention
+
+- 도메인 procedure는 `baseProcedure`를 직접 import하지 않는다.
+- 도메인 procedure는 반드시 `src/core/trpc/base/procedures/*`의 preset procedure를 사용한다.
+  - 공개 API: `publicProcedure`
+  - 로그인 필요 API: `authProcedure`
+  - 관리자 API: `adminProcedure`
+- 공통 로깅은 preset procedure에 포함되어 있으므로 도메인 procedure에서 `loggerMiddleware`를 직접 조합하지 않는다.
+- `adminProcedure`는 로그인 여부와 관리자 권한을 함께 검증한다.
+- 도메인 router는 `procedure/index.ts` 배럴을 만들지 않고, 개별 procedure를 직접 import해 명시적으로 조립한다.
 
 ## 의존 방향 규칙
 
