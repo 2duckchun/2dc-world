@@ -1,7 +1,6 @@
-export const createSlug = (value: string) =>
-  value
-    .normalize("NFKC")
-    .trim()
-    .toLowerCase()
-    .replace(/[^\p{Letter}\p{Number}]+/gu, "-")
-    .replace(/^-+|-+$/g, "")
+export const slugPattern = /^[A-Za-z0-9-]+$/
+
+export const normalizeSlug = (value: string) => value.normalize("NFKC").trim()
+
+export const sanitizeSlugInput = (value: string) =>
+  normalizeSlug(value).replace(/[^A-Za-z0-9-]/g, "")

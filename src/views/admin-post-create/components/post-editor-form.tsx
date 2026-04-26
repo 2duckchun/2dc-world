@@ -1,12 +1,12 @@
 "use client"
 
 import { CheckCircle2, Save, UploadCloud } from "lucide-react"
-import { useActionState, useEffect, useMemo, useState } from "react"
+import { useActionState, useMemo, useState } from "react"
 import {
   type CreatePostState,
   createPostAction,
 } from "@/domain/content/actions"
-import { createSlug } from "@/domain/content/slug"
+import { sanitizeSlugInput } from "@/domain/content/slug"
 import {
   type PostKind,
   postKindLabels,
@@ -44,15 +44,8 @@ export function PostEditorForm({ seriesOptions }: PostEditorFormProps) {
   )
   const [title, setTitle] = useState("")
   const [slug, setSlug] = useState("")
-  const [isSlugEdited, setIsSlugEdited] = useState(false)
   const [kind, setKind] = useState<PostKind>("post")
   const [markdown, setMarkdown] = useState(defaultMarkdown)
-
-  useEffect(() => {
-    if (!isSlugEdited) {
-      setSlug(createSlug(title))
-    }
-  }, [isSlugEdited, title])
 
   const isSeriesKind = kind === "series"
   const statusTone = useMemo(() => {
@@ -104,13 +97,16 @@ export function PostEditorForm({ seriesOptions }: PostEditorFormProps) {
             <input
               name="slug"
               value={slug}
-              onChange={(event) => {
-                setIsSlugEdited(true)
-                setSlug(createSlug(event.target.value))
-              }}
+              onChange={(event) =>
+                setSlug(sanitizeSlugInput(event.target.value))
+              }
+              pattern="[A-Za-z0-9-]+"
               required
               className="h-10 rounded-md border border-input bg-background px-3 text-sm outline-none transition focus:border-ring focus:ring-3 focus:ring-ring/25"
             />
+            <span className="text-muted-foreground text-xs">
+              영문, 숫자, 하이픈(-)만 사용할 수 있습니다.
+            </span>
           </label>
 
           <label className="grid gap-2">

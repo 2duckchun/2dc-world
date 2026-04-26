@@ -1,10 +1,12 @@
 "use server"
 
 import { eq } from "drizzle-orm"
+import { redirect } from "next/navigation"
+import { z } from "zod"
 import { auth } from "@/auth"
 import { db } from "@/core/db"
 import { posts, series } from "@/core/db/schema"
-import { createSlug } from "@/domain/content/slug"
+import { normalizeSlug, slugPattern } from "@/domain/content/slug"
 import {
   type PostKind,
   type PostStatus,
@@ -43,6 +45,20 @@ const parseSeriesOrder = (value: string) => {
   return numberValue
 }
 
+const createPostSchema = z.object({
+  title: z.string().trim().min(1),
+  slug: z
+    .string()
+    .transform(normalizeSlug)
+    .pipe(
+      z
+        .string()
+        .min(1)
+        .regex(slugPattern, "slug must contain only letters, numbers, and -"),
+    ),
+  content: z.string().trim().min(1),
+})
+
 export const createPostAction = async (
   _previousState: CreatePostState,
   formData: FormData,
@@ -60,7 +76,7 @@ export const createPostAction = async (
   const subtitle = getString(formData, "subtitle")
   const thumbnail = getString(formData, "thumbnail")
   const content = getString(formData, "content")
-  const requestedSlug = createSlug(getString(formData, "slug"))
+  const requestedSlug = getString(formData, "slug")
   const kindValue = getString(formData, "kind")
   const statusValue = getString(formData, "status")
   const seriesId = getString(formData, "seriesId")
@@ -68,14 +84,21 @@ export const createPostAction = async (
 
   const kind = isPostKind(kindValue) ? kindValue : "post"
   const status = isPostStatus(statusValue) ? statusValue : "draft"
-  const slug = requestedSlug || createSlug(title)
+  const postInput = createPostSchema.safeParse({
+    title,
+    slug: requestedSlug,
+    content,
+  })
 
-  if (!title || !slug || !content.trim()) {
+  if (!postInput.success) {
     return {
       status: "error",
-      message: "제목, 슬러그, 본문은 필수입니다.",
+      message:
+        "제목, 본문은 필수이며 슬러그는 영문, 숫자, 하이픈(-)만 사용할 수 있습니다.",
     }
   }
+
+  const { slug } = postInput.data
 
   if (seriesOrder === undefined) {
     return {
@@ -139,15 +162,12 @@ export const createPostAction = async (
       publishedAt: status === "published" ? new Date() : null,
       updatedAt: new Date(),
     })
-
-    return {
-      status: "success",
-      message: "게시글을 저장했습니다.",
-    }
   } catch {
     return {
       status: "error",
       message: "게시글 저장에 실패했습니다. 입력값을 다시 확인해 주세요.",
     }
   }
+
+  redirect("/")
 }
