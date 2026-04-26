@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 import "@mdxeditor/editor/style.css"
 import "./globals.css"
 import { Toaster } from "sonner"
+import { TrpcTanstackQueryProvider } from "@/core/trpc/trpc-tanstack-query-provider"
 
 export const metadata: Metadata = {
   title: {
@@ -19,8 +20,10 @@ export default function RootLayout({
   return (
     <html lang="ko" className="h-full antialiased" suppressHydrationWarning>
       <body className="min-h-full font-sans">
-        {children}
-        <Toaster />
+        <TrpcTanstackQueryProvider>
+          {children}
+          <Toaster />
+        </TrpcTanstackQueryProvider>
       </body>
     </html>
   )
