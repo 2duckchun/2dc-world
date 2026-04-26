@@ -1,24 +1,13 @@
 "use client"
 
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useMutation } from "@tanstack/react-query"
 import { AlertCircle, Save, UploadCloud } from "lucide-react"
-import { useRouter } from "next/navigation"
-import { useEffect } from "react"
-import { Controller, useForm } from "react-hook-form"
-import { toast } from "sonner"
-import { useTRPC } from "@/core/trpc/client/providers/trpc-tanstack-query-provider"
-import { sanitizeSlugInput } from "@/domain/content/slug"
+import { Controller } from "react-hook-form"
 import {
   postKindLabels,
   postKindValues,
   postStatusLabels,
   postStatusValues,
 } from "@/domain/content/types"
-import {
-  type PostCreatePostInput,
-  postCreatePostInputSchema,
-} from "@/domain/post/procedure/post-create-post/schema"
 import { Button } from "@/shared/ui/button"
 import {
   Field,
@@ -37,7 +26,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/shared/ui/select"
-import { MarkdownEditor } from "./markdown-editor"
+import { MarkdownEditor } from "../markdown-editor"
+import { usePostEditorForm } from "./post-editor-form-hook"
 
 type SeriesOption = {
   id: string
@@ -48,71 +38,20 @@ type PostEditorFormProps = {
   seriesOptions: SeriesOption[]
 }
 
-const defaultMarkdown = `# 제목
-
-본문을 작성하세요.
-`
-
 export function PostEditorForm({ seriesOptions }: PostEditorFormProps) {
-  const router = useRouter()
-  const trpc = useTRPC()
-  const form = useForm<PostCreatePostInput>({
-    resolver: zodResolver(postCreatePostInputSchema),
-    defaultValues: {
-      title: "",
-      slug: "",
-      subtitle: null,
-      thumbnail: null,
-      content: defaultMarkdown,
-      kind: "post",
-      status: "draft",
-      seriesId: null,
-      seriesOrder: null,
-    },
-  })
-  const selectedKind = form.watch("kind")
-  const isSeriesKind = selectedKind === "series"
-  const createPost = useMutation(
-    trpc.post.create.mutationOptions({
-      onSuccess: () => {
-        toast.success("게시글을 저장했습니다.")
-        router.push("/")
-      },
-      onError: (error) => {
-        const message =
-          error.message || "게시글 저장에 실패했습니다. 다시 시도해 주세요."
-
-        form.setError("root", { type: "server", message })
-
-        if (message.includes("슬러그")) {
-          form.setError("slug", { type: "server", message })
-        }
-
-        toast.error(message)
-      },
-    }),
-  )
-  const isPending = createPost.isPending
-  const rootError = form.formState.errors.root?.message
-
-  useEffect(() => {
-    if (isSeriesKind) {
-      return
-    }
-
-    form.setValue("seriesId", null)
-    form.setValue("seriesOrder", null)
-    form.clearErrors(["seriesId", "seriesOrder"])
-  }, [form, isSeriesKind])
+  const {
+    form,
+    handleNullableTextChange,
+    handleSeriesOrderChange,
+    handleSlugChange,
+    handleSubmit,
+    isPending,
+    isSeriesKind,
+    rootError,
+  } = usePostEditorForm()
 
   return (
-    <form
-      onSubmit={form.handleSubmit((values) => {
-        form.clearErrors("root")
-        createPost.mutate(values)
-      })}
-      className="grid gap-6"
-    >
+    <form onSubmit={handleSubmit} className="grid gap-6">
       <section className="grid gap-4 rounded-lg border border-border bg-card p-5 shadow-sm sm:p-6">
         <div className="grid gap-4 lg:grid-cols-[1fr_280px]">
           <Controller
@@ -175,7 +114,7 @@ export function PostEditorForm({ seriesOptions }: PostEditorFormProps) {
                   aria-invalid={fieldState.invalid}
                   pattern="[A-Za-z0-9-]+"
                   onChange={(event) =>
-                    field.onChange(sanitizeSlugInput(event.target.value))
+                    field.onChange(handleSlugChange(event.target.value))
                   }
                 />
                 <FieldDescription>
@@ -197,7 +136,7 @@ export function PostEditorForm({ seriesOptions }: PostEditorFormProps) {
                   value={field.value ?? ""}
                   onBlur={field.onBlur}
                   onChange={(event) =>
-                    field.onChange(event.target.value || null)
+                    field.onChange(handleNullableTextChange(event.target.value))
                   }
                   aria-invalid={fieldState.invalid}
                 />
@@ -218,7 +157,9 @@ export function PostEditorForm({ seriesOptions }: PostEditorFormProps) {
                 type="url"
                 value={field.value ?? ""}
                 onBlur={field.onBlur}
-                onChange={(event) => field.onChange(event.target.value || null)}
+                onChange={(event) =>
+                  field.onChange(handleNullableTextChange(event.target.value))
+                }
                 aria-invalid={fieldState.invalid}
               />
               <FieldError errors={[fieldState.error]} />
@@ -298,11 +239,11 @@ export function PostEditorForm({ seriesOptions }: PostEditorFormProps) {
                     min={1}
                     value={field.value ?? ""}
                     onBlur={field.onBlur}
-                    onChange={(event) => {
-                      const value = event.target.value
-
-                      field.onChange(value ? Number(value) : null)
-                    }}
+                    onChange={(event) =>
+                      field.onChange(
+                        handleSeriesOrderChange(event.target.value),
+                      )
+                    }
                     aria-invalid={fieldState.invalid}
                   />
                   <FieldError errors={[fieldState.error]} />
