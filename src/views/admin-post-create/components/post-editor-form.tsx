@@ -1,21 +1,42 @@
 "use client"
 
-import { CheckCircle2, Save, UploadCloud } from "lucide-react"
-import { useActionState, useMemo, useState } from "react"
-import {
-  type CreatePostState,
-  createPostAction,
-} from "@/domain/content/actions"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useMutation } from "@tanstack/react-query"
+import { AlertCircle, Save, UploadCloud } from "lucide-react"
+import { useRouter } from "next/navigation"
+import { useEffect } from "react"
+import { Controller, type Resolver, useForm } from "react-hook-form"
+import { toast } from "sonner"
+import { useTRPC } from "@/core/trpc/client/providers/trpc-tanstack-query-provider"
 import { sanitizeSlugInput } from "@/domain/content/slug"
 import {
-  type PostKind,
   postKindLabels,
   postKindValues,
   postStatusLabels,
   postStatusValues,
 } from "@/domain/content/types"
-import { cn } from "@/shared/lib/utils"
-import { buttonVariants } from "@/shared/ui/button"
+import {
+  type PostCreatePostInput,
+  postCreatePostInputSchema,
+} from "@/domain/post/procedure/post-create-post/schema"
+import { Button } from "@/shared/ui/button"
+import {
+  Field,
+  FieldDescription,
+  FieldError,
+  FieldLabel,
+  FieldLegend,
+  FieldSet,
+} from "@/shared/ui/field"
+import { Input } from "@/shared/ui/input"
+import { RadioGroup, RadioGroupItem } from "@/shared/ui/radio-group"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/shared/ui/select"
 import { MarkdownEditor } from "./markdown-editor"
 
 type SeriesOption = {
@@ -27,162 +48,275 @@ type PostEditorFormProps = {
   seriesOptions: SeriesOption[]
 }
 
-const initialState = {
-  message: "",
-  status: "idle",
-} satisfies CreatePostState
-
 const defaultMarkdown = `# 제목
 
 본문을 작성하세요.
 `
 
+// pnpm keeps a secondary zod copy for transitive tooling, so the resolver
+// package's Zod v4 type identity differs from the app schema's type identity.
+const postCreatePostResolver = zodResolver(
+  postCreatePostInputSchema as never,
+) as Resolver<PostCreatePostInput>
+
 export function PostEditorForm({ seriesOptions }: PostEditorFormProps) {
-  const [state, formAction, isPending] = useActionState(
-    createPostAction,
-    initialState,
+  const router = useRouter()
+  const trpc = useTRPC()
+  const form = useForm<PostCreatePostInput>({
+    resolver: postCreatePostResolver,
+    defaultValues: {
+      title: "",
+      slug: "",
+      subtitle: null,
+      thumbnail: null,
+      content: defaultMarkdown,
+      kind: "post",
+      status: "draft",
+      seriesId: null,
+      seriesOrder: null,
+    },
+  })
+  const selectedKind = form.watch("kind")
+  const isSeriesKind = selectedKind === "series"
+  const createPost = useMutation(
+    trpc.post.create.mutationOptions({
+      onSuccess: () => {
+        toast.success("게시글을 저장했습니다.")
+        router.push("/")
+      },
+      onError: (error) => {
+        const message =
+          error.message || "게시글 저장에 실패했습니다. 다시 시도해 주세요."
+
+        form.setError("root", { type: "server", message })
+
+        if (message.includes("슬러그")) {
+          form.setError("slug", { type: "server", message })
+        }
+
+        toast.error(message)
+      },
+    }),
   )
-  const [title, setTitle] = useState("")
-  const [slug, setSlug] = useState("")
-  const [kind, setKind] = useState<PostKind>("post")
-  const [markdown, setMarkdown] = useState(defaultMarkdown)
+  const isPending = createPost.isPending
+  const rootError = form.formState.errors.root?.message
 
-  const isSeriesKind = kind === "series"
-  const statusTone = useMemo(() => {
-    if (state.status === "success") {
-      return "border-chart-2/35 bg-chart-2/10 text-chart-2"
+  useEffect(() => {
+    if (isSeriesKind) {
+      return
     }
 
-    if (state.status === "error") {
-      return "border-destructive/35 bg-destructive/10 text-destructive"
-    }
-
-    return "hidden"
-  }, [state.status])
+    form.setValue("seriesId", null)
+    form.setValue("seriesOrder", null)
+    form.clearErrors(["seriesId", "seriesOrder"])
+  }, [form, isSeriesKind])
 
   return (
-    <form action={formAction} className="grid gap-6">
+    <form
+      onSubmit={form.handleSubmit((values) => {
+        form.clearErrors("root")
+        createPost.mutate(values)
+      })}
+      className="grid gap-6"
+    >
       <section className="grid gap-4 rounded-lg border border-border bg-card p-5 shadow-sm sm:p-6">
         <div className="grid gap-4 lg:grid-cols-[1fr_280px]">
-          <label className="grid gap-2">
-            <span className="font-medium text-sm">제목</span>
-            <input
-              name="title"
-              value={title}
-              onChange={(event) => setTitle(event.target.value)}
-              required
-              className="h-10 rounded-md border border-input bg-background px-3 text-sm outline-none transition focus:border-ring focus:ring-3 focus:ring-ring/25"
-            />
-          </label>
+          <Controller
+            control={form.control}
+            name="title"
+            render={({ field, fieldState }) => (
+              <Field data-invalid={fieldState.invalid}>
+                <FieldLabel htmlFor="post-title">제목</FieldLabel>
+                <Input
+                  {...field}
+                  id="post-title"
+                  aria-invalid={fieldState.invalid}
+                />
+                <FieldError errors={[fieldState.error]} />
+              </Field>
+            )}
+          />
 
-          <label className="grid gap-2">
-            <span className="font-medium text-sm">상태</span>
-            <select
-              name="status"
-              defaultValue="draft"
-              className="h-10 rounded-md border border-input bg-background px-3 text-sm outline-none transition focus:border-ring focus:ring-3 focus:ring-ring/25"
-            >
-              {postStatusValues.map((status) => (
-                <option key={status} value={status}>
-                  {postStatusLabels[status]}
-                </option>
-              ))}
-            </select>
-          </label>
+          <Controller
+            control={form.control}
+            name="status"
+            render={({ field, fieldState }) => (
+              <Field data-invalid={fieldState.invalid}>
+                <FieldLabel htmlFor="post-status">상태</FieldLabel>
+                <Select
+                  value={field.value}
+                  onValueChange={(value) => field.onChange(value)}
+                >
+                  <SelectTrigger
+                    id="post-status"
+                    aria-invalid={fieldState.invalid}
+                    className="w-full"
+                  >
+                    <SelectValue placeholder="상태 선택" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {postStatusValues.map((status) => (
+                      <SelectItem key={status} value={status}>
+                        {postStatusLabels[status]}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FieldError errors={[fieldState.error]} />
+              </Field>
+            )}
+          />
         </div>
 
         <div className="grid gap-4 lg:grid-cols-[1fr_1fr]">
-          <label className="grid gap-2">
-            <span className="font-medium text-sm">슬러그</span>
-            <input
-              name="slug"
-              value={slug}
-              onChange={(event) =>
-                setSlug(sanitizeSlugInput(event.target.value))
-              }
-              pattern="[A-Za-z0-9-]+"
-              required
-              className="h-10 rounded-md border border-input bg-background px-3 text-sm outline-none transition focus:border-ring focus:ring-3 focus:ring-ring/25"
-            />
-            <span className="text-muted-foreground text-xs">
-              영문, 숫자, 하이픈(-)만 사용할 수 있습니다.
-            </span>
-          </label>
+          <Controller
+            control={form.control}
+            name="slug"
+            render={({ field, fieldState }) => (
+              <Field data-invalid={fieldState.invalid}>
+                <FieldLabel htmlFor="post-slug">슬러그</FieldLabel>
+                <Input
+                  {...field}
+                  id="post-slug"
+                  aria-invalid={fieldState.invalid}
+                  pattern="[A-Za-z0-9-]+"
+                  onChange={(event) =>
+                    field.onChange(sanitizeSlugInput(event.target.value))
+                  }
+                />
+                <FieldDescription>
+                  영문, 숫자, 하이픈(-)만 사용할 수 있습니다.
+                </FieldDescription>
+                <FieldError errors={[fieldState.error]} />
+              </Field>
+            )}
+          />
 
-          <label className="grid gap-2">
-            <span className="font-medium text-sm">부제목</span>
-            <input
-              name="subtitle"
-              className="h-10 rounded-md border border-input bg-background px-3 text-sm outline-none transition focus:border-ring focus:ring-3 focus:ring-ring/25"
-            />
-          </label>
+          <Controller
+            control={form.control}
+            name="subtitle"
+            render={({ field, fieldState }) => (
+              <Field data-invalid={fieldState.invalid}>
+                <FieldLabel htmlFor="post-subtitle">부제목</FieldLabel>
+                <Input
+                  id="post-subtitle"
+                  value={field.value ?? ""}
+                  onBlur={field.onBlur}
+                  onChange={(event) =>
+                    field.onChange(event.target.value || null)
+                  }
+                  aria-invalid={fieldState.invalid}
+                />
+                <FieldError errors={[fieldState.error]} />
+              </Field>
+            )}
+          />
         </div>
 
-        <label className="grid gap-2">
-          <span className="font-medium text-sm">썸네일 URL</span>
-          <input
-            name="thumbnail"
-            type="url"
-            className="h-10 rounded-md border border-input bg-background px-3 text-sm outline-none transition focus:border-ring focus:ring-3 focus:ring-ring/25"
-          />
-        </label>
+        <Controller
+          control={form.control}
+          name="thumbnail"
+          render={({ field, fieldState }) => (
+            <Field data-invalid={fieldState.invalid}>
+              <FieldLabel htmlFor="post-thumbnail">썸네일 URL</FieldLabel>
+              <Input
+                id="post-thumbnail"
+                type="url"
+                value={field.value ?? ""}
+                onBlur={field.onBlur}
+                onChange={(event) => field.onChange(event.target.value || null)}
+                aria-invalid={fieldState.invalid}
+              />
+              <FieldError errors={[fieldState.error]} />
+            </Field>
+          )}
+        />
 
-        <fieldset className="grid gap-2">
-          <legend className="font-medium text-sm">분류</legend>
-          <div className="grid grid-cols-3 rounded-lg border border-border bg-background p-1">
-            {postKindValues.map((value) => (
-              <label key={value} className="min-w-0">
-                <input
-                  type="radio"
-                  name="kind"
-                  value={value}
-                  checked={kind === value}
-                  onChange={() => setKind(value)}
-                  className="peer sr-only"
-                />
-                <span className="flex h-9 cursor-pointer items-center justify-center rounded-md px-2 text-center font-medium text-muted-foreground text-sm transition peer-checked:bg-primary peer-checked:text-primary-foreground peer-focus-visible:ring-3 peer-focus-visible:ring-ring/40">
-                  {postKindLabels[value]}
-                </span>
-              </label>
-            ))}
-          </div>
-        </fieldset>
+        <Controller
+          control={form.control}
+          name="kind"
+          render={({ field, fieldState }) => (
+            <FieldSet data-invalid={fieldState.invalid}>
+              <FieldLegend variant="label">분류</FieldLegend>
+              <RadioGroup
+                value={field.value}
+                onValueChange={(value) => field.onChange(value)}
+                className="grid grid-cols-3 gap-2"
+              >
+                {postKindValues.map((value) => (
+                  <FieldLabel
+                    key={value}
+                    className="flex min-h-10 cursor-pointer items-center rounded-lg border border-border bg-background px-3 py-2 text-muted-foreground transition has-data-checked:border-primary/40 has-data-checked:bg-primary/10 has-data-checked:text-foreground"
+                  >
+                    <RadioGroupItem value={value} />
+                    <span className="min-w-0 truncate">
+                      {postKindLabels[value]}
+                    </span>
+                  </FieldLabel>
+                ))}
+              </RadioGroup>
+              <FieldError errors={[fieldState.error]} />
+            </FieldSet>
+          )}
+        />
 
         {isSeriesKind ? (
           <div className="grid gap-4 lg:grid-cols-[1fr_180px]">
-            <label className="grid gap-2">
-              <span className="font-medium text-sm">시리즈</span>
-              <select
-                name="seriesId"
-                required={isSeriesKind}
-                className="h-10 rounded-md border border-input bg-background px-3 text-sm outline-none transition focus:border-ring focus:ring-3 focus:ring-ring/25"
-              >
-                <option value="">선택</option>
-                {seriesOptions.map((series) => (
-                  <option key={series.id} value={series.id}>
-                    {series.title}
-                  </option>
-                ))}
-              </select>
-            </label>
+            <Controller
+              control={form.control}
+              name="seriesId"
+              render={({ field, fieldState }) => (
+                <Field data-invalid={fieldState.invalid}>
+                  <FieldLabel htmlFor="post-series">시리즈</FieldLabel>
+                  <Select
+                    value={field.value}
+                    onValueChange={(value) => field.onChange(value)}
+                  >
+                    <SelectTrigger
+                      id="post-series"
+                      aria-invalid={fieldState.invalid}
+                      className="w-full"
+                    >
+                      <SelectValue placeholder="선택" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {seriesOptions.map((series) => (
+                        <SelectItem key={series.id} value={series.id}>
+                          {series.title}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FieldError errors={[fieldState.error]} />
+                </Field>
+              )}
+            />
 
-            <label className="grid gap-2">
-              <span className="font-medium text-sm">순서</span>
-              <input
-                name="seriesOrder"
-                type="number"
-                min="1"
-                required={isSeriesKind}
-                className="h-10 rounded-md border border-input bg-background px-3 text-sm outline-none transition focus:border-ring focus:ring-3 focus:ring-ring/25"
-              />
-            </label>
+            <Controller
+              control={form.control}
+              name="seriesOrder"
+              render={({ field, fieldState }) => (
+                <Field data-invalid={fieldState.invalid}>
+                  <FieldLabel htmlFor="post-series-order">순서</FieldLabel>
+                  <Input
+                    id="post-series-order"
+                    type="number"
+                    min={1}
+                    value={field.value ?? ""}
+                    onBlur={field.onBlur}
+                    onChange={(event) => {
+                      const value = event.target.value
+
+                      field.onChange(value ? Number(value) : null)
+                    }}
+                    aria-invalid={fieldState.invalid}
+                  />
+                  <FieldError errors={[fieldState.error]} />
+                </Field>
+              )}
+            />
           </div>
-        ) : (
-          <>
-            <input name="seriesId" type="hidden" value="" />
-            <input name="seriesOrder" type="hidden" value="" />
-          </>
-        )}
+        ) : null}
       </section>
 
       <section className="overflow-hidden rounded-lg border border-border bg-card shadow-sm">
@@ -195,36 +329,39 @@ export function PostEditorForm({ seriesOptions }: PostEditorFormProps) {
             S3
           </span>
         </div>
-        <MarkdownEditor
-          markdown={markdown}
-          onChange={(value) => setMarkdown(value)}
-          placeholder=""
-          trim={false}
+        <Controller
+          control={form.control}
+          name="content"
+          render={({ field, fieldState }) => (
+            <Field data-invalid={fieldState.invalid} className="gap-0">
+              <MarkdownEditor
+                markdown={field.value}
+                onChange={(value) => field.onChange(value)}
+                placeholder=""
+                trim={false}
+              />
+              <FieldError errors={[fieldState.error]} className="px-4 pb-4" />
+            </Field>
+          )}
         />
-        <input name="content" type="hidden" value={markdown} />
       </section>
 
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <p
-          className={cn(
-            "inline-flex min-h-9 items-center gap-2 rounded-lg border px-3 py-2 text-sm",
-            statusTone,
-          )}
-          aria-live="polite"
-        >
-          {state.status === "success" ? (
-            <CheckCircle2 className="size-4" />
-          ) : null}
-          {state.message}
-        </p>
-        <button
-          type="submit"
-          disabled={isPending}
-          className={buttonVariants({ className: "min-w-24" })}
-        >
+        {rootError ? (
+          <p
+            className="inline-flex min-h-9 items-center gap-2 rounded-lg border border-destructive/35 bg-destructive/10 px-3 py-2 text-destructive text-sm"
+            aria-live="polite"
+          >
+            <AlertCircle className="size-4" />
+            {rootError}
+          </p>
+        ) : (
+          <span />
+        )}
+        <Button type="submit" disabled={isPending} className="min-w-24">
           <Save data-icon="inline-start" className="size-4" />
           {isPending ? "저장 중" : "저장"}
-        </button>
+        </Button>
       </div>
     </form>
   )
