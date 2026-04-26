@@ -1,13 +1,11 @@
 "use client"
 
-import "client-only"
-
 import { QueryClientProvider } from "@tanstack/react-query"
 import { createTRPCClient, httpBatchLink } from "@trpc/client"
 import { createTRPCContext } from "@trpc/tanstack-react-query"
 import { type ReactNode, useState } from "react"
 import type { AppRouter } from "@/core/trpc/router"
-import { getQueryClient } from "../tanstack-query/query-client"
+import { getQueryClient } from "../../../tanstack-query/query-client"
 
 export const { TRPCProvider, useTRPC, useTRPCClient } =
   createTRPCContext<AppRouter>()

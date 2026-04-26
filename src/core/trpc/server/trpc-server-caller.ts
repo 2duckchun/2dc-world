@@ -1,10 +1,10 @@
 import "server-only"
 
-import { createTRPCContext } from "@/core/trpc/context"
 import { appRouter } from "@/core/trpc/router"
-import { createCallerFactory } from "./init"
+import { createTRPCContext } from "@/core/trpc/server/context"
+import { createCallerFactory } from "../base/init"
 
 const createCaller = createCallerFactory(appRouter)
 
-export const createTRPCCaller = async () =>
+export const trpcServerCaller = async () =>
   createCaller(await createTRPCContext())

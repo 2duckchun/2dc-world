@@ -2,7 +2,7 @@ import type { Metadata } from "next"
 import "@mdxeditor/editor/style.css"
 import "./globals.css"
 import { Toaster } from "sonner"
-import { TrpcTanstackQueryProvider } from "@/core/trpc/trpc-tanstack-query-provider"
+import { TrpcTanstackQueryProvider } from "@/core/trpc/client/providers/trpc-tanstack-query-provider"
 
 export const metadata: Metadata = {
   title: {

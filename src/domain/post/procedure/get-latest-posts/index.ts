@@ -1,6 +1,6 @@
 import { desc, eq } from "drizzle-orm"
 import { posts } from "@/core/db/schema"
-import { publicProcedure } from "@/core/trpc/init"
+import { publicProcedure } from "@/core/trpc/base/procedures/public-procedure"
 import { getLatestPostsInputSchema, getLatestPostsOutputSchema } from "./schema"
 
 export const getLatestPostsProcedure = publicProcedure
