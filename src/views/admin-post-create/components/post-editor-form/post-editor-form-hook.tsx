@@ -7,7 +7,6 @@ import { useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 import { useTRPC } from "@/core/trpc/client/providers/trpc-tanstack-query-provider"
-import { sanitizeSlugInput } from "@/domain/content/slug"
 import {
   type PostCreatePostInput,
   postCreatePostInputSchema,
@@ -71,11 +70,7 @@ export function usePostEditorForm() {
   return {
     form,
     isPending: createPost.isPending,
-    isSeriesKind,
     rootError: form.formState.errors.root?.message,
-    handleNullableTextChange: (value: string) => value || null,
-    handleSeriesOrderChange: (value: string) => (value ? Number(value) : null),
-    handleSlugChange: sanitizeSlugInput,
     handleSubmit: form.handleSubmit((values) => {
       form.clearErrors("root")
       createPost.mutate(values)
