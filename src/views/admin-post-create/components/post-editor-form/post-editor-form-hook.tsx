@@ -32,6 +32,7 @@ export function usePostEditorForm() {
       status: "draft",
       seriesId: null,
       seriesOrder: null,
+      tags: [],
     },
   })
   const selectedKind = form.watch("kind")

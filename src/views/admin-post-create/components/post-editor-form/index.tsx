@@ -9,6 +9,7 @@ import { PostSeriesFields } from "./fields/post-series-fields"
 import { PostSlugInputField } from "./fields/post-slug-input-field"
 import { PostStatusSelectField } from "./fields/post-status-select-field"
 import { PostSubtitleInputField } from "./fields/post-subtitle-input-field"
+import { PostTagsInputField } from "./fields/post-tags-input-field"
 import { PostThumbnailInputField } from "./fields/post-thumbnail-input-field"
 import { PostTitleInputField } from "./fields/post-title-input-field"
 import { usePostEditorForm } from "./post-editor-form-hook"
@@ -40,6 +41,7 @@ export function PostEditorForm({ seriesOptions }: PostEditorFormProps) {
           </div>
 
           <PostThumbnailInputField />
+          <PostTagsInputField />
           <PostKindRadioField />
           <PostSeriesFields seriesOptions={seriesOptions} />
         </section>

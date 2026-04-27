@@ -5,22 +5,47 @@ import { db } from "@/core/db"
 import { posts } from "@/core/db/schema"
 import type { PostKind } from "@/domain/content/types"
 
+const publishedArchiveColumns = {
+  id: true,
+  title: true,
+  slug: true,
+  subtitle: true,
+  publishedAt: true,
+  createdAt: true,
+} as const
+
+const getPublishedArchiveOrderBy = () => [
+  desc(posts.publishedAt),
+  desc(posts.createdAt),
+]
+
 const getPublishedArchiveByKind = async (kind: PostKind) =>
   db.query.posts.findMany({
-    columns: {
-      id: true,
-      title: true,
-      slug: true,
-      subtitle: true,
-      publishedAt: true,
-      createdAt: true,
-    },
+    columns: publishedArchiveColumns,
     where: and(eq(posts.status, "published"), eq(posts.kind, kind)),
-    orderBy: [desc(posts.publishedAt), desc(posts.createdAt)],
+    orderBy: getPublishedArchiveOrderBy(),
   })
 
 export const getPublishedPostArchive = async () =>
-  getPublishedArchiveByKind("post")
+  db.query.posts.findMany({
+    columns: publishedArchiveColumns,
+    where: and(eq(posts.status, "published"), eq(posts.kind, "post")),
+    orderBy: getPublishedArchiveOrderBy(),
+    with: {
+      postTags: {
+        columns: {},
+        with: {
+          tag: {
+            columns: {
+              id: true,
+              name: true,
+              slug: true,
+            },
+          },
+        },
+      },
+    },
+  })
 
 export const getPublishedLogArchive = async () =>
   getPublishedArchiveByKind("log")

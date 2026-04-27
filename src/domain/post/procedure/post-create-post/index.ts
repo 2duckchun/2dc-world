@@ -1,7 +1,8 @@
 import { TRPCError } from "@trpc/server"
-import { eq } from "drizzle-orm"
-import { posts, series } from "@/core/db/schema"
+import { eq, inArray, sql } from "drizzle-orm"
+import { posts, postTags, series, tags } from "@/core/db/schema"
 import { adminProcedure } from "@/core/trpc/base/procedures/admin-procedure"
+import { normalizeTagInputs } from "@/domain/content/tags"
 import { postCreatePostInputSchema, postCreatePostOutputSchema } from "./schema"
 
 export const postCreatePostProcedure = adminProcedure
@@ -46,9 +47,12 @@ export const postCreatePostProcedure = adminProcedure
     }
 
     try {
-      const [createdPost] = await ctx.db
+      const postId = crypto.randomUUID()
+      const normalizedTags = normalizeTagInputs(input.tags)
+      const createdPostQuery = ctx.db
         .insert(posts)
         .values({
+          id: postId,
           title: input.title,
           slug: input.slug,
           subtitle: input.subtitle || null,
@@ -66,6 +70,45 @@ export const postCreatePostProcedure = adminProcedure
           id: posts.id,
           slug: posts.slug,
         })
+      let createdPostRows: Array<{ id: string; slug: string }>
+
+      if (normalizedTags.length > 0) {
+        const [, postRows] = await ctx.db.batch([
+          ctx.db
+            .insert(tags)
+            .values(normalizedTags)
+            .onConflictDoUpdate({
+              target: tags.slug,
+              set: { name: sql`${tags.name}` },
+            }),
+          createdPostQuery,
+          ctx.db
+            .insert(postTags)
+            .select(
+              ctx.db
+                .select({
+                  postId: sql<string>`${postId}`.as("post_id"),
+                  tagId: tags.id,
+                })
+                .from(tags)
+                .where(
+                  inArray(
+                    tags.slug,
+                    normalizedTags.map((tag) => tag.slug),
+                  ),
+                ),
+            )
+            .onConflictDoNothing(),
+        ])
+
+        createdPostRows = postRows
+      } else {
+        const [postRows] = await ctx.db.batch([createdPostQuery])
+
+        createdPostRows = postRows
+      }
+
+      const [createdPost] = createdPostRows
 
       if (!createdPost) {
         throw new Error("Post insert did not return a row")

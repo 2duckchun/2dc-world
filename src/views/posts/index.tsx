@@ -1,6 +1,6 @@
 import { LibraryBig } from "lucide-react"
-import { PostList } from "@/widgets/post/post-list"
 import { PostListHeader } from "@/widgets/post/post-list-header"
+import { PostsArchive } from "./components/posts-archive"
 
 type PostArchiveItem = {
   id: string
@@ -9,6 +9,13 @@ type PostArchiveItem = {
   subtitle: string | null
   publishedAt: Date | null
   createdAt: Date
+  postTags: readonly {
+    tag: {
+      id: string
+      name: string
+      slug: string
+    }
+  }[]
 }
 
 type PostsViewProps = {
@@ -16,9 +23,18 @@ type PostsViewProps = {
 }
 
 export function PostsView({ posts }: PostsViewProps) {
-  const listPosts = posts.map((post) => ({
-    ...post,
-    href: `/posts/${post.slug}`,
+  const archivePosts = posts.map((post) => ({
+    id: post.id,
+    title: post.title,
+    slug: post.slug,
+    subtitle: post.subtitle,
+    publishedAt: post.publishedAt?.toISOString() ?? null,
+    createdAt: post.createdAt.toISOString(),
+    tags: post.postTags
+      .map(({ tag }) => tag)
+      .sort((firstTag, secondTag) =>
+        firstTag.name.localeCompare(secondTag.name, "ko-KR"),
+      ),
   }))
 
   return (
@@ -31,11 +47,7 @@ export function PostsView({ posts }: PostsViewProps) {
         meta={`공개된 글 ${posts.length.toLocaleString("ko-KR")}개`}
       />
 
-      <PostList
-        posts={listPosts}
-        ariaLabel="공개 글 목록"
-        emptyMessage="아직 공개된 글이 없습니다. 첫 글이 올라오면 이곳에 차곡차곡 쌓입니다."
-      />
+      <PostsArchive posts={archivePosts} />
     </div>
   )
 }

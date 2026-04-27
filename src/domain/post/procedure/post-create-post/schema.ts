@@ -1,5 +1,6 @@
 import { z } from "zod"
 import { normalizeSlug, slugPattern } from "@/domain/content/slug"
+import { normalizeTagNames } from "@/domain/content/tags"
 import { postKindValues, postStatusValues } from "@/domain/content/types"
 
 export const postCreatePostInputSchema = z
@@ -28,6 +29,10 @@ export const postCreatePostInputSchema = z
       .int()
       .min(1, "순서는 1 이상의 정수여야 합니다.")
       .nullable(),
+    tags: z
+      .array(z.string())
+      .optional()
+      .transform((values) => normalizeTagNames(values ?? [])),
   })
   .superRefine((input, ctx) => {
     const hasSeriesId = Boolean(input.seriesId)

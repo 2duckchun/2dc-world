@@ -7,6 +7,11 @@ export type PostListItem = {
   subtitle: string | null
   publishedAt: Date | null
   createdAt: Date
+  tags?: readonly {
+    id: string
+    name: string
+    slug: string
+  }[]
 }
 
 type PostListProps = {
@@ -44,6 +49,18 @@ export const PostList = ({ posts, ariaLabel, emptyMessage }: PostListProps) => {
                       <CalendarDays className="size-4" />
                       {displayDate}
                     </span>
+                    {post.tags?.length ? (
+                      <span className="flex min-w-0 flex-wrap gap-1.5">
+                        {post.tags.map((tag) => (
+                          <span
+                            key={tag.id}
+                            className="inline-flex max-w-40 items-center rounded-lg border border-border bg-background px-2 py-0.5 text-muted-foreground"
+                          >
+                            <span className="truncate">#{tag.name}</span>
+                          </span>
+                        ))}
+                      </span>
+                    ) : null}
                   </div>
                   <div className="flex items-start justify-between gap-4">
                     <div className="grid gap-2">

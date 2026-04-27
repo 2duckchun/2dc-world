@@ -10,6 +10,7 @@ export const postCreatePostInputFixture = {
   status: "draft",
   seriesId: null,
   seriesOrder: null,
+  tags: [],
 } satisfies PostCreatePostInput
 
 export const postCreatePostOutputFixture = {

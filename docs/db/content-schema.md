@@ -136,6 +136,10 @@ Constraints:
 - Both foreign keys use `on delete cascade`, so deleting a post or tag clears
   only the join rows.
 
+During post creation, the application accepts tag display names, normalizes them
+into reusable slugs, reuses existing rows by `tags.slug`, and writes the
+post-to-tag links through `post_tags`.
+
 ## Markdown Storage
 
 `posts.content` stores markdown source, not rendered HTML. Rendering, sanitizing,
