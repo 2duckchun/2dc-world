@@ -5,31 +5,36 @@ import { useMemo, useState } from "react"
 import { Button } from "@/shared/ui/button"
 import { PostList, type PostListItem } from "@/widgets/post/post-list"
 
-type PostArchiveTag = {
+export type PostsArchiveTag = {
   id: string
   name: string
   slug: string
 }
 
-type SerializedPostArchiveItem = {
+export type PostsArchiveItem = {
   id: string
   title: string
   slug: string
   subtitle: string | null
   publishedAt: string | null
   createdAt: string
-  tags: readonly PostArchiveTag[]
+  tags: readonly PostsArchiveTag[]
 }
 
-type TagOption = PostArchiveTag & {
+type TagOption = PostsArchiveTag & {
   count: number
 }
 
 type PostsArchiveProps = {
-  posts: readonly SerializedPostArchiveItem[]
+  posts: readonly PostsArchiveItem[]
+  hrefPrefix: string
+  itemLabel: string
+  ariaLabel: string
+  emptyMessage: string
+  selectedEmptyMessage: string
 }
 
-const getTagOptions = (posts: readonly SerializedPostArchiveItem[]) => {
+const getTagOptions = (posts: readonly PostsArchiveItem[]) => {
   const tagOptionsBySlug = new Map<string, TagOption>()
 
   for (const post of posts) {
@@ -52,17 +57,27 @@ const getTagOptions = (posts: readonly SerializedPostArchiveItem[]) => {
   })
 }
 
-const toPostListItem = (post: SerializedPostArchiveItem): PostListItem => ({
+const toPostListItem = (
+  post: PostsArchiveItem,
+  hrefPrefix: string,
+): PostListItem => ({
   id: post.id,
   title: post.title,
-  href: `/posts/${post.slug}`,
+  href: `${hrefPrefix}/${post.slug}`,
   subtitle: post.subtitle,
   publishedAt: post.publishedAt ? new Date(post.publishedAt) : null,
   createdAt: new Date(post.createdAt),
   tags: post.tags,
 })
 
-export function PostsArchive({ posts }: PostsArchiveProps) {
+export function PostsArchive({
+  posts,
+  hrefPrefix,
+  itemLabel,
+  ariaLabel,
+  emptyMessage,
+  selectedEmptyMessage,
+}: PostsArchiveProps) {
   const [selectedTagSlug, setSelectedTagSlug] = useState<string | null>(null)
   const tagOptions = useMemo(() => getTagOptions(posts), [posts])
   const selectedTag = selectedTagSlug
@@ -75,8 +90,8 @@ export function PostsArchive({ posts }: PostsArchiveProps) {
             post.tags.some((tag) => tag.slug === selectedTagSlug),
           )
         : posts
-      ).map(toPostListItem),
-    [posts, selectedTagSlug],
+      ).map((post) => toPostListItem(post, hrefPrefix)),
+    [hrefPrefix, posts, selectedTagSlug],
   )
 
   return (
@@ -93,8 +108,8 @@ export function PostsArchive({ posts }: PostsArchiveProps) {
             </div>
             <p className="text-muted-foreground text-sm">
               {selectedTag
-                ? `${selectedTag.name} 글 ${filteredPosts.length.toLocaleString("ko-KR")}개`
-                : `전체 글 ${posts.length.toLocaleString("ko-KR")}개`}
+                ? `${selectedTag.name} ${itemLabel} ${filteredPosts.length.toLocaleString("ko-KR")}개`
+                : `전체 ${itemLabel} ${posts.length.toLocaleString("ko-KR")}개`}
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
@@ -131,13 +146,9 @@ export function PostsArchive({ posts }: PostsArchiveProps) {
       <PostList
         posts={filteredPosts}
         ariaLabel={
-          selectedTag ? `${selectedTag.name} 공개 글 목록` : "공개 글 목록"
+          selectedTag ? `${selectedTag.name} 공개 ${itemLabel} 목록` : ariaLabel
         }
-        emptyMessage={
-          selectedTag
-            ? "선택한 태그에 포함된 공개 글이 없습니다."
-            : "아직 공개된 글이 없습니다. 첫 글이 올라오면 이곳에 차곡차곡 쌓입니다."
-        }
+        emptyMessage={selectedTag ? selectedEmptyMessage : emptyMessage}
       />
     </div>
   )

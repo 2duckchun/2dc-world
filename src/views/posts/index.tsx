@@ -1,6 +1,6 @@
 import { LibraryBig } from "lucide-react"
 import { PostListHeader } from "@/widgets/post/post-list-header"
-import { PostsArchive } from "./components/posts-archive"
+import { PostsArchive } from "@/widgets/post/posts-archive"
 
 type PostArchiveItem = {
   id: string
@@ -47,7 +47,14 @@ export function PostsView({ posts }: PostsViewProps) {
         meta={`공개된 글 ${posts.length.toLocaleString("ko-KR")}개`}
       />
 
-      <PostsArchive posts={archivePosts} />
+      <PostsArchive
+        posts={archivePosts}
+        hrefPrefix="/posts"
+        itemLabel="글"
+        ariaLabel="공개 글 목록"
+        emptyMessage="아직 공개된 글이 없습니다. 첫 글이 올라오면 이곳에 차곡차곡 쌓입니다."
+        selectedEmptyMessage="선택한 태그에 포함된 공개 글이 없습니다."
+      />
     </div>
   )
 }

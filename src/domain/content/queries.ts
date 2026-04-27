@@ -24,13 +24,6 @@ const getPublishedArchiveByKind = async (kind: PostKind) =>
     columns: publishedArchiveColumns,
     where: and(eq(posts.status, "published"), eq(posts.kind, kind)),
     orderBy: getPublishedArchiveOrderBy(),
-  })
-
-export const getPublishedPostArchive = async () =>
-  db.query.posts.findMany({
-    columns: publishedArchiveColumns,
-    where: and(eq(posts.status, "published"), eq(posts.kind, "post")),
-    orderBy: getPublishedArchiveOrderBy(),
     with: {
       postTags: {
         columns: {},
@@ -46,6 +39,9 @@ export const getPublishedPostArchive = async () =>
       },
     },
   })
+
+export const getPublishedPostArchive = async () =>
+  getPublishedArchiveByKind("post")
 
 export const getPublishedLogArchive = async () =>
   getPublishedArchiveByKind("log")
