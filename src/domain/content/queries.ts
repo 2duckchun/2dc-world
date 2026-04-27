@@ -3,8 +3,9 @@ import "server-only"
 import { and, desc, eq } from "drizzle-orm"
 import { db } from "@/core/db"
 import { posts } from "@/core/db/schema"
+import type { PostKind } from "@/domain/content/types"
 
-export const getPublishedPostArchive = async () =>
+const getPublishedArchiveByKind = async (kind: PostKind) =>
   db.query.posts.findMany({
     columns: {
       id: true,
@@ -14,11 +15,17 @@ export const getPublishedPostArchive = async () =>
       publishedAt: true,
       createdAt: true,
     },
-    where: and(eq(posts.status, "published"), eq(posts.kind, "post")),
+    where: and(eq(posts.status, "published"), eq(posts.kind, kind)),
     orderBy: [desc(posts.publishedAt), desc(posts.createdAt)],
   })
 
-export const getPublishedPostBySlug = async (slug: string) =>
+export const getPublishedPostArchive = async () =>
+  getPublishedArchiveByKind("post")
+
+export const getPublishedLogArchive = async () =>
+  getPublishedArchiveByKind("log")
+
+const getPublishedPostBySlugAndKind = async (slug: string, kind: PostKind) =>
   db.query.posts.findFirst({
     columns: {
       title: true,
@@ -29,7 +36,11 @@ export const getPublishedPostBySlug = async (slug: string) =>
       publishedAt: true,
       createdAt: true,
     },
-    where: and(eq(posts.slug, slug), eq(posts.status, "published")),
+    where: and(
+      eq(posts.slug, slug),
+      eq(posts.status, "published"),
+      eq(posts.kind, kind),
+    ),
     with: {
       series: {
         columns: {
@@ -39,3 +50,9 @@ export const getPublishedPostBySlug = async (slug: string) =>
       },
     },
   })
+
+export const getPublishedLogBySlug = async (slug: string) =>
+  getPublishedPostBySlugAndKind(slug, "log")
+
+export const getPublishedPostBySlug = async (slug: string) =>
+  getPublishedPostBySlugAndKind(slug, "post")
