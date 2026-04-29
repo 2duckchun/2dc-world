@@ -118,6 +118,7 @@ export const getPublishedHomeContent = async () => {
         title: true,
         slug: true,
         description: true,
+        thumbnail: true,
         createdAt: true,
         updatedAt: true,
       },

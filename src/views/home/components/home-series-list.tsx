@@ -1,4 +1,5 @@
 import { ArrowUpRight, CalendarDays, Layers3 } from "lucide-react"
+import Image from "next/image"
 import Link from "next/link"
 import type { HomeContentSeries } from "@/views/home/components/home-content-types"
 
@@ -19,9 +20,21 @@ export function HomeSeriesList({ series }: HomeSeriesListProps) {
             <Link
               key={seriesItem.id}
               href={seriesItem.href}
-              className="group rounded-lg border border-border bg-background p-5 transition-colors hover:bg-muted/45 sm:p-6"
+              className="group overflow-hidden rounded-lg border border-border bg-background transition-colors hover:bg-muted/45"
             >
-              <article className="grid gap-4">
+              {seriesItem.thumbnail ? (
+                <div className="relative aspect-[16/9] border-border border-b bg-muted">
+                  <Image
+                    src={seriesItem.thumbnail}
+                    alt=""
+                    fill
+                    sizes="(min-width: 768px) 496px, calc(100vw - 72px)"
+                    className="object-contain p-4"
+                    unoptimized
+                  />
+                </div>
+              ) : null}
+              <article className="grid gap-4 p-5 sm:p-6">
                 <div className="flex items-start justify-between gap-4">
                   <div className="grid gap-2">
                     <h2 className="font-bold text-2xl leading-snug transition-colors group-hover:text-chart-3">

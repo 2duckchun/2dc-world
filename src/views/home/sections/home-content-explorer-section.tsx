@@ -88,6 +88,7 @@ export async function HomeContentExplorerSection() {
         title: seriesItem.title,
         href: `/series/${seriesItem.slug}`,
         description: seriesItem.description,
+        thumbnail: seriesItem.thumbnail,
         episodeCount: seriesItem.posts.length,
         latestAt: getSeriesLatestDate(seriesItem).toISOString(),
       }) satisfies HomeContentSeries,

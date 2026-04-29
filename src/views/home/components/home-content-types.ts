@@ -24,6 +24,7 @@ export type HomeContentSeries = {
   title: string
   href: string
   description: string | null
+  thumbnail: string | null
   episodeCount: number
   latestAt: string
 }
