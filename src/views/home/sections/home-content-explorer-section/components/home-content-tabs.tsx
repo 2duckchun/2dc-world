@@ -1,5 +1,5 @@
 import { cn } from "@/shared/lib/utils"
-import type { HomeContentTab } from "@/views/home/sections/home-content-explorer-section/components/home-content-types"
+import type { HomeContentTab } from "@/views/home/sections/home-content-explorer-section/components/home-content-explorer"
 
 export type HomeContentTabItem = {
   value: HomeContentTab

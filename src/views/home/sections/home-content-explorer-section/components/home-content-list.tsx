@@ -1,7 +1,7 @@
 import { ArrowUpRight, CalendarDays } from "lucide-react"
 import Link from "next/link"
 import { postKindLabels } from "@/domain/content/types"
-import type { HomeContentPost } from "@/views/home/sections/home-content-explorer-section/components/home-content-types"
+import type { HomeContentPost } from "@/views/home/sections/home-content-explorer-section/components/home-content-explorer"
 
 type HomeContentListProps = {
   posts: readonly HomeContentPost[]

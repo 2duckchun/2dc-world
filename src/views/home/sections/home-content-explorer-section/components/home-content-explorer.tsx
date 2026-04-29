@@ -1,22 +1,46 @@
 "use client"
 
 import { useMemo, useState } from "react"
+import type { PostKind } from "@/domain/content/types"
 import { animationDelay } from "@/shared/lib/animation"
 import { HomeContentList } from "@/views/home/sections/home-content-explorer-section/components/home-content-list"
 import {
   type HomeContentTabItem,
   HomeContentTabs,
 } from "@/views/home/sections/home-content-explorer-section/components/home-content-tabs"
-import type {
-  HomeContentPost,
-  HomeContentSeries,
-  HomeContentTab,
-  HomeContentTag,
-} from "@/views/home/sections/home-content-explorer-section/components/home-content-types"
 import { HomeSeriesList } from "@/views/home/sections/home-content-explorer-section/components/home-series-list"
 import { HomeTagFilter } from "@/views/home/sections/home-content-explorer-section/components/home-tag-filter"
 
-type HomeContentExplorerProps = {
+export type HomeContentTab = "all" | PostKind
+
+export type HomeContentTag = {
+  id: string
+  name: string
+  slug: string
+}
+
+export type HomeContentPost = {
+  id: string
+  title: string
+  href: string
+  kind: PostKind
+  subtitle: string | null
+  publishedAt: string | null
+  createdAt: string
+  tags: readonly HomeContentTag[]
+}
+
+export type HomeContentSeries = {
+  id: string
+  title: string
+  href: string
+  description: string | null
+  thumbnail: string | null
+  episodeCount: number
+  latestAt: string
+}
+
+export type HomeContentExplorerProps = {
   posts: readonly HomeContentPost[]
   series: readonly HomeContentSeries[]
 }

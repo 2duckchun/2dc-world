@@ -1,10 +1,10 @@
 import { trpcServerCaller } from "@/core/trpc/server/trpc-server-caller"
 import { AppRoutes } from "@/shared/utils/app-routes"
-import type {
-  HomeContentPost,
-  HomeContentSeries,
-} from "./components/home-content-types"
+import type { HomeContentExplorerProps } from "./components/home-content-explorer"
 import { getPostHref, getSeriesLatestDate, toSortedTags } from "./utils"
+
+type HomeContentPost = HomeContentExplorerProps["posts"][number]
+type HomeContentSeries = HomeContentExplorerProps["series"][number]
 
 export const getHomeContents = async () => {
   const caller = await trpcServerCaller()

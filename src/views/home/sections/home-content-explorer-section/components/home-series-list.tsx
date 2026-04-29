@@ -1,7 +1,7 @@
 import { ArrowUpRight, CalendarDays, Layers3 } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
-import type { HomeContentSeries } from "@/views/home/sections/home-content-explorer-section/components/home-content-types"
+import type { HomeContentSeries } from "@/views/home/sections/home-content-explorer-section/components/home-content-explorer"
 
 type HomeSeriesListProps = {
   series: readonly HomeContentSeries[]
