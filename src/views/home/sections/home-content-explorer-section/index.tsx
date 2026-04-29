@@ -1,4 +1,4 @@
-import { getPublishedHomeContent } from "@/domain/content/queries"
+import { trpcServerCaller } from "@/core/trpc/server/trpc-server-caller"
 import { HomeContentExplorer } from "@/views/home/sections/home-content-explorer-section/components/home-content-explorer"
 import type {
   HomeContentPost,
@@ -60,7 +60,8 @@ const getSeriesLatestDate = (series: {
 }
 
 export async function HomeContentExplorerSection() {
-  const content = await getPublishedHomeContent()
+  const caller = await trpcServerCaller()
+  const content = await caller.content.getHomeContent()
   const posts = content.posts.flatMap((post) => {
     const href = getPostHref(post)
 
