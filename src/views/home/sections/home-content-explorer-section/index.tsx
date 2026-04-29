@@ -1,9 +1,9 @@
 import { getPublishedHomeContent } from "@/domain/content/queries"
-import { HomeContentExplorer } from "@/views/home/components/home-content-explorer"
+import { HomeContentExplorer } from "@/views/home/sections/home-content-explorer-section/components/home-content-explorer"
 import type {
   HomeContentPost,
   HomeContentSeries,
-} from "@/views/home/components/home-content-types"
+} from "@/views/home/sections/home-content-explorer-section/components/home-content-types"
 
 const getPostHref = (post: {
   kind: string

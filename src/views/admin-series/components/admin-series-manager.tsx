@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useMutation } from "@tanstack/react-query"
-import { AlertCircle, Plus, RotateCcw, Save } from "lucide-react"
+import { AlertCircle, Plus, RotateCcw, Save, Trash2 } from "lucide-react"
 import { useRouter } from "next/navigation"
 import {
   Controller,
@@ -186,6 +186,29 @@ function SeriesEditForm({ series }: { series: SeriesListItem }) {
       },
     }),
   )
+  const deleteSeries = useMutation(
+    trpc.series.delete.mutationOptions({
+      onSuccess: (result) => {
+        if (result.deletedPostCount > 0) {
+          toast.success(
+            `시리즈와 연결된 ${result.deletedPostCount.toLocaleString("ko-KR")}개 글을 삭제했습니다.`,
+          )
+        } else {
+          toast.success("시리즈를 삭제했습니다.")
+        }
+
+        router.refresh()
+      },
+      onError: (error) => {
+        toast.error(error.message || "시리즈 삭제에 실패했습니다.")
+      },
+    }),
+  )
+  const isActionPending = updateSeries.isPending || deleteSeries.isPending
+  const deleteConfirmationMessage =
+    series.episodeCount > 0
+      ? `이 시리즈와 연결된 ${series.episodeCount.toLocaleString("ko-KR")}개 글을 모두 삭제할까요? 이 작업은 되돌릴 수 없습니다.`
+      : "이 시리즈를 삭제할까요?"
 
   return (
     <FormProvider {...form}>
@@ -198,14 +221,34 @@ function SeriesEditForm({ series }: { series: SeriesListItem }) {
       >
         <SeriesFormFields form={form} idPrefix={`series-${series.id}`} />
         <SeriesFormActions
-          isPending={updateSeries.isPending}
+          isPending={isActionPending}
           rootError={form.formState.errors.root?.message}
           submitLabel={updateSeries.isPending ? "수정 중" : "수정 저장"}
           submitIcon={<Save data-icon="inline-start" className="size-4" />}
+          deleteButton={
+            <Button
+              type="button"
+              variant="destructive"
+              disabled={isActionPending}
+              onClick={() => {
+                const confirmed = window.confirm(deleteConfirmationMessage)
+
+                if (!confirmed) {
+                  return
+                }
+
+                deleteSeries.mutate({ id: series.id })
+              }}
+            >
+              <Trash2 data-icon="inline-start" className="size-4" />
+              {deleteSeries.isPending ? "삭제 중" : "삭제"}
+            </Button>
+          }
           resetButton={
             <Button
               type="button"
               variant="outline"
+              disabled={isActionPending}
               onClick={() => {
                 form.reset(getSeriesFormValues(series))
                 form.clearErrors()
@@ -319,12 +362,14 @@ function SeriesFormActions({
   rootError,
   submitLabel,
   submitIcon,
+  deleteButton,
   resetButton,
 }: {
   isPending: boolean
   rootError?: string
   submitLabel: string
   submitIcon: React.ReactNode
+  deleteButton?: React.ReactNode
   resetButton?: React.ReactNode
 }) {
   return (
@@ -341,6 +386,7 @@ function SeriesFormActions({
         <span />
       )}
       <div className="flex flex-wrap items-center gap-2">
+        {deleteButton}
         {resetButton}
         <Button type="submit" disabled={isPending}>
           {submitIcon}

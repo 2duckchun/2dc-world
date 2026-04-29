@@ -1,6 +1,6 @@
 import { Hash, Layers2 } from "lucide-react"
 import { Button } from "@/shared/ui/button"
-import type { HomeContentTag } from "@/views/home/components/home-content-types"
+import type { HomeContentTag } from "@/views/home/sections/home-content-explorer-section/components/home-content-types"
 
 export type HomeTagOption = HomeContentTag & {
   count: number

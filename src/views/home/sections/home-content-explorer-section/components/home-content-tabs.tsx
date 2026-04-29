@@ -1,5 +1,5 @@
 import { cn } from "@/shared/lib/utils"
-import type { HomeContentTab } from "@/views/home/components/home-content-types"
+import type { HomeContentTab } from "@/views/home/sections/home-content-explorer-section/components/home-content-types"
 
 export type HomeContentTabItem = {
   value: HomeContentTab
@@ -36,7 +36,7 @@ export function HomeContentTabs({
             aria-selected={isActive}
             aria-controls={`home-content-panel-${tab.value}`}
             className={cn(
-              "flex min-h-16 items-center justify-center gap-2 border-border border-t px-3 font-bold text-base transition-colors first:border-t-0 odd:border-r sm:border-t-0 sm:border-r sm:first:border-l-0 sm:last:border-r-0",
+              "flex min-h-16 cursor-pointer items-center justify-center gap-2 border-border border-t px-3 font-bold text-base transition-colors first:border-t-0 odd:border-r sm:border-t-0 sm:border-r sm:first:border-l-0 sm:last:border-r-0",
               isActive
                 ? "bg-background text-foreground"
                 : "bg-card text-muted-foreground hover:bg-muted/55 hover:text-foreground",

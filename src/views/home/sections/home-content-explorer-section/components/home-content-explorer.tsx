@@ -2,19 +2,19 @@
 
 import { useMemo, useState } from "react"
 import { animationDelay } from "@/shared/lib/animation"
-import { HomeContentList } from "@/views/home/components/home-content-list"
+import { HomeContentList } from "@/views/home/sections/home-content-explorer-section/components/home-content-list"
 import {
   type HomeContentTabItem,
   HomeContentTabs,
-} from "@/views/home/components/home-content-tabs"
+} from "@/views/home/sections/home-content-explorer-section/components/home-content-tabs"
 import type {
   HomeContentPost,
   HomeContentSeries,
   HomeContentTab,
   HomeContentTag,
-} from "@/views/home/components/home-content-types"
-import { HomeSeriesList } from "@/views/home/components/home-series-list"
-import { HomeTagFilter } from "@/views/home/components/home-tag-filter"
+} from "@/views/home/sections/home-content-explorer-section/components/home-content-types"
+import { HomeSeriesList } from "@/views/home/sections/home-content-explorer-section/components/home-series-list"
+import { HomeTagFilter } from "@/views/home/sections/home-content-explorer-section/components/home-tag-filter"
 
 type HomeContentExplorerProps = {
   posts: readonly HomeContentPost[]
