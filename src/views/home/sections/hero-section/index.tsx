@@ -1,4 +1,4 @@
-import { GitBranch, Mail, Rss, Sparkles } from "lucide-react"
+import { GitBranch, Mail, Rss } from "lucide-react"
 import { animationDelay } from "@/shared/lib/animation"
 import {
   IconLinkList,
