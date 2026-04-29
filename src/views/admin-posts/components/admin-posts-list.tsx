@@ -8,6 +8,7 @@ import { useTRPC } from "@/core/trpc/client/providers/trpc-tanstack-query-provid
 import { postKindLabels, postStatusLabels } from "@/domain/content/types"
 import type { PostListForAdminOutput } from "@/domain/post/procedure/get-list-for-admin/schema"
 import { Button, buttonVariants } from "@/shared/ui/button"
+import { AppRoutes } from "@/shared/utils/app-routes"
 
 type AdminPostListItem = PostListForAdminOutput[number]
 
@@ -36,14 +37,16 @@ const getPublishedHref = (post: AdminPostListItem) => {
   }
 
   if (post.kind === "log") {
-    return `/log/${post.slug}`
+    return AppRoutes.log.post(post.slug)
   }
 
   if (post.kind === "series") {
-    return post.series ? `/series/${post.series.slug}/${post.slug}` : null
+    return post.series
+      ? AppRoutes.series.post(post.series.slug, post.slug)
+      : null
   }
 
-  return `/posts/${post.slug}`
+  return AppRoutes.posts.post(post.slug)
 }
 
 const getSeriesLabel = (post: AdminPostListItem) => {
@@ -118,7 +121,7 @@ export function AdminPostsList({ posts }: AdminPostsListProps) {
                       </a>
                     ) : null}
                     <a
-                      href={`/admin/posts/${post.id}/edit`}
+                      href={AppRoutes.admin.posts.edit(post.id)}
                       className={buttonVariants({
                         variant: "outline",
                         size: "sm",
