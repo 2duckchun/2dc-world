@@ -1,13 +1,11 @@
-import { ContentSummarySection } from "@/views/home/sections/content-summary-section"
 import { HeroSection } from "@/views/home/sections/hero-section"
-import { LatestUploadSection } from "@/views/home/sections/latest-upload-section"
+import { HomeContentExplorerSection } from "@/views/home/sections/home-content-explorer-section"
 
 export function HomeView() {
   return (
     <div className="flex-col gap-8 flex">
       <HeroSection />
-      <LatestUploadSection />
-      <ContentSummarySection />
+      <HomeContentExplorerSection />
     </div>
   )
 }
