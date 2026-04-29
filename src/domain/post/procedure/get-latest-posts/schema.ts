@@ -18,6 +18,12 @@ export const getLatestPostsOutputSchema = z.array(
     kind: z.enum(postKindValues),
     publishedAt: z.date().nullable(),
     createdAt: z.date(),
+    series: z
+      .object({
+        title: z.string(),
+        slug: z.string(),
+      })
+      .nullable(),
   }),
 )
 

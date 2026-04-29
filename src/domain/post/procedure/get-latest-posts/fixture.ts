@@ -10,5 +10,6 @@ export const getLatestPostsFixture = [
     kind: "post",
     publishedAt: new Date("2026-04-26T00:00:00.000Z"),
     createdAt: new Date("2026-04-26T00:00:00.000Z"),
+    series: null,
   },
 ] satisfies GetLatestPostsOutput

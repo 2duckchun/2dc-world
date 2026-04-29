@@ -19,6 +19,14 @@ export const getLatestPostsProcedure = publicProcedure
         createdAt: true,
       },
       where: eq(posts.status, "published"),
+      with: {
+        series: {
+          columns: {
+            title: true,
+            slug: true,
+          },
+        },
+      },
       orderBy: [desc(posts.publishedAt), desc(posts.createdAt)],
       limit: input.limit,
     }),

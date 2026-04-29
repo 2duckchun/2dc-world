@@ -1,5 +1,7 @@
+import { Layers3 } from "lucide-react"
 import { Controller, useFormContext } from "react-hook-form"
 import type { PostCreatePostInput } from "@/domain/post/procedure/post-create-post/schema"
+import { buttonVariants } from "@/shared/ui/button"
 import { Field, FieldError, FieldLabel } from "@/shared/ui/field"
 import { Input } from "@/shared/ui/input"
 import {
@@ -25,6 +27,26 @@ export const PostSeriesFields = ({ seriesOptions }: PostSeriesFieldsProps) => {
 
   if (kind !== "series") {
     return null
+  }
+
+  if (seriesOptions.length === 0) {
+    return (
+      <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-border bg-background p-4">
+        <div className="grid gap-1">
+          <p className="font-medium text-sm">등록된 시리즈가 없습니다.</p>
+          <p className="text-muted-foreground text-sm">
+            시리즈 글은 먼저 시리즈를 만든 뒤 회차로 연결합니다.
+          </p>
+        </div>
+        <a
+          href="/admin/series"
+          className={buttonVariants({ variant: "outline" })}
+        >
+          <Layers3 data-icon="inline-start" className="size-4" />
+          시리즈 만들기
+        </a>
+      </div>
+    )
   }
 
   return (
