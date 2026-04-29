@@ -10,22 +10,42 @@ const dateFormatter = new Intl.DateTimeFormat("ko-KR", {
   dateStyle: "medium",
 })
 
-const getLatestUploadHref = (post: { kind: string; slug: string }) =>
-  post.kind === "log" ? `/log/${post.slug}` : `/posts/${post.slug}`
+const getLatestUploadHref = (post: {
+  kind: string
+  slug: string
+  series: { slug: string } | null
+}) => {
+  if (post.kind === "log") {
+    return `/log/${post.slug}`
+  }
+
+  if (post.kind === "series") {
+    return post.series ? `/series/${post.series.slug}/${post.slug}` : null
+  }
+
+  return `/posts/${post.slug}`
+}
 
 export async function LatestUploadSection() {
   const caller = await trpcServerCaller()
   const latestPosts = await caller.post.getLatestPosts({ limit: 3 })
-  const latestUploads = latestPosts.map(
-    (post) =>
-      ({
+  const latestUploads = latestPosts.flatMap((post) => {
+    const href = getLatestUploadHref(post)
+
+    if (!href) {
+      return []
+    }
+
+    return [
+      {
         title: post.title,
-        href: getLatestUploadHref(post),
+        href,
         category: postKindLabels[post.kind],
         summary: post.subtitle ?? "요약이 준비 중입니다.",
         meta: dateFormatter.format(post.publishedAt ?? post.createdAt),
-      }) satisfies LatestUploadItem,
-  )
+      } satisfies LatestUploadItem,
+    ]
+  })
   const [spotlight, ...listPosts] = latestUploads
 
   return (
