@@ -2,6 +2,7 @@
 
 import { AlertCircle, Save } from "lucide-react"
 import { FormProvider } from "react-hook-form"
+import type { PostCreatePostInput } from "@/domain/post/procedure/post-create-post/schema"
 import { Button } from "@/shared/ui/button"
 import { PostContentMarkdownField } from "./fields/post-content-markdown-field"
 import { PostKindRadioField } from "./fields/post-kind-radio-field"
@@ -12,7 +13,10 @@ import { PostSubtitleInputField } from "./fields/post-subtitle-input-field"
 import { PostTagsInputField } from "./fields/post-tags-input-field"
 import { PostThumbnailInputField } from "./fields/post-thumbnail-input-field"
 import { PostTitleInputField } from "./fields/post-title-input-field"
-import { usePostEditorForm } from "./post-editor-form-hook"
+import {
+  defaultPostEditorValues,
+  usePostEditorForm,
+} from "./post-editor-form-hook"
 
 type SeriesOption = {
   id: string
@@ -20,11 +24,31 @@ type SeriesOption = {
 }
 
 type PostEditorFormProps = {
+  mode?: "create" | "edit"
   seriesOptions: SeriesOption[]
+  initialValues?: PostCreatePostInput
+  postId?: string
 }
 
-export function PostEditorForm({ seriesOptions }: PostEditorFormProps) {
-  const { form, handleSubmit, isPending, rootError } = usePostEditorForm()
+export function PostEditorForm({
+  mode = "create",
+  seriesOptions,
+  initialValues = defaultPostEditorValues,
+  postId,
+}: PostEditorFormProps) {
+  const { form, handleSubmit, isPending, rootError } = usePostEditorForm({
+    mode,
+    initialValues,
+    postId,
+  })
+  const submitLabel =
+    mode === "edit"
+      ? isPending
+        ? "수정 중"
+        : "수정 저장"
+      : isPending
+        ? "저장 중"
+        : "저장"
 
   return (
     <FormProvider {...form}>
@@ -62,7 +86,7 @@ export function PostEditorForm({ seriesOptions }: PostEditorFormProps) {
           )}
           <Button type="submit" disabled={isPending} className="min-w-24">
             <Save data-icon="inline-start" className="size-4" />
-            {isPending ? "저장 중" : "저장"}
+            {submitLabel}
           </Button>
         </div>
       </form>

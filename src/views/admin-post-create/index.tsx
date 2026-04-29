@@ -18,7 +18,7 @@ export function AdminPostCreateView({
         <p className="font-semibold text-muted-foreground text-sm">Admin</p>
         <h1 className="font-black text-3xl leading-tight">새 글 작성</h1>
       </header>
-      <PostEditorForm seriesOptions={seriesOptions} />
+      <PostEditorForm mode="create" seriesOptions={seriesOptions} />
     </div>
   )
 }

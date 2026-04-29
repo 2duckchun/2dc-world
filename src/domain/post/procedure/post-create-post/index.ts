@@ -18,8 +18,8 @@ export const postCreatePostProcedure = adminProcedure
       })
     }
 
-    const seriesId = input.seriesId || null
-    const seriesOrder = input.seriesOrder
+    const seriesId = input.kind === "series" ? input.seriesId || null : null
+    const seriesOrder = input.kind === "series" ? input.seriesOrder : null
     const existingPost = await ctx.db.query.posts.findFirst({
       columns: { id: true },
       where: eq(posts.slug, input.slug),
