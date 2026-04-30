@@ -4,19 +4,20 @@ import { AlertCircle, Save } from "lucide-react"
 import { FormProvider } from "react-hook-form"
 import type { PostCreatePostInput } from "@/domain/post/procedure/post-create-post/schema"
 import { Button } from "@/shared/ui/button"
-import { PostContentMarkdownField } from "./fields/post-content-markdown-field"
-import { PostKindRadioField } from "./fields/post-kind-radio-field"
-import { PostSeriesFields } from "./fields/post-series-fields"
-import { PostSlugInputField } from "./fields/post-slug-input-field"
-import { PostStatusSelectField } from "./fields/post-status-select-field"
-import { PostSubtitleInputField } from "./fields/post-subtitle-input-field"
-import { PostTagsInputField } from "./fields/post-tags-input-field"
-import { PostThumbnailInputField } from "./fields/post-thumbnail-input-field"
-import { PostTitleInputField } from "./fields/post-title-input-field"
+
 import {
   defaultPostEditorValues,
   usePostEditorForm,
 } from "./post-editor-form-hook"
+import { PostContentMarkdownField } from "./shared/fields/post-content-markdown-field"
+import { PostKindRadioField } from "./shared/fields/post-kind-radio-field"
+import { PostSeriesFields } from "./shared/fields/post-series-fields"
+import { PostSlugInputField } from "./shared/fields/post-slug-input-field"
+import { PostStatusSelectField } from "./shared/fields/post-status-select-field"
+import { PostSubtitleInputField } from "./shared/fields/post-subtitle-input-field"
+import { PostTagsInputField } from "./shared/fields/post-tags-input-field"
+import { PostThumbnailInputField } from "./shared/fields/post-thumbnail-input-field"
+import { PostTitleInputField } from "./shared/fields/post-title-input-field"
 
 type SeriesOption = {
   id: string
@@ -30,6 +31,13 @@ type PostEditorFormProps = {
   postId?: string
 }
 
+function getSubmitLabel(mode: "create" | "edit", isPending: boolean) {
+  if (mode === "edit") {
+    return isPending ? "수정 중" : "수정 저장"
+  }
+  return isPending ? "저장 중" : "저장"
+}
+
 export function PostEditorForm({
   mode = "create",
   seriesOptions,
@@ -41,14 +49,8 @@ export function PostEditorForm({
     initialValues,
     postId,
   })
-  const submitLabel =
-    mode === "edit"
-      ? isPending
-        ? "수정 중"
-        : "수정 저장"
-      : isPending
-        ? "저장 중"
-        : "저장"
+
+  const submitLabel = getSubmitLabel(mode, isPending)
 
   return (
     <FormProvider {...form}>
@@ -73,7 +75,7 @@ export function PostEditorForm({
         <PostContentMarkdownField />
 
         <div className="flex flex-wrap items-center justify-between gap-3">
-          {rootError ? (
+          {rootError && (
             <p
               className="inline-flex min-h-9 items-center gap-2 rounded-lg border border-destructive/35 bg-destructive/10 px-3 py-2 text-destructive text-sm"
               aria-live="polite"
@@ -81,10 +83,12 @@ export function PostEditorForm({
               <AlertCircle className="size-4" />
               {rootError}
             </p>
-          ) : (
-            <span />
           )}
-          <Button type="submit" disabled={isPending} className="min-w-24">
+          <Button
+            type="submit"
+            disabled={isPending}
+            className="ml-auto min-w-24"
+          >
             <Save data-icon="inline-start" className="size-4" />
             {submitLabel}
           </Button>

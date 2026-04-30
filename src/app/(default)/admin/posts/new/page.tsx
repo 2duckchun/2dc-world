@@ -1,7 +1,11 @@
 import type { Metadata } from "next"
 import { forbidden } from "next/navigation"
 import { auth } from "@/auth"
-import { trpcServerCaller } from "@/core/trpc/server/trpc-server-caller"
+import {
+  getServerQueryClient,
+  PrefetchBoundary,
+} from "@/core/tanstack-query/prefetch-boundary"
+import { trpcServerProxy } from "@/core/trpc/server/create-trpc-proxy"
 import { AdminPostCreateView } from "@/views/admin-post-create"
 
 export const metadata: Metadata = {
@@ -10,13 +14,18 @@ export const metadata: Metadata = {
 
 export default async function AdminPostCreatePage() {
   const session = await auth()
-
   if (!session?.user || session.user.role !== "admin") {
     forbidden()
   }
 
-  const caller = await trpcServerCaller()
-  const seriesOptions = await caller.series.getOptions()
+  const queryClient = getServerQueryClient()
+  await queryClient.prefetchQuery(
+    trpcServerProxy.series.getOptions.queryOptions(),
+  )
 
-  return <AdminPostCreateView seriesOptions={seriesOptions} />
+  return (
+    <PrefetchBoundary>
+      <AdminPostCreateView />
+    </PrefetchBoundary>
+  )
 }

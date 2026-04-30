@@ -2,7 +2,7 @@ import { UploadCloud } from "lucide-react"
 import { Controller, useFormContext } from "react-hook-form"
 import type { PostCreatePostInput } from "@/domain/post/procedure/post-create-post/schema"
 import { Field, FieldError } from "@/shared/ui/field"
-import { MarkdownEditor } from "../../markdown-editor"
+import { MarkdownEditor } from "../../../markdown-editor"
 
 export const PostContentMarkdownField = () => {
   const form = useFormContext<PostCreatePostInput>()
