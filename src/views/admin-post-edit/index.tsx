@@ -1,6 +1,6 @@
 import type { PostGetForEditOutput } from "@/domain/post/procedure/get-for-edit/schema"
 import type { PostCreatePostInput } from "@/domain/post/procedure/post-create-post/schema"
-import { PostEditorForm } from "@/views/admin-post-create/components/post-editor-form"
+import { PostEditorForm } from "@/views/admin-post-create/post-editor-form"
 
 type SeriesOption = {
   id: string
@@ -41,7 +41,7 @@ export function AdminPostEditView({
         mode="edit"
         postId={post.id}
         initialValues={getInitialValues(post)}
-        seriesOptions={seriesOptions}
+        // seriesOptions={seriesOptions}
       />
     </div>
   )

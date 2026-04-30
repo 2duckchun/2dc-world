@@ -1,4 +1,4 @@
-import { AdminPostCreateForm } from "@/views/admin-post-create/components/admin-post-create-form"
+import { PostEditorForm } from "./post-editor-form"
 
 export function AdminPostCreateView() {
   return (
@@ -7,7 +7,7 @@ export function AdminPostCreateView() {
         <p className="font-semibold text-muted-foreground text-sm">Admin</p>
         <h1 className="font-black text-3xl leading-tight">새 글 작성</h1>
       </header>
-      <AdminPostCreateForm />
+      <PostEditorForm mode="create" />
     </div>
   )
 }

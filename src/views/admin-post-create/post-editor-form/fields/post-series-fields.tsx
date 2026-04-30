@@ -1,5 +1,7 @@
+import { useSuspenseQuery } from "@tanstack/react-query"
 import { Layers3 } from "lucide-react"
 import { Controller, useFormContext } from "react-hook-form"
+import { useTRPC } from "@/core/trpc/client/providers/trpc-tanstack-query-provider"
 import type { PostCreatePostInput } from "@/domain/post/procedure/post-create-post/schema"
 import { buttonVariants } from "@/shared/ui/button"
 import { Field, FieldError, FieldLabel } from "@/shared/ui/field"
@@ -12,16 +14,11 @@ import {
   SelectValue,
 } from "@/shared/ui/select"
 
-type SeriesOption = {
-  id: string
-  title: string
-}
-
-type PostSeriesFieldsProps = {
-  seriesOptions: SeriesOption[]
-}
-
-export const PostSeriesFields = ({ seriesOptions }: PostSeriesFieldsProps) => {
+export const PostSeriesFields = () => {
+  const trpc = useTRPC()
+  const { data: seriesOptions } = useSuspenseQuery(
+    trpc.series.getOptions.queryOptions(),
+  )
   const form = useFormContext<PostCreatePostInput>()
   const kind = form.watch("kind")
 

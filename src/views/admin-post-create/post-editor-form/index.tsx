@@ -4,29 +4,22 @@ import { AlertCircle, Save } from "lucide-react"
 import { FormProvider } from "react-hook-form"
 import type { PostCreatePostInput } from "@/domain/post/procedure/post-create-post/schema"
 import { Button } from "@/shared/ui/button"
-
+import { PostContentMarkdownField } from "./fields/post-content-markdown-field"
+import { PostKindRadioField } from "./fields/post-kind-radio-field"
+import { PostSeriesFields } from "./fields/post-series-fields"
+import { PostSlugInputField } from "./fields/post-slug-input-field"
+import { PostStatusSelectField } from "./fields/post-status-select-field"
+import { PostSubtitleInputField } from "./fields/post-subtitle-input-field"
+import { PostTagsInputField } from "./fields/post-tags-input-field"
+import { PostThumbnailInputField } from "./fields/post-thumbnail-input-field"
+import { PostTitleInputField } from "./fields/post-title-input-field"
 import {
   defaultPostEditorValues,
   usePostEditorForm,
 } from "./post-editor-form-hook"
-import { PostContentMarkdownField } from "./shared/fields/post-content-markdown-field"
-import { PostKindRadioField } from "./shared/fields/post-kind-radio-field"
-import { PostSeriesFields } from "./shared/fields/post-series-fields"
-import { PostSlugInputField } from "./shared/fields/post-slug-input-field"
-import { PostStatusSelectField } from "./shared/fields/post-status-select-field"
-import { PostSubtitleInputField } from "./shared/fields/post-subtitle-input-field"
-import { PostTagsInputField } from "./shared/fields/post-tags-input-field"
-import { PostThumbnailInputField } from "./shared/fields/post-thumbnail-input-field"
-import { PostTitleInputField } from "./shared/fields/post-title-input-field"
-
-type SeriesOption = {
-  id: string
-  title: string
-}
 
 type PostEditorFormProps = {
   mode?: "create" | "edit"
-  seriesOptions: SeriesOption[]
   initialValues?: PostCreatePostInput
   postId?: string
 }
@@ -40,7 +33,6 @@ function getSubmitLabel(mode: "create" | "edit", isPending: boolean) {
 
 export function PostEditorForm({
   mode = "create",
-  seriesOptions,
   initialValues = defaultPostEditorValues,
   postId,
 }: PostEditorFormProps) {
@@ -69,7 +61,7 @@ export function PostEditorForm({
           <PostThumbnailInputField />
           <PostTagsInputField />
           <PostKindRadioField />
-          <PostSeriesFields seriesOptions={seriesOptions} />
+          <PostSeriesFields />
         </section>
 
         <PostContentMarkdownField />
