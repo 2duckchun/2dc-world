@@ -2,14 +2,8 @@ import type { PostGetForEditOutput } from "@/domain/post/procedure/get-for-edit/
 import type { PostCreatePostInput } from "@/domain/post/procedure/post-create-post/schema"
 import { PostEditorForm } from "@/views/admin-post-create/post-editor-form"
 
-type SeriesOption = {
-  id: string
-  title: string
-}
-
 type AdminPostEditViewProps = {
   post: NonNullable<PostGetForEditOutput>
-  seriesOptions: SeriesOption[]
 }
 
 const getInitialValues = (
@@ -27,10 +21,7 @@ const getInitialValues = (
   tags: post.tags,
 })
 
-export function AdminPostEditView({
-  post,
-  seriesOptions,
-}: AdminPostEditViewProps) {
+export function AdminPostEditView({ post }: AdminPostEditViewProps) {
   return (
     <div className="grid w-full gap-6">
       <header className="grid gap-2">
@@ -41,7 +32,6 @@ export function AdminPostEditView({
         mode="edit"
         postId={post.id}
         initialValues={getInitialValues(post)}
-        // seriesOptions={seriesOptions}
       />
     </div>
   )

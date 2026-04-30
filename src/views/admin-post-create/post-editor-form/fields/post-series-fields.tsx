@@ -55,6 +55,10 @@ export const PostSeriesFields = () => {
           <Field data-invalid={fieldState.invalid}>
             <FieldLabel htmlFor="post-series">시리즈</FieldLabel>
             <Select
+              items={seriesOptions.map((series) => ({
+                label: series.title,
+                value: series.id,
+              }))}
               value={field.value}
               onValueChange={(value) => field.onChange(value)}
             >
