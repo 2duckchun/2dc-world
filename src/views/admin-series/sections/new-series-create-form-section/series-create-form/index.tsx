@@ -1,6 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useMutation } from "@tanstack/react-query"
-import { Plus } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { FormProvider, type UseFormReturn, useForm } from "react-hook-form"
 import { toast } from "sonner"
@@ -10,6 +9,7 @@ import {
   seriesCreateInputSchema,
 } from "@/domain/series/procedure/post-create-series/schema"
 import { SeriesFormActions } from "./fields/series-form-actions"
+import { SeriesSlugInputField } from "./fields/series-slug-input-field"
 import { SeriesTitleField } from "./fields/series-title-field"
 
 const createEmptySeriesFormValues = (): SeriesCreateInput => ({
@@ -63,11 +63,7 @@ export function SeriesCreateForm() {
         className="grid gap-4"
       >
         <SeriesTitleField />
-        <SeriesFormActions
-          isPending={isPending}
-          submitLabel={isPending ? "저장 중" : "저장"}
-          submitIcon={<Plus data-icon="inline-start" className="size-4" />}
-        />
+        <SeriesFormActions isPending={isPending} />
       </form>
     </FormProvider>
   )

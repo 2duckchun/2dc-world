@@ -1,4 +1,4 @@
-import { SeriesCreateForm } from "./series-create-form/series-create-form"
+import { SeriesCreateForm } from "./series-create-form"
 
 export const NewSeriesCreateFormSection = () => {
   return (
