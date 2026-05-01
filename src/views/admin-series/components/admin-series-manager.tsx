@@ -1,7 +1,7 @@
 "use client"
 
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useMutation } from "@tanstack/react-query"
+import { useMutation, useSuspenseQuery } from "@tanstack/react-query"
 import { AlertCircle, Plus, RotateCcw, Save, Trash2 } from "lucide-react"
 import { useRouter } from "next/navigation"
 import {
@@ -9,6 +9,7 @@ import {
   FormProvider,
   type UseFormReturn,
   useForm,
+  useFormContext,
 } from "react-hook-form"
 import { toast } from "sonner"
 import { useTRPC } from "@/core/trpc/client/providers/trpc-tanstack-query-provider"
@@ -28,10 +29,12 @@ import {
 import { Input } from "@/shared/ui/input"
 import { Textarea } from "@/shared/ui/textarea"
 
-type SeriesListItem = SeriesListOutput[number]
-
-type AdminSeriesManagerProps = {
-  series: SeriesListOutput
+type SeriesListItem = Omit<
+  SeriesListOutput[number],
+  "createdAt" | "updatedAt"
+> & {
+  createdAt: Date | string
+  updatedAt: Date | string
 }
 
 const createEmptySeriesFormValues = (): SeriesCreateInput => ({
@@ -59,7 +62,10 @@ const setServerError = (
   }
 }
 
-export function AdminSeriesManager({ series }: AdminSeriesManagerProps) {
+export function AdminSeriesManager() {
+  const trpc = useTRPC()
+  const { data: series } = useSuspenseQuery(trpc.series.list.queryOptions())
+
   return (
     <div className="grid gap-5">
       <section className="grid gap-4 rounded-lg border border-border bg-card p-5 shadow-sm sm:p-6">
@@ -132,7 +138,6 @@ function SeriesCreateForm() {
         <SeriesFormFields form={form} idPrefix="series-create" />
         <SeriesFormActions
           isPending={createSeries.isPending}
-          rootError={form.formState.errors.root?.message}
           submitLabel={createSeries.isPending ? "저장 중" : "저장"}
           submitIcon={<Plus data-icon="inline-start" className="size-4" />}
         />
@@ -222,9 +227,9 @@ function SeriesEditForm({ series }: { series: SeriesListItem }) {
         <SeriesFormFields form={form} idPrefix={`series-${series.id}`} />
         <SeriesFormActions
           isPending={isActionPending}
-          rootError={form.formState.errors.root?.message}
           submitLabel={updateSeries.isPending ? "수정 중" : "수정 저장"}
           submitIcon={<Save data-icon="inline-start" className="size-4" />}
+          canReset
           deleteButton={
             <Button
               type="button"
@@ -242,20 +247,6 @@ function SeriesEditForm({ series }: { series: SeriesListItem }) {
             >
               <Trash2 data-icon="inline-start" className="size-4" />
               {deleteSeries.isPending ? "삭제 중" : "삭제"}
-            </Button>
-          }
-          resetButton={
-            <Button
-              type="button"
-              variant="outline"
-              disabled={isActionPending}
-              onClick={() => {
-                form.reset(getSeriesFormValues(series))
-                form.clearErrors()
-              }}
-            >
-              <RotateCcw data-icon="inline-start" className="size-4" />
-              되돌리기
             </Button>
           }
         />
@@ -359,19 +350,20 @@ function SeriesFormFields({
 
 function SeriesFormActions({
   isPending,
-  rootError,
   submitLabel,
   submitIcon,
+  canReset = false,
   deleteButton,
-  resetButton,
 }: {
   isPending: boolean
-  rootError?: string
   submitLabel: string
   submitIcon: React.ReactNode
+  canReset?: boolean
   deleteButton?: React.ReactNode
-  resetButton?: React.ReactNode
 }) {
+  const form = useFormContext<SeriesCreateInput>()
+  const rootError = form.formState.errors.root?.message
+
   return (
     <div className="flex flex-wrap items-center justify-between gap-3">
       {rootError ? (
@@ -387,7 +379,20 @@ function SeriesFormActions({
       )}
       <div className="flex flex-wrap items-center gap-2">
         {deleteButton}
-        {resetButton}
+        {canReset ? (
+          <Button
+            type="button"
+            variant="outline"
+            disabled={isPending}
+            onClick={() => {
+              form.reset()
+              form.clearErrors()
+            }}
+          >
+            <RotateCcw data-icon="inline-start" className="size-4" />
+            되돌리기
+          </Button>
+        ) : null}
         <Button type="submit" disabled={isPending}>
           {submitIcon}
           {submitLabel}

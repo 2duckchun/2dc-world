@@ -1,7 +1,11 @@
 import type { Metadata } from "next"
 import { forbidden } from "next/navigation"
 import { auth } from "@/auth"
-import { trpcServerCaller } from "@/core/trpc/server/trpc-server-caller"
+import {
+  getServerQueryClient,
+  PrefetchBoundary,
+} from "@/core/tanstack-query/prefetch-boundary"
+import { trpcServerProxy } from "@/core/trpc/server/create-trpc-proxy"
 import { AdminSeriesView } from "@/views/admin-series"
 
 export const metadata: Metadata = {
@@ -15,8 +19,12 @@ export default async function AdminSeriesPage() {
     forbidden()
   }
 
-  const caller = await trpcServerCaller()
-  const series = await caller.series.list()
+  const queryClient = getServerQueryClient()
+  await queryClient.prefetchQuery(trpcServerProxy.series.list.queryOptions())
 
-  return <AdminSeriesView series={series} />
+  return (
+    <PrefetchBoundary>
+      <AdminSeriesView />
+    </PrefetchBoundary>
+  )
 }

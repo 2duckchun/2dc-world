@@ -1,14 +1,9 @@
 import { PenLine } from "lucide-react"
-import type { SeriesListOutput } from "@/domain/series/procedure/get-list/schema"
 import { buttonVariants } from "@/shared/ui/button"
 import { PostAdminHeader } from "@/widgets/post/post-admin-header"
 import { AdminSeriesManager } from "./components/admin-series-manager"
 
-type AdminSeriesViewProps = {
-  series: SeriesListOutput
-}
-
-export function AdminSeriesView({ series }: AdminSeriesViewProps) {
+export function AdminSeriesView() {
   return (
     <div className="grid w-full gap-6">
       <PostAdminHeader
@@ -23,7 +18,7 @@ export function AdminSeriesView({ series }: AdminSeriesViewProps) {
         }
       />
 
-      <AdminSeriesManager series={series} />
+      <AdminSeriesManager />
     </div>
   )
 }
