@@ -3,7 +3,7 @@
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { useTRPC } from "@/core/trpc/client/providers/trpc-tanstack-query-provider"
 import type { PostCreatePostInput } from "@/domain/post/procedure/post-create-post/schema"
-import { PostEditorForm } from "@/views/admin-post-create/post-editor-form"
+import { PostEditorForm } from "@/widgets/post/post-editor-form"
 
 type PostEditFormContentProps = {
   postId: string

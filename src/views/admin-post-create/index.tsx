@@ -1,4 +1,4 @@
-import { PostEditorForm } from "./post-editor-form"
+import { PostEditorForm } from "../../widgets/post/post-editor-form"
 
 export function AdminPostCreateView() {
   return (
