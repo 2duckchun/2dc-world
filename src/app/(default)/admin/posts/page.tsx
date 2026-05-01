@@ -1,7 +1,11 @@
 import type { Metadata } from "next"
 import { forbidden } from "next/navigation"
 import { auth } from "@/auth"
-import { trpcServerCaller } from "@/core/trpc/server/trpc-server-caller"
+import {
+  getServerQueryClient,
+  PrefetchBoundary,
+} from "@/core/tanstack-query/prefetch-boundary"
+import { trpcServerProxy } from "@/core/trpc/server/create-trpc-proxy"
 import { AdminPostsView } from "@/views/admin-posts"
 
 export const metadata: Metadata = {
@@ -15,8 +19,14 @@ export default async function AdminPostsPage() {
     forbidden()
   }
 
-  const caller = await trpcServerCaller()
-  const posts = await caller.post.listForAdmin()
+  const queryClient = getServerQueryClient()
+  await queryClient.prefetchQuery(
+    trpcServerProxy.post.listForAdmin.queryOptions(),
+  )
 
-  return <AdminPostsView posts={posts} />
+  return (
+    <PrefetchBoundary>
+      <AdminPostsView />
+    </PrefetchBoundary>
+  )
 }
