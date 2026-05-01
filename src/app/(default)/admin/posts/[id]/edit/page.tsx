@@ -6,7 +6,6 @@ import {
   PrefetchBoundary,
 } from "@/core/tanstack-query/prefetch-boundary"
 import { trpcServerProxy } from "@/core/trpc/server/create-trpc-proxy"
-import { trpcServerCaller } from "@/core/trpc/server/trpc-server-caller"
 import { AdminPostEditView } from "@/views/admin-post-edit"
 
 type AdminPostEditPageProps = {
@@ -29,21 +28,21 @@ export default async function AdminPostEditPage({
     forbidden()
   }
 
-  const caller = await trpcServerCaller()
-  const post = await caller.post.getForEdit({ id })
+  const queryClient = getServerQueryClient()
+  const postQueryOptions = trpcServerProxy.post.getForEdit.queryOptions({ id })
+  const post = await queryClient.fetchQuery(postQueryOptions)
 
   if (!post) {
     notFound()
   }
 
-  const queryClient = getServerQueryClient()
   await queryClient.prefetchQuery(
     trpcServerProxy.series.getOptions.queryOptions(),
   )
 
   return (
     <PrefetchBoundary>
-      <AdminPostEditView post={post} />
+      <AdminPostEditView postId={id} />
     </PrefetchBoundary>
   )
 }
