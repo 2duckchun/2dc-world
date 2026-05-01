@@ -8,6 +8,7 @@ import {
 } from "@/domain/content/types"
 import { Button, buttonVariants } from "@/shared/ui/button"
 import { AppRoutes } from "@/shared/utils/app-routes"
+import { formatKoreanDateTime } from "@/shared/utils/date-format"
 
 export type AdminPostListItem = {
   id: string
@@ -27,22 +28,6 @@ type AdminPostListCardProps = {
   post: AdminPostListItem
   isArchivePending: boolean
   onArchive: (postId: string) => void
-}
-
-const kstOffsetMilliseconds = 9 * 60 * 60 * 1000
-
-const formatKoreanDateTime = (date: Date | string) => {
-  const sourceDate = typeof date === "string" ? new Date(date) : date
-  const kstDate = new Date(sourceDate.getTime() + kstOffsetMilliseconds)
-  const year = kstDate.getUTCFullYear()
-  const month = kstDate.getUTCMonth() + 1
-  const day = kstDate.getUTCDate()
-  const hours = kstDate.getUTCHours()
-  const minutes = kstDate.getUTCMinutes().toString().padStart(2, "0")
-  const period = hours < 12 ? "오전" : "오후"
-  const displayHours = hours % 12 || 12
-
-  return `${year}. ${month}. ${day}. ${period} ${displayHours}:${minutes}`
 }
 
 const getPublishedHref = (post: AdminPostListItem) => {

@@ -40,11 +40,9 @@ export function AdminPostsList() {
                 const confirmed = window.confirm(
                   "이 게시글을 Archived 상태로 변경할까요?",
                 )
-
                 if (!confirmed) {
                   return
                 }
-
                 archivePost.mutate({ id: postId })
               }}
             />
