@@ -1,4 +1,4 @@
-import { PostEditFormContent } from "./post-edit-form-content"
+import { PostEditFormContent } from "./sections/post-edit-form-content"
 
 type AdminPostEditViewProps = {
   postId: string
