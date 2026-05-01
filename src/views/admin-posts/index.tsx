@@ -3,7 +3,7 @@ import Link from "next/link"
 import { buttonVariants } from "@/shared/ui/button"
 import { AppRoutes } from "@/shared/utils/app-routes"
 import { PostAdminHeader } from "@/widgets/post/post-admin-header"
-import { AdminPostsList } from "./components/admin-posts-list"
+import { AdminPostsList } from "./sections/admin-posts-list"
 
 export function AdminPostsView() {
   return (
