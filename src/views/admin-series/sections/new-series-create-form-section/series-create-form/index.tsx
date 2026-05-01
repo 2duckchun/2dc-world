@@ -8,8 +8,10 @@ import {
   type SeriesCreateInput,
   seriesCreateInputSchema,
 } from "@/domain/series/procedure/post-create-series/schema"
+import { SeriesDescriptionField } from "./fields/series-description-field"
 import { SeriesFormActions } from "./fields/series-form-actions"
 import { SeriesSlugInputField } from "./fields/series-slug-input-field"
+import { SeriesThumbnailInputField } from "./fields/series-thumbnail-input-field"
 import { SeriesTitleField } from "./fields/series-title-field"
 
 const createEmptySeriesFormValues = (): SeriesCreateInput => ({
@@ -63,6 +65,9 @@ export function SeriesCreateForm() {
         className="grid gap-4"
       >
         <SeriesTitleField />
+        <SeriesSlugInputField />
+        <SeriesDescriptionField />
+        <SeriesThumbnailInputField />
         <SeriesFormActions isPending={isPending} />
       </form>
     </FormProvider>
