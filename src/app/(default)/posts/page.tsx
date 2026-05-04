@@ -1,5 +1,9 @@
 import type { Metadata } from "next"
-import { getPublishedPostArchive } from "@/domain/content/queries"
+import {
+  getServerQueryClient,
+  PrefetchBoundary,
+} from "@/core/tanstack-query/prefetch-boundary"
+import { trpcServerProxy } from "@/core/trpc/server/create-trpc-proxy"
 import { PostsView } from "@/views/posts"
 
 export const metadata: Metadata = {
@@ -8,7 +12,14 @@ export const metadata: Metadata = {
 }
 
 export default async function PostsPage() {
-  const posts = await getPublishedPostArchive()
+  const queryClient = getServerQueryClient()
+  await queryClient.prefetchQuery(
+    trpcServerProxy.content.getPostArchive.queryOptions(),
+  )
 
-  return <PostsView posts={posts} />
+  return (
+    <PrefetchBoundary>
+      <PostsView />
+    </PrefetchBoundary>
+  )
 }

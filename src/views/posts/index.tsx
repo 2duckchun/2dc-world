@@ -1,41 +1,35 @@
+"use client"
+
+import { useSuspenseQuery } from "@tanstack/react-query"
 import { LibraryBig } from "lucide-react"
+import { useTRPC } from "@/core/trpc/client/providers/trpc-tanstack-query-provider"
+import type { PostArchiveData } from "@/domain/content/procedure/get-post-archive/schema"
 import { PostListHeader } from "@/widgets/post/post-list-header"
 import { PostsArchive } from "@/widgets/post/posts-archive"
 
-type PostArchiveItem = {
-  id: string
-  title: string
-  slug: string
-  subtitle: string | null
-  publishedAt: Date | null
-  createdAt: Date
-  postTags: readonly {
-    tag: {
-      id: string
-      name: string
-      slug: string
-    }
-  }[]
-}
+const toIsoString = (value: Date | string) => new Date(value).toISOString()
 
-type PostsViewProps = {
-  posts: readonly PostArchiveItem[]
-}
-
-export function PostsView({ posts }: PostsViewProps) {
-  const archivePosts = posts.map((post) => ({
+const toArchivePosts = (posts: PostArchiveData) =>
+  posts.map((post) => ({
     id: post.id,
     title: post.title,
     slug: post.slug,
     subtitle: post.subtitle,
-    publishedAt: post.publishedAt?.toISOString() ?? null,
-    createdAt: post.createdAt.toISOString(),
+    publishedAt: post.publishedAt ? toIsoString(post.publishedAt) : null,
+    createdAt: toIsoString(post.createdAt),
     tags: post.postTags
       .map(({ tag }) => tag)
       .sort((firstTag, secondTag) =>
         firstTag.name.localeCompare(secondTag.name, "ko-KR"),
       ),
   }))
+
+export function PostsView() {
+  const trpc = useTRPC()
+  const { data: posts } = useSuspenseQuery(
+    trpc.content.getPostArchive.queryOptions(),
+  )
+  const archivePosts = toArchivePosts(posts)
 
   return (
     <div className="grid w-full gap-6">
