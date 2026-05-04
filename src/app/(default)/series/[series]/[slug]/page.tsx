@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
 import { notFound } from "next/navigation"
-import { getPublishedSeriesPostBySlug } from "@/domain/content/queries"
+import { cache } from "react"
+import { trpcServerCaller } from "@/core/trpc/server/trpc-server-caller"
 import { PostDetailView } from "@/views/post-detail"
 
 type SeriesPostDetailPageProps = {
@@ -10,11 +11,17 @@ type SeriesPostDetailPageProps = {
   }>
 }
 
+const getSeriesPostDetail = cache(async (seriesSlug: string, slug: string) => {
+  const caller = await trpcServerCaller()
+
+  return caller.content.getSeriesPostDetail({ seriesSlug, slug })
+})
+
 export const generateMetadata = async ({
   params,
 }: SeriesPostDetailPageProps): Promise<Metadata> => {
   const { series: seriesSlug, slug } = await params
-  const post = await getPublishedSeriesPostBySlug(seriesSlug, slug)
+  const post = await getSeriesPostDetail(seriesSlug, slug)
 
   if (!post) {
     return {
@@ -32,7 +39,7 @@ export default async function SeriesPostDetailPage({
   params,
 }: SeriesPostDetailPageProps) {
   const { series: seriesSlug, slug } = await params
-  const post = await getPublishedSeriesPostBySlug(seriesSlug, slug)
+  const post = await getSeriesPostDetail(seriesSlug, slug)
 
   if (!post) {
     notFound()
