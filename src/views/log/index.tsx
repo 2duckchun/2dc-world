@@ -1,35 +1,22 @@
+"use client"
+
+import { useSuspenseQuery } from "@tanstack/react-query"
 import { NotebookPen } from "lucide-react"
+import { useTRPC } from "@/core/trpc/client/providers/trpc-tanstack-query-provider"
+import type { LogArchiveData } from "@/domain/content/procedure/get-log-archive/schema"
 import { PostListHeader } from "@/widgets/post/post-list-header"
 import { PostsArchive } from "@/widgets/post/posts-archive"
 
-type LogArchiveItem = {
-  id: string
-  title: string
-  slug: string
-  subtitle: string | null
-  publishedAt: Date | null
-  createdAt: Date
-  postTags: readonly {
-    tag: {
-      id: string
-      name: string
-      slug: string
-    }
-  }[]
-}
+const toIsoString = (value: Date | string) => new Date(value).toISOString()
 
-type LogViewProps = {
-  posts: readonly LogArchiveItem[]
-}
-
-export function LogView({ posts }: LogViewProps) {
-  const archivePosts = posts.map((post) => ({
+const toArchivePosts = (posts: LogArchiveData) =>
+  posts.map((post) => ({
     id: post.id,
     title: post.title,
     slug: post.slug,
     subtitle: post.subtitle,
-    publishedAt: post.publishedAt?.toISOString() ?? null,
-    createdAt: post.createdAt.toISOString(),
+    publishedAt: post.publishedAt ? toIsoString(post.publishedAt) : null,
+    createdAt: toIsoString(post.createdAt),
     tags: post.postTags
       .map(({ tag }) => tag)
       .sort((firstTag, secondTag) =>
@@ -37,6 +24,12 @@ export function LogView({ posts }: LogViewProps) {
       ),
   }))
 
+export function LogView() {
+  const trpc = useTRPC()
+  const { data: posts } = useSuspenseQuery(
+    trpc.content.getLogArchive.queryOptions(),
+  )
+  const archivePosts = toArchivePosts(posts)
   return (
     <div className="grid w-full gap-6">
       <PostListHeader

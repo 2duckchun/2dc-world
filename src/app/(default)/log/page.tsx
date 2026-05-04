@@ -1,5 +1,9 @@
 import type { Metadata } from "next"
-import { getPublishedLogArchive } from "@/domain/content/queries"
+import {
+  getServerQueryClient,
+  PrefetchBoundary,
+} from "@/core/tanstack-query/prefetch-boundary"
+import { trpcServerProxy } from "@/core/trpc/server/create-trpc-proxy"
 import { LogView } from "@/views/log"
 
 export const metadata: Metadata = {
@@ -8,7 +12,14 @@ export const metadata: Metadata = {
 }
 
 export default async function LogPage() {
-  const posts = await getPublishedLogArchive()
+  const queryClient = getServerQueryClient()
+  await queryClient.prefetchQuery(
+    trpcServerProxy.content.getLogArchive.queryOptions(),
+  )
 
-  return <LogView posts={posts} />
+  return (
+    <PrefetchBoundary>
+      <LogView />
+    </PrefetchBoundary>
+  )
 }
