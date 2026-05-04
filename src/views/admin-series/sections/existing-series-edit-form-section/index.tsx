@@ -2,6 +2,7 @@
 
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { useTRPC } from "@/core/trpc/client/providers/trpc-tanstack-query-provider"
+import { SeriesEditCard } from "../new-series-create-form-section/series-edit-card"
 
 export const ExistingSeriesEditFormSections = () => {
   const trpc = useTRPC()
@@ -18,9 +19,9 @@ export const ExistingSeriesEditFormSections = () => {
 
       {series.length > 0 ? (
         <div className="grid gap-4">
-          {/* {series.map((seriesItem) => (
+          {series.map((seriesItem) => (
             <SeriesEditCard key={seriesItem.id} series={seriesItem} />
-          ))} */}
+          ))}
         </div>
       ) : (
         <div className="flex min-h-36 items-center rounded-lg border border-border bg-card p-5 text-muted-foreground shadow-sm">

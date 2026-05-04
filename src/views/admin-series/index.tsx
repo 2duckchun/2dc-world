@@ -1,7 +1,7 @@
 import { PenLine } from "lucide-react"
 import { buttonVariants } from "@/shared/ui/button"
 import { PostAdminHeader } from "@/widgets/post/post-admin-header"
-import { AdminSeriesManager } from "./components/admin-series-manager"
+import { SeriesEditAndCreateSection } from "./sections"
 
 export function AdminSeriesView() {
   return (
@@ -18,7 +18,8 @@ export function AdminSeriesView() {
         }
       />
 
-      <AdminSeriesManager />
+      <SeriesEditAndCreateSection />
+      {/* <AdminSeriesManager /> */}
     </div>
   )
 }
