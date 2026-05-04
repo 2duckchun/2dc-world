@@ -1,15 +1,7 @@
 import Link from "next/link"
-import type { SeriesListOutput } from "@/domain/series/procedure/get-list/schema"
 import { AppRoutes } from "@/shared/utils/app-routes"
 import { SeriesEditForm } from "../existing-series-edit-form-section/series-edit-form"
-
-type SeriesListItem = Omit<
-  SeriesListOutput[number],
-  "createdAt" | "updatedAt"
-> & {
-  createdAt: Date | string
-  updatedAt: Date | string
-}
+import type { SeriesListItem } from "../shared/types"
 
 export function SeriesEditCard({ series }: { series: SeriesListItem }) {
   return (

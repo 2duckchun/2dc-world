@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation"
 import { FormProvider, type UseFormReturn, useForm } from "react-hook-form"
 import { toast } from "sonner"
 import { useTRPC } from "@/core/trpc/client/providers/trpc-tanstack-query-provider"
-import type { SeriesListOutput } from "@/domain/series/procedure/get-list/schema"
 import {
   type SeriesCreateInput,
   seriesCreateInputSchema,
@@ -16,6 +15,7 @@ import { SeriesFormActions } from "../../shared/fields/series-form-actions"
 import { SeriesSlugInputField } from "../../shared/fields/series-slug-input-field"
 import { SeriesThumbnailInputField } from "../../shared/fields/series-thumbnail-input-field"
 import { SeriesTitleField } from "../../shared/fields/series-title-field"
+import type { SeriesListItem } from "../../shared/types"
 
 const getSeriesFormValues = (series: SeriesListItem): SeriesCreateInput => ({
   title: series.title,
@@ -33,14 +33,6 @@ const setServerError = (
   if (message.includes("슬러그")) {
     form.setError("slug", { type: "server", message })
   }
-}
-
-type SeriesListItem = Omit<
-  SeriesListOutput[number],
-  "createdAt" | "updatedAt"
-> & {
-  createdAt: Date | string
-  updatedAt: Date | string
 }
 
 export const SeriesEditForm = ({ series }: { series: SeriesListItem }) => {

@@ -19,7 +19,6 @@ export function AdminSeriesView() {
       />
 
       <SeriesEditAndCreateSection />
-      {/* <AdminSeriesManager /> */}
     </div>
   )
 }
