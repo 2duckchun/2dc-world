@@ -1,46 +1,38 @@
+"use client"
+
+import { useSuspenseQuery } from "@tanstack/react-query"
 import { ArrowUpRight, CalendarDays, Layers3 } from "lucide-react"
 import Image from "next/image"
+import { useTRPC } from "@/core/trpc/client/providers/trpc-tanstack-query-provider"
+import type { SeriesArchiveData } from "@/domain/content/procedure/get-series-archive/schema"
 import { PostListHeader } from "@/widgets/post/post-list-header"
-
-type SeriesArchiveItem = {
-  id: string
-  title: string
-  slug: string
-  description: string | null
-  thumbnail: string | null
-  createdAt: Date
-  updatedAt: Date
-  posts: readonly {
-    id: string
-    title: string
-    slug: string
-    publishedAt: Date | null
-    createdAt: Date
-    seriesOrder: number | null
-  }[]
-}
-
-type SeriesViewProps = {
-  series: readonly SeriesArchiveItem[]
-}
 
 const dateFormatter = new Intl.DateTimeFormat("ko-KR", {
   dateStyle: "medium",
 })
 
-const getSeriesDisplayDate = (series: SeriesArchiveItem) => {
+const toDate = (value: Date | string) => new Date(value)
+
+const getPostDate = (post: SeriesArchiveData[number]["posts"][number]) =>
+  toDate(post.publishedAt ?? post.createdAt)
+
+const getSeriesDisplayDate = (series: SeriesArchiveData[number]) => {
   const latestPost = [...series.posts].sort(
     (firstPost, secondPost) =>
-      (secondPost.publishedAt ?? secondPost.createdAt).getTime() -
-      (firstPost.publishedAt ?? firstPost.createdAt).getTime(),
+      getPostDate(secondPost).getTime() - getPostDate(firstPost).getTime(),
   )[0]
 
   return latestPost
-    ? dateFormatter.format(latestPost.publishedAt ?? latestPost.createdAt)
-    : dateFormatter.format(series.updatedAt)
+    ? dateFormatter.format(getPostDate(latestPost))
+    : dateFormatter.format(toDate(series.updatedAt))
 }
 
-export function SeriesView({ series }: SeriesViewProps) {
+export function SeriesView() {
+  const trpc = useTRPC()
+  const { data: series } = useSuspenseQuery(
+    trpc.content.getSeriesArchive.queryOptions(),
+  )
+
   return (
     <div className="grid w-full gap-6">
       <PostListHeader

@@ -1,5 +1,9 @@
 import type { Metadata } from "next"
-import { getPublishedSeriesArchive } from "@/domain/content/queries"
+import {
+  getServerQueryClient,
+  PrefetchBoundary,
+} from "@/core/tanstack-query/prefetch-boundary"
+import { trpcServerProxy } from "@/core/trpc/server/create-trpc-proxy"
 import { SeriesView } from "@/views/series"
 
 export const metadata: Metadata = {
@@ -8,7 +12,14 @@ export const metadata: Metadata = {
 }
 
 export default async function SeriesPage() {
-  const series = await getPublishedSeriesArchive()
+  const queryClient = getServerQueryClient()
+  await queryClient.prefetchQuery(
+    trpcServerProxy.content.getSeriesArchive.queryOptions(),
+  )
 
-  return <SeriesView series={series} />
+  return (
+    <PrefetchBoundary>
+      <SeriesView />
+    </PrefetchBoundary>
+  )
 }
