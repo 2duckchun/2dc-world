@@ -8,11 +8,11 @@ import {
   type SeriesCreateInput,
   seriesCreateInputSchema,
 } from "@/domain/series/procedure/post-create-series/schema"
-import { SeriesDescriptionField } from "./fields/series-description-field"
-import { SeriesFormActions } from "./fields/series-form-actions"
-import { SeriesSlugInputField } from "./fields/series-slug-input-field"
-import { SeriesThumbnailInputField } from "./fields/series-thumbnail-input-field"
-import { SeriesTitleField } from "./fields/series-title-field"
+import { SeriesDescriptionField } from "../../shared/fields/series-description-field"
+import { SeriesFormActions } from "../../shared/fields/series-form-actions"
+import { SeriesSlugInputField } from "../../shared/fields/series-slug-input-field"
+import { SeriesThumbnailInputField } from "../../shared/fields/series-thumbnail-input-field"
+import { SeriesTitleField } from "../../shared/fields/series-title-field"
 
 const createEmptySeriesFormValues = (): SeriesCreateInput => ({
   title: "",
