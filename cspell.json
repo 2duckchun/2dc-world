@@ -33,6 +33,7 @@
     "tanstack",
     "trpc",
     "typecheck",
-    "Vercel"
+    "Vercel",
+    "doctag"
   ]
 }

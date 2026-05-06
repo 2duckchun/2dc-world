@@ -219,6 +219,96 @@
     --tw-prose-invert-td-borders: var(--border);
   }
 
+  .prose-blog :where(pre) {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    border: 1px solid var(--border);
+    background: color-mix(in oklch, var(--foreground) 7%, var(--background));
+    color: var(--foreground);
+    scrollbar-width: thin;
+    scrollbar-color: color-mix(in oklch, var(--foreground) 28%, transparent)
+      transparent;
+  }
+
+  .prose-blog :where(pre code) {
+    display: block;
+    width: max-content;
+    max-width: none;
+    min-width: 100%;
+    white-space: pre;
+    word-break: normal;
+    overflow-wrap: normal;
+  }
+
+  .prose-blog :where(code):not(:where(pre code)) {
+    border: 1px solid color-mix(in oklch, var(--chart-3) 35%, var(--border));
+    border-radius: 0.35rem;
+    background: color-mix(in oklch, var(--chart-3) 10%, var(--background));
+    padding: 0.12rem 0.32rem;
+    color: var(--chart-3);
+    font-weight: 600;
+  }
+
+  .prose-blog :where(code):not(:where(pre code))::before,
+  .prose-blog :where(code):not(:where(pre code))::after {
+    content: "";
+  }
+
+  .prose-blog :where(.hljs) {
+    background: transparent;
+    color: var(--foreground);
+  }
+
+  .prose-blog :where(.hljs-comment, .hljs-quote) {
+    color: var(--muted-foreground);
+    font-style: italic;
+  }
+
+  .prose-blog
+    :where(.hljs-keyword, .hljs-selector-tag, .hljs-built_in, .hljs-type) {
+    color: var(--chart-3);
+  }
+
+  .prose-blog :where(.hljs-string, .hljs-symbol, .hljs-bullet, .hljs-addition) {
+    color: var(--chart-2);
+  }
+
+  .prose-blog
+    :where(
+      .hljs-number,
+      .hljs-literal,
+      .hljs-variable,
+      .hljs-template-variable,
+      .hljs-attr
+    ) {
+    color: var(--chart-4);
+  }
+
+  .prose-blog
+    :where(
+      .hljs-title,
+      .hljs-section,
+      .hljs-selector-id,
+      .hljs-title.function_
+    ) {
+    color: var(--chart-1);
+  }
+
+  .prose-blog :where(.hljs-meta, .hljs-doctag, .hljs-regexp, .hljs-link) {
+    color: var(--chart-5);
+  }
+
+  .prose-blog :where(.hljs-attribute, .hljs-name, .hljs-tag) {
+    color: var(--chart-3);
+  }
+
+  .prose-blog :where(.hljs-deletion) {
+    color: var(--destructive);
+  }
+
   .admin-markdown-editor {
     --accentBase: color-mix(in oklch, var(--chart-1) 10%, var(--background));
     --accentBg: color-mix(in oklch, var(--chart-1) 14%, var(--background));
