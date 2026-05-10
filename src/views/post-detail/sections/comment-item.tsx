@@ -13,7 +13,7 @@ export type CommentForView = {
   body: string
   isDeleted: boolean
   isEdited: boolean
-  createdAt: Date
+  createdAt: string
   author: { id: string; name: string | null; image: string | null } | null
   canEdit: boolean
   canDelete: boolean
@@ -50,7 +50,7 @@ export function CommentItem({
 }: CommentItemProps) {
   const authorName = comment.author?.name ?? "(알 수 없음)"
   const authorImage = comment.author?.image ?? null
-  const formattedDate = dateTimeFormatter.format(comment.createdAt)
+  const formattedDate = dateTimeFormatter.format(new Date(comment.createdAt))
   const showActions = !comment.isDeleted && !isEditing
 
   return (

@@ -1,6 +1,7 @@
 import { CalendarDays } from "lucide-react"
 import Image from "next/image"
 import { MarkdownContent } from "@/shared/ui/markdown-content"
+import { CommentSection } from "./sections/comment-section"
 import { LikeSection } from "./sections/like-section"
 
 type PostDetailViewProps = {
@@ -79,6 +80,8 @@ export function PostDetailView({ post, isAuthenticated }: PostDetailViewProps) {
       <div className="flex justify-center">
         <LikeSection postId={post.id} isAuthenticated={isAuthenticated} />
       </div>
+
+      <CommentSection postId={post.id} isAuthenticated={isAuthenticated} />
     </div>
   )
 }

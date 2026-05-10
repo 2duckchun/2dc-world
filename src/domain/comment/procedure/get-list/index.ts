@@ -77,7 +77,7 @@ function shapeComment(
     body: row.isDeleted ? "" : row.body,
     isDeleted: row.isDeleted,
     isEdited: !row.isDeleted && row.updatedAt > row.createdAt,
-    createdAt: row.createdAt,
+    createdAt: row.createdAt.toISOString(),
     author: row.author,
     canEdit: !row.isDeleted && isOwner,
     canDelete: !row.isDeleted && (isOwner || viewerIsAdmin),

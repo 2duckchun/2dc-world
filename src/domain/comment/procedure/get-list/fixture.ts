@@ -10,7 +10,7 @@ export const commentGetListOutputFixture = [
     body: "첫 댓글입니다.",
     isDeleted: false,
     isEdited: false,
-    createdAt: new Date("2026-05-10T00:00:00Z"),
+    createdAt: "2026-05-10T00:00:00.000Z",
     author: {
       id: "user_fixture_1",
       name: "Alice",
@@ -24,7 +24,7 @@ export const commentGetListOutputFixture = [
         body: "대댓글입니다.",
         isDeleted: false,
         isEdited: false,
-        createdAt: new Date("2026-05-10T00:01:00Z"),
+        createdAt: "2026-05-10T00:01:00.000Z",
         author: {
           id: "user_fixture_2",
           name: "Bob",

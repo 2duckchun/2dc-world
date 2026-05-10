@@ -11,7 +11,7 @@ const commentBaseSchema = z.object({
   body: z.string(),
   isDeleted: z.boolean(),
   isEdited: z.boolean(),
-  createdAt: z.date(),
+  createdAt: z.string(),
   author: commentAuthorSchema.nullable(),
   canEdit: z.boolean(),
   canDelete: z.boolean(),
