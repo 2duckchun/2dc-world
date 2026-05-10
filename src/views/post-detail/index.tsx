@@ -4,6 +4,7 @@ import { MarkdownContent } from "@/shared/ui/markdown-content"
 
 type PostDetailViewProps = {
   post: {
+    id: string
     title: string
     subtitle: string | null
     thumbnail: string | null

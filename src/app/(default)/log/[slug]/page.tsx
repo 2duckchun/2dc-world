@@ -1,6 +1,11 @@
 import type { Metadata } from "next"
 import { notFound } from "next/navigation"
 import { cache } from "react"
+import {
+  getServerQueryClient,
+  PrefetchBoundary,
+} from "@/core/tanstack-query/prefetch-boundary"
+import { trpcServerProxy } from "@/core/trpc/server/create-trpc-proxy"
 import { trpcServerCaller } from "@/core/trpc/server/trpc-server-caller"
 import { PostDetailView } from "@/views/post-detail"
 
@@ -42,5 +47,14 @@ export default async function LogDetailPage({ params }: LogDetailPageProps) {
     notFound()
   }
 
-  return <PostDetailView post={post} />
+  const queryClient = getServerQueryClient()
+  await queryClient.prefetchQuery(
+    trpcServerProxy.like.getPostStats.queryOptions({ postId: post.id }),
+  )
+
+  return (
+    <PrefetchBoundary>
+      <PostDetailView post={post} />
+    </PrefetchBoundary>
+  )
 }
