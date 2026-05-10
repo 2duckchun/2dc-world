@@ -1,6 +1,7 @@
 import type { ContentGetPostDetailOutput } from "./schema"
 
 export const contentGetPostDetailFixture = {
+  id: "post_fixture_1",
   title: "First post",
   slug: "first-post",
   subtitle: "Example post detail item.",

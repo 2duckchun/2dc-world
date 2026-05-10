@@ -7,6 +7,7 @@ import {
 } from "./schema"
 
 const publishedPostDetailColumns = {
+  id: true,
   title: true,
   slug: true,
   subtitle: true,

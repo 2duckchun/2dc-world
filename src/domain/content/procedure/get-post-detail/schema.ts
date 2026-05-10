@@ -8,6 +8,7 @@ const postDetailSeriesSchema = z
   .nullable()
 
 const postDetailSchema = z.object({
+  id: z.string(),
   title: z.string(),
   slug: z.string(),
   subtitle: z.string().nullable(),

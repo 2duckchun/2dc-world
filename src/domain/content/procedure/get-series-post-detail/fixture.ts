@@ -1,6 +1,7 @@
 import type { ContentGetSeriesPostDetailOutput } from "./schema"
 
 export const contentGetSeriesPostDetailFixture = {
+  id: "series_post_fixture_1",
   title: "First series post",
   slug: "series-first-post",
   subtitle: "Example series post detail item.",

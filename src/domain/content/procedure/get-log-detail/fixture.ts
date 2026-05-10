@@ -1,6 +1,7 @@
 import type { ContentGetLogDetailOutput } from "./schema"
 
 export const contentGetLogDetailFixture = {
+  id: "log_fixture_1",
   title: "First log",
   slug: "first-log",
   subtitle: "Example log detail item.",
