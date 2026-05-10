@@ -1,3 +1,4 @@
+import { commentRouter } from "@/domain/comment/router"
 import { contentRouter } from "@/domain/content/router"
 import { likeRouter } from "@/domain/like/router"
 import { postRouter } from "@/domain/post/router"
@@ -5,6 +6,7 @@ import { seriesRouter } from "@/domain/series/router"
 import { createTRPCRouter } from "./base/init"
 
 export const appRouter = createTRPCRouter({
+  comment: commentRouter,
   content: contentRouter,
   like: likeRouter,
   post: postRouter,
