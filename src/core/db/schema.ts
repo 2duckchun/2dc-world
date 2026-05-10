@@ -2,6 +2,7 @@ import { relations, sql } from "drizzle-orm"
 import {
   boolean,
   check,
+  index,
   integer,
   pgEnum,
   pgTable,
@@ -175,11 +176,31 @@ export const postTags = pgTable(
   ],
 )
 
+export const postLikes = pgTable(
+  "post_likes",
+  {
+    postId: text("post_id")
+      .notNull()
+      .references(() => posts.id, { onDelete: "cascade" }),
+    userId: text("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    createdAt: timestamp("created_at", { mode: "date" }).notNull().defaultNow(),
+  },
+  (postLike) => [
+    primaryKey({
+      columns: [postLike.postId, postLike.userId],
+    }),
+    index("post_likes_post_id_idx").on(postLike.postId),
+  ],
+)
+
 export const usersRelations = relations(users, ({ many }) => ({
   accounts: many(accounts),
   sessions: many(sessions),
   authenticators: many(authenticators),
   posts: many(posts),
+  postLikes: many(postLikes),
 }))
 
 export const accountsRelations = relations(accounts, ({ one }) => ({
@@ -217,6 +238,7 @@ export const postsRelations = relations(posts, ({ many, one }) => ({
     references: [series.id],
   }),
   postTags: many(postTags),
+  postLikes: many(postLikes),
 }))
 
 export const tagsRelations = relations(tags, ({ many }) => ({
@@ -231,5 +253,16 @@ export const postTagsRelations = relations(postTags, ({ one }) => ({
   tag: one(tags, {
     fields: [postTags.tagId],
     references: [tags.id],
+  }),
+}))
+
+export const postLikesRelations = relations(postLikes, ({ one }) => ({
+  post: one(posts, {
+    fields: [postLikes.postId],
+    references: [posts.id],
+  }),
+  user: one(users, {
+    fields: [postLikes.userId],
+    references: [users.id],
   }),
 }))
