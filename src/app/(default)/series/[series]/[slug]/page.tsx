@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
 import { notFound } from "next/navigation"
 import { cache } from "react"
+import { auth } from "@/auth"
 import {
   getServerQueryClient,
   PrefetchBoundary,
@@ -54,10 +55,11 @@ export default async function SeriesPostDetailPage({
   await queryClient.prefetchQuery(
     trpcServerProxy.like.getPostStats.queryOptions({ postId: post.id }),
   )
+  const session = await auth()
 
   return (
     <PrefetchBoundary>
-      <PostDetailView post={post} />
+      <PostDetailView post={post} isAuthenticated={Boolean(session?.user)} />
     </PrefetchBoundary>
   )
 }

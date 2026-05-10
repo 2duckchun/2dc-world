@@ -1,6 +1,7 @@
 import { CalendarDays } from "lucide-react"
 import Image from "next/image"
 import { MarkdownContent } from "@/shared/ui/markdown-content"
+import { LikeSection } from "./sections/like-section"
 
 type PostDetailViewProps = {
   post: {
@@ -16,13 +17,14 @@ type PostDetailViewProps = {
       slug: string
     } | null
   }
+  isAuthenticated: boolean
 }
 
 const dateFormatter = new Intl.DateTimeFormat("ko-KR", {
   dateStyle: "medium",
 })
 
-export function PostDetailView({ post }: PostDetailViewProps) {
+export function PostDetailView({ post, isAuthenticated }: PostDetailViewProps) {
   const displayDate = dateFormatter.format(post.publishedAt ?? post.createdAt)
 
   return (
@@ -73,6 +75,10 @@ export function PostDetailView({ post }: PostDetailViewProps) {
       <section className="min-w-0 rounded-lg border border-border bg-card p-5 shadow-sm sm:p-8">
         <MarkdownContent markdown={post.content} className="prose-lg" />
       </section>
+
+      <div className="flex justify-center">
+        <LikeSection postId={post.id} isAuthenticated={isAuthenticated} />
+      </div>
     </div>
   )
 }
