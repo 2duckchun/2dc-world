@@ -1,5 +1,6 @@
 import { relations, sql } from "drizzle-orm"
 import {
+  type AnyPgColumn,
   boolean,
   check,
   index,
@@ -195,12 +196,45 @@ export const postLikes = pgTable(
   ],
 )
 
+export const postComments = pgTable(
+  "post_comments",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    postId: text("post_id")
+      .notNull()
+      .references(() => posts.id, { onDelete: "cascade" }),
+    authorId: text("author_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "restrict" }),
+    parentCommentId: text("parent_comment_id").references(
+      (): AnyPgColumn => postComments.id,
+      { onDelete: "cascade" },
+    ),
+    body: text("body").notNull(),
+    isDeleted: boolean("is_deleted").notNull().default(false),
+    createdAt: timestamp("created_at", { mode: "date" }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { mode: "date" }).notNull().defaultNow(),
+  },
+  (postComment) => [
+    index("post_comments_post_id_created_at_idx").on(
+      postComment.postId,
+      postComment.createdAt,
+    ),
+    index("post_comments_parent_comment_id_idx").on(
+      postComment.parentCommentId,
+    ),
+  ],
+)
+
 export const usersRelations = relations(users, ({ many }) => ({
   accounts: many(accounts),
   sessions: many(sessions),
   authenticators: many(authenticators),
   posts: many(posts),
   postLikes: many(postLikes),
+  postComments: many(postComments),
 }))
 
 export const accountsRelations = relations(accounts, ({ one }) => ({
@@ -239,6 +273,7 @@ export const postsRelations = relations(posts, ({ many, one }) => ({
   }),
   postTags: many(postTags),
   postLikes: many(postLikes),
+  postComments: many(postComments),
 }))
 
 export const tagsRelations = relations(tags, ({ many }) => ({
@@ -266,3 +301,25 @@ export const postLikesRelations = relations(postLikes, ({ one }) => ({
     references: [users.id],
   }),
 }))
+
+export const postCommentsRelations = relations(
+  postComments,
+  ({ one, many }) => ({
+    post: one(posts, {
+      fields: [postComments.postId],
+      references: [posts.id],
+    }),
+    author: one(users, {
+      fields: [postComments.authorId],
+      references: [users.id],
+    }),
+    parent: one(postComments, {
+      fields: [postComments.parentCommentId],
+      references: [postComments.id],
+      relationName: "comment_replies",
+    }),
+    replies: many(postComments, {
+      relationName: "comment_replies",
+    }),
+  }),
+)
