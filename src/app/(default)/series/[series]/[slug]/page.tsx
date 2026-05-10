@@ -52,9 +52,14 @@ export default async function SeriesPostDetailPage({
   }
 
   const queryClient = getServerQueryClient()
-  await queryClient.prefetchQuery(
-    trpcServerProxy.like.getPostStats.queryOptions({ postId: post.id }),
-  )
+  await Promise.all([
+    queryClient.prefetchQuery(
+      trpcServerProxy.like.getPostStats.queryOptions({ postId: post.id }),
+    ),
+    queryClient.prefetchQuery(
+      trpcServerProxy.comment.list.queryOptions({ postId: post.id }),
+    ),
+  ])
   const session = await auth()
 
   return (
