@@ -1,12 +1,13 @@
 "use client"
 
 import { ImagePlus, LoaderCircle } from "lucide-react"
-import { type ChangeEvent, useRef, useState } from "react"
+import { type ChangeEvent, type ClipboardEvent, useRef, useState } from "react"
 import { toast } from "sonner"
 import { Button } from "@/shared/ui/button"
 import { Input } from "@/shared/ui/input"
 
 const imageUploadAccept = "image/avif,image/gif,image/jpeg,image/png,image/webp"
+const acceptedImageTypes = imageUploadAccept.split(",")
 
 type PresignedImageUpload = {
   imageUrl?: unknown
@@ -75,14 +76,7 @@ export function ThumbnailUrlUploadInput({
   const [isUploading, setIsUploading] = useState(false)
   const fileInputId = `${id}-image-upload`
 
-  const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
-    const input = event.currentTarget
-    const image = input.files?.[0]
-
-    if (!image) {
-      return
-    }
-
+  const handleImageUpload = async (image: File) => {
     setIsUploading(true)
 
     try {
@@ -94,8 +88,45 @@ export function ThumbnailUrlUploadInput({
       toast.error(getUploadErrorMessage(error))
     } finally {
       setIsUploading(false)
+    }
+  }
+
+  const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
+    const input = event.currentTarget
+    const image = input.files?.[0]
+
+    if (!image) {
+      return
+    }
+
+    try {
+      await handleImageUpload(image)
+    } finally {
       input.value = ""
     }
+  }
+
+  const handlePaste = (event: ClipboardEvent<HTMLInputElement>) => {
+    if (isUploading) {
+      return
+    }
+
+    const imageItem = Array.from(event.clipboardData.items).find(
+      (item) => item.kind === "file" && acceptedImageTypes.includes(item.type),
+    )
+
+    if (!imageItem) {
+      return
+    }
+
+    const file = imageItem.getAsFile()
+
+    if (!file) {
+      return
+    }
+
+    event.preventDefault()
+    void handleImageUpload(file)
   }
 
   return (
@@ -106,6 +137,7 @@ export function ThumbnailUrlUploadInput({
         value={value}
         onBlur={onBlur}
         onChange={(event) => onChange(event.target.value || null)}
+        onPaste={handlePaste}
         aria-invalid={invalid}
       />
       <Button
