@@ -39,11 +39,13 @@ const toMetadata = (
   }
 }
 
+// 자기완결 글(post/log/series 회차)용. og:type=article + article:published_time 노출.
 export const buildArticleMetadata = (input: ArticleMetadataInput): Metadata =>
   toMetadata(input, {
     type: "article",
     publishedTime: input.publishedTime.toISOString(),
   })
 
+// 단일 글이 아닌 허브/인덱스 페이지(예: 시리즈 상세)용. og:type=website.
 export const buildWebsiteMetadata = (input: BaseMetadataInput): Metadata =>
   toMetadata(input, { type: "website" })
