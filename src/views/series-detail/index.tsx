@@ -73,10 +73,13 @@ export function SeriesDetailView({ series }: SeriesDetailViewProps) {
               <Layers3 className="size-4" />
               {series.posts.length.toLocaleString("ko-KR")}회차
             </span>
-            <span className="inline-flex items-center gap-1.5">
+            <time
+              dateTime={series.updatedAt.toISOString()}
+              className="inline-flex items-center gap-1.5"
+            >
               <CalendarDays className="size-4" />
               {displayDate}
-            </span>
+            </time>
           </div>
           <div className="grid gap-3">
             <h1 className="text-balance font-black text-4xl leading-tight sm:text-5xl">

@@ -8,6 +8,7 @@ import {
 } from "@/core/tanstack-query/prefetch-boundary"
 import { trpcServerProxy } from "@/core/trpc/server/create-trpc-proxy"
 import { trpcServerCaller } from "@/core/trpc/server/trpc-server-caller"
+import { buildArticleMetadata } from "@/shared/utils/metadata"
 import { PostDetailView } from "@/views/post-detail"
 
 type LogDetailPageProps = {
@@ -34,10 +35,12 @@ export const generateMetadata = async ({
     }
   }
 
-  return {
+  return buildArticleMetadata({
     title: post.title,
-    description: post.subtitle ?? undefined,
-  }
+    description: post.subtitle,
+    thumbnail: post.thumbnail,
+    publishedTime: post.publishedAt ?? post.createdAt,
+  })
 }
 
 export default async function LogDetailPage({ params }: LogDetailPageProps) {

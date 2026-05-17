@@ -28,8 +28,10 @@ const dateFormatter = new Intl.DateTimeFormat("ko-KR", {
 export function PostDetailView({ post, isAuthenticated }: PostDetailViewProps) {
   const displayDate = dateFormatter.format(post.publishedAt ?? post.createdAt)
 
+  const datetime = (post.publishedAt ?? post.createdAt).toISOString()
+
   return (
-    <div className="grid w-full gap-8">
+    <article className="grid w-full gap-8">
       <header className="overflow-hidden rounded-lg border border-border bg-card shadow-sm">
         {post.thumbnail ? (
           <div className="relative aspect-[16/7] w-full border-border border-b bg-muted">
@@ -55,10 +57,13 @@ export function PostDetailView({ post, isAuthenticated }: PostDetailViewProps) {
                 {post.series.title}
               </a>
             ) : null}
-            <span className="inline-flex items-center gap-1.5">
+            <time
+              dateTime={datetime}
+              className="inline-flex items-center gap-1.5"
+            >
               <CalendarDays className="size-4" />
               {displayDate}
-            </span>
+            </time>
           </div>
           <div className="grid gap-3">
             <h1 className="text-balance font-black text-4xl leading-tight sm:text-5xl">
@@ -82,6 +87,6 @@ export function PostDetailView({ post, isAuthenticated }: PostDetailViewProps) {
       </div>
 
       <CommentSection postId={post.id} isAuthenticated={isAuthenticated} />
-    </div>
+    </article>
   )
 }

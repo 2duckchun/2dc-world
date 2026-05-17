@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
 import { notFound } from "next/navigation"
 import { getPublishedSeriesBySlug } from "@/domain/content/queries"
+import { buildWebsiteMetadata } from "@/shared/utils/metadata"
 import { SeriesDetailView } from "@/views/series-detail"
 
 type SeriesDetailPageProps = {
@@ -21,10 +22,11 @@ export const generateMetadata = async ({
     }
   }
 
-  return {
+  return buildWebsiteMetadata({
     title: series.title,
-    description: series.description ?? undefined,
-  }
+    description: series.description,
+    thumbnail: series.thumbnail,
+  })
 }
 
 export default async function SeriesDetailPage({
