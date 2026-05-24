@@ -42,7 +42,7 @@ export function PostViewerAdminActions({
   }
 
   return (
-    <div className="ml-auto flex items-center gap-2">
+    <div className="flex items-center justify-end gap-2">
       <Link
         href={AppRoutes.admin.posts.edit(postId)}
         className={buttonVariants({ variant: "outline", size: "sm" })}
