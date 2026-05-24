@@ -45,3 +45,5 @@ next-env.d.ts
 # drizzle pull artifacts
 drizzle/schema.ts
 drizzle/relations.ts
+
+/content-migration
