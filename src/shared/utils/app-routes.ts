@@ -22,6 +22,7 @@ export const AppRoutes = {
     },
     series: {
       list: () => "/admin/series",
+      editAnchor: (id: string) => `/admin/series#series-${id}`,
     },
   },
 }

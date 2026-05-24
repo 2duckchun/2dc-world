@@ -8,8 +8,10 @@ import {
 } from "@/core/tanstack-query/prefetch-boundary"
 import { trpcServerProxy } from "@/core/trpc/server/create-trpc-proxy"
 import { trpcServerCaller } from "@/core/trpc/server/trpc-server-caller"
+import { AppRoutes } from "@/shared/utils/app-routes"
 import { buildArticleMetadata } from "@/shared/utils/metadata"
 import { PostDetailView } from "@/views/post-detail"
+import { PostViewerAdminActions } from "@/widgets/post/post-viewer-admin-actions"
 
 type SeriesPostDetailPageProps = {
   params: Promise<{
@@ -64,10 +66,19 @@ export default async function SeriesPostDetailPage({
     ),
   ])
   const session = await auth()
+  const isAdmin = session?.user?.role === "admin"
 
   return (
     <PrefetchBoundary>
-      <PostDetailView post={post} isAuthenticated={Boolean(session?.user)} />
+      <div className="grid w-full gap-3">
+        {isAdmin && (
+          <PostViewerAdminActions
+            postId={post.id}
+            listHref={AppRoutes.series.detail(seriesSlug)}
+          />
+        )}
+        <PostDetailView post={post} isAuthenticated={Boolean(session?.user)} />
+      </div>
     </PrefetchBoundary>
   )
 }
