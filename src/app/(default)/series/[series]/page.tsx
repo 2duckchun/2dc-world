@@ -1,8 +1,10 @@
 import type { Metadata } from "next"
 import { notFound } from "next/navigation"
+import { auth } from "@/auth"
 import { getPublishedSeriesBySlug } from "@/domain/content/queries"
 import { buildWebsiteMetadata } from "@/shared/utils/metadata"
 import { SeriesDetailView } from "@/views/series-detail"
+import { SeriesViewerAdminActions } from "@/widgets/series/series-viewer-admin-actions"
 
 type SeriesDetailPageProps = {
   params: Promise<{
@@ -39,5 +41,18 @@ export default async function SeriesDetailPage({
     notFound()
   }
 
-  return <SeriesDetailView series={series} />
+  const session = await auth()
+  const isAdmin = session?.user?.role === "admin"
+
+  return (
+    <div className="grid w-full gap-3">
+      {isAdmin && (
+        <SeriesViewerAdminActions
+          seriesId={series.id}
+          episodeCount={series.posts.length}
+        />
+      )}
+      <SeriesDetailView series={series} />
+    </div>
+  )
 }
