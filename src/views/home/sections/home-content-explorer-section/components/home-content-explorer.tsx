@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useMemo, useRef } from "react"
 import type { PostKind } from "@/domain/content/types"
 import { animationDelay } from "@/shared/lib/animation"
 import { HomeContentList } from "@/views/home/sections/home-content-explorer-section/components/home-content-list"
@@ -8,8 +8,10 @@ import {
   type HomeContentTabItem,
   HomeContentTabs,
 } from "@/views/home/sections/home-content-explorer-section/components/home-content-tabs"
+import { HomePagination } from "@/views/home/sections/home-content-explorer-section/components/home-pagination"
 import { HomeSeriesList } from "@/views/home/sections/home-content-explorer-section/components/home-series-list"
 import { HomeTagFilter } from "@/views/home/sections/home-content-explorer-section/components/home-tag-filter"
+import { useHomeExplorerParams } from "@/views/home/sections/home-content-explorer-section/hooks/use-home-explorer-params"
 
 export type HomeContentTab = "all" | PostKind
 
@@ -48,6 +50,8 @@ export type HomeContentExplorerProps = {
 type TagOption = HomeContentTag & {
   count: number
 }
+
+const PAGE_SIZE = 10
 
 const tabLabels = {
   all: "All",
@@ -119,8 +123,16 @@ export function HomeContentExplorer({
   posts,
   series,
 }: HomeContentExplorerProps) {
-  const [activeTab, setActiveTab] = useState<HomeContentTab>("all")
-  const [selectedTagSlug, setSelectedTagSlug] = useState<string | null>(null)
+  const sectionRef = useRef<HTMLElement>(null)
+  const {
+    tab: activeTab,
+    tagSlug,
+    page,
+    setTab,
+    setTagSlug,
+    setPage,
+  } = useHomeExplorerParams()
+
   const tabItems = useMemo(() => getTabItems(posts, series), [posts, series])
   const visiblePosts = useMemo(
     () =>
@@ -130,23 +142,49 @@ export function HomeContentExplorer({
     [activeTab, posts],
   )
   const tagOptions = useMemo(() => getTagOptions(visiblePosts), [visiblePosts])
-  const filteredPosts = useMemo(
+
+  const effectiveTagSlug = useMemo(
     () =>
-      selectedTagSlug
-        ? visiblePosts.filter((post) =>
-            post.tags.some((tag) => tag.slug === selectedTagSlug),
-          )
-        : visiblePosts,
-    [selectedTagSlug, visiblePosts],
+      tagSlug && tagOptions.some((option) => option.slug === tagSlug)
+        ? tagSlug
+        : null,
+    [tagSlug, tagOptions],
   )
 
-  const handleTabChange = (tab: HomeContentTab) => {
-    setActiveTab(tab)
-    setSelectedTagSlug(null)
+  const filteredPosts = useMemo(
+    () =>
+      effectiveTagSlug
+        ? visiblePosts.filter((post) =>
+            post.tags.some((tag) => tag.slug === effectiveTagSlug),
+          )
+        : visiblePosts,
+    [effectiveTagSlug, visiblePosts],
+  )
+
+  const isSeriesTab = activeTab === "series"
+  const listLength = isSeriesTab ? series.length : filteredPosts.length
+  const totalPages = Math.max(1, Math.ceil(listLength / PAGE_SIZE))
+  const effectivePage = page < 1 || page > totalPages ? 1 : page
+  const pageStart = (effectivePage - 1) * PAGE_SIZE
+  const pageEnd = pageStart + PAGE_SIZE
+
+  const pagedPosts = useMemo(
+    () => filteredPosts.slice(pageStart, pageEnd),
+    [filteredPosts, pageStart, pageEnd],
+  )
+  const pagedSeries = useMemo(
+    () => series.slice(pageStart, pageEnd),
+    [series, pageStart, pageEnd],
+  )
+
+  const handlePageChange = (nextPage: number) => {
+    setPage(nextPage)
+    sectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" })
   }
 
   return (
     <section
+      ref={sectionRef}
       className="animate-rise overflow-hidden rounded-lg border border-border bg-card shadow-sm"
       style={animationDelay(130)}
       aria-labelledby="home-content-explorer-title"
@@ -158,16 +196,16 @@ export function HomeContentExplorer({
       <HomeContentTabs
         tabs={tabItems}
         activeTab={activeTab}
-        onTabChange={handleTabChange}
+        onTabChange={setTab}
       />
 
-      {activeTab !== "series" ? (
+      {!isSeriesTab ? (
         <HomeTagFilter
           tags={tagOptions}
-          selectedTagSlug={selectedTagSlug}
+          selectedTagSlug={effectiveTagSlug}
           totalCount={visiblePosts.length}
           filteredCount={filteredPosts.length}
-          onTagChange={setSelectedTagSlug}
+          onTagChange={setTagSlug}
         />
       ) : null}
 
@@ -177,15 +215,25 @@ export function HomeContentExplorer({
         aria-labelledby={`home-content-tab-${activeTab}`}
         className="border-border border-t bg-card"
       >
-        {activeTab === "series" ? (
-          <HomeSeriesList series={series} />
+        {isSeriesTab ? (
+          <HomeSeriesList series={pagedSeries} />
         ) : (
           <HomeContentList
-            posts={filteredPosts}
+            posts={pagedPosts}
             ariaLabel={`${tabLabels[activeTab]} 공개 콘텐츠 목록`}
-            emptyMessage={getEmptyMessage(activeTab, selectedTagSlug)}
+            emptyMessage={getEmptyMessage(activeTab, effectiveTagSlug)}
           />
         )}
+
+        {listLength > 0 ? (
+          <div className="border-border border-t p-4 sm:p-5">
+            <HomePagination
+              currentPage={effectivePage}
+              totalPages={totalPages}
+              onPageChange={handlePageChange}
+            />
+          </div>
+        ) : null}
       </div>
     </section>
   )
