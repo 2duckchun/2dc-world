@@ -1,4 +1,4 @@
-import { GitBranch, Mail, Rss } from "lucide-react"
+import { GitBranch, Rss } from "lucide-react"
 import { animationDelay } from "@/shared/lib/animation"
 import {
   IconLinkList,
@@ -7,8 +7,7 @@ import {
 import { BrandMark } from "@/widgets/brand/brand-mark"
 
 const links = [
-  { label: "GitHub", icon: GitBranch, href: "https://github.com/" },
-  { label: "Mail", icon: Mail, href: "mailto:hello@2dc.world" },
+  { label: "GitHub", icon: GitBranch, href: "https://github.com/2duckchun" },
   { label: "RSS", icon: Rss, href: "/rss.xml" },
 ] satisfies readonly IconLinkListItem[]
 
