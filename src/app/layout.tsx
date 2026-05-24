@@ -12,6 +12,11 @@ export const metadata: Metadata = {
   },
   description:
     "2DC가 쓰는 기술 블로그. 깊이 있는 글, 일상적인 개발 로그, 연재 시리즈로 학습과 경험을 기록합니다.",
+  verification: {
+    other: {
+      "naver-site-verification": "5da2532700825226e569779beb872ba677c13472",
+    },
+  },
 }
 
 export default function RootLayout({
