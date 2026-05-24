@@ -5,7 +5,10 @@ import type { SeriesListItem } from "../shared/types"
 
 export function SeriesEditCard({ series }: { series: SeriesListItem }) {
   return (
-    <article className="grid gap-4 rounded-lg border border-border bg-card p-5 shadow-sm sm:p-6">
+    <article
+      id={`series-${series.id}`}
+      className="grid scroll-mt-24 gap-4 rounded-lg border border-border bg-card p-5 shadow-sm sm:p-6"
+    >
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="grid gap-1">
           <h3 className="font-bold text-lg leading-tight">{series.title}</h3>
