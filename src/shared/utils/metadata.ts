@@ -9,12 +9,6 @@ export const NAVER_SITE_VERIFICATION =
 
 export const GTM_CONTAINER_ID = "GTM-N42DW84B"
 
-export const PRIVACY_CONTACT_EMAIL = "kkts9308@gmail.com"
-
-export const SITE_OPERATOR = "2duckchun"
-
-export const PRIVACY_POLICY_EFFECTIVE_DATE = "2026-05-25"
-
 type BaseMetadataInput = {
   title: string
   description?: string | null
