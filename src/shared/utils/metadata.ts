@@ -2,6 +2,8 @@ import type { Metadata } from "next"
 
 export const SITE_NAME = "2DC Tech Blog"
 
+export const SITE_URL = "https://blog.2duckchun.com"
+
 type BaseMetadataInput = {
   title: string
   description?: string | null
