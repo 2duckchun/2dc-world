@@ -8,6 +8,7 @@ import { isProductionEnv } from "@/shared/utils/env"
 import {
   GTM_CONTAINER_ID,
   NAVER_SITE_VERIFICATION,
+  SITE_DESCRIPTION,
   SITE_NAME,
   SITE_URL,
 } from "@/shared/utils/metadata"
@@ -18,8 +19,12 @@ export const metadata: Metadata = {
     default: SITE_NAME,
     template: `%s | ${SITE_NAME}`,
   },
-  description:
-    "2DC가 쓰는 기술 블로그. 깊이 있는 글, 일상적인 개발 로그, 연재 시리즈로 학습과 경험을 기록합니다.",
+  description: SITE_DESCRIPTION,
+  alternates: {
+    types: {
+      "application/rss+xml": "/rss.xml",
+    },
+  },
   verification: {
     other: {
       "naver-site-verification": NAVER_SITE_VERIFICATION,

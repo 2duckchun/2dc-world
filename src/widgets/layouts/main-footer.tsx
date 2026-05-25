@@ -10,12 +10,18 @@ export const MainFooter = () => {
         <p>
           © {currentYear} {SITE_NAME}
         </p>
-        <nav aria-label="하단 메뉴">
+        <nav aria-label="하단 메뉴" className="flex items-center gap-4">
           <a
             href={AppRoutes.privacy()}
             className="transition-colors hover:text-foreground"
           >
             개인정보 처리방침
+          </a>
+          <a
+            href={AppRoutes.rss()}
+            className="transition-colors hover:text-foreground"
+          >
+            RSS
           </a>
         </nav>
       </div>

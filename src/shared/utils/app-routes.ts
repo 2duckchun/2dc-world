@@ -1,6 +1,7 @@
 export const AppRoutes = {
   home: () => "/",
   privacy: () => "/privacy",
+  rss: () => "/rss.xml",
   log: {
     list: () => "/log",
     post: (slug: string) => `/log/${slug}`,
