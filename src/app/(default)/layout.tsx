@@ -1,4 +1,5 @@
 import { MainContent } from "@/widgets/layouts/main-content"
+import { MainFooter } from "@/widgets/layouts/main-footer"
 import { MainHeader } from "@/widgets/layouts/main-header"
 
 export default function DefaultLayout({
@@ -7,9 +8,10 @@ export default function DefaultLayout({
   children: React.ReactNode
 }>) {
   return (
-    <div className="blog-surface min-h-svh bg-background text-foreground">
+    <div className="blog-surface flex min-h-svh flex-col bg-background text-foreground">
       <MainHeader />
       <MainContent>{children}</MainContent>
+      <MainFooter />
     </div>
   )
 }

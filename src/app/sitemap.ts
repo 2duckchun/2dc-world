@@ -20,6 +20,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: toAbsoluteUrl(AppRoutes.posts.list()), lastModified: now },
     { url: toAbsoluteUrl(AppRoutes.log.list()), lastModified: now },
     { url: toAbsoluteUrl(AppRoutes.series.list()), lastModified: now },
+    { url: toAbsoluteUrl(AppRoutes.privacy()), lastModified: now },
   ]
 
   const postPages: MetadataRoute.Sitemap = postRows.map((post) => ({
