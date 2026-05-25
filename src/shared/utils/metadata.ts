@@ -4,6 +4,11 @@ export const SITE_NAME = "2DC Tech Blog"
 
 export const SITE_URL = "https://blog.2duckchun.com"
 
+export const NAVER_SITE_VERIFICATION =
+  "5da2532700825226e569779beb872ba677c13472"
+
+export const GTM_CONTAINER_ID = "GTM-N42DW84B"
+
 type BaseMetadataInput = {
   title: string
   description?: string | null

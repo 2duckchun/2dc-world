@@ -1,9 +1,16 @@
+import { GoogleTagManager } from "@next/third-parties/google"
 import type { Metadata } from "next"
 import "@mdxeditor/editor/style.css"
 import "./globals.css"
 import { Toaster } from "sonner"
 import { TrpcTanstackQueryProvider } from "@/core/trpc/client/providers/trpc-tanstack-query-provider"
-import { SITE_NAME, SITE_URL } from "@/shared/utils/metadata"
+import { isProductionEnv } from "@/shared/utils/env"
+import {
+  GTM_CONTAINER_ID,
+  NAVER_SITE_VERIFICATION,
+  SITE_NAME,
+  SITE_URL,
+} from "@/shared/utils/metadata"
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -15,7 +22,7 @@ export const metadata: Metadata = {
     "2DC가 쓰는 기술 블로그. 깊이 있는 글, 일상적인 개발 로그, 연재 시리즈로 학습과 경험을 기록합니다.",
   verification: {
     other: {
-      "naver-site-verification": "5da2532700825226e569779beb872ba677c13472",
+      "naver-site-verification": NAVER_SITE_VERIFICATION,
     },
   },
 }
@@ -27,6 +34,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko" className="h-full antialiased" suppressHydrationWarning>
+      {isProductionEnv ? <GoogleTagManager gtmId={GTM_CONTAINER_ID} /> : null}
       <body className="min-h-full font-sans">
         <TrpcTanstackQueryProvider>
           {children}
