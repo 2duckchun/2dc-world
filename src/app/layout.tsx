@@ -1,9 +1,12 @@
+import { GoogleTagManager } from "@next/third-parties/google"
 import type { Metadata } from "next"
 import "@mdxeditor/editor/style.css"
 import "./globals.css"
 import { Toaster } from "sonner"
 import { TrpcTanstackQueryProvider } from "@/core/trpc/client/providers/trpc-tanstack-query-provider"
 import { SITE_NAME, SITE_URL } from "@/shared/utils/metadata"
+
+const GTM_CONTAINER_ID = "GTM-N42DW84B"
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -25,8 +28,11 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  const isProduction = process.env.NODE_ENV === "production"
+
   return (
     <html lang="ko" className="h-full antialiased" suppressHydrationWarning>
+      {isProduction ? <GoogleTagManager gtmId={GTM_CONTAINER_ID} /> : null}
       <body className="min-h-full font-sans">
         <TrpcTanstackQueryProvider>
           {children}
