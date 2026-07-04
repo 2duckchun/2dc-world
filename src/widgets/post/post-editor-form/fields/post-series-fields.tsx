@@ -60,7 +60,21 @@ export const PostSeriesFields = () => {
                 value: series.id,
               }))}
               value={field.value}
-              onValueChange={(value) => field.onChange(value)}
+              onValueChange={(value) => {
+                field.onChange(value)
+
+                // 시리즈를 고르면 다음 순서를 제안값으로 채운다. (이후 수정 가능)
+                const selected = seriesOptions.find(
+                  (series) => series.id === value,
+                )
+
+                if (selected) {
+                  form.setValue("seriesOrder", selected.nextOrder, {
+                    shouldDirty: true,
+                    shouldValidate: true,
+                  })
+                }
+              }}
             >
               <SelectTrigger
                 id="post-series"

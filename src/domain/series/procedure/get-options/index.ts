@@ -1,5 +1,5 @@
-import { asc } from "drizzle-orm"
-import { series } from "@/core/db/schema"
+import { asc, eq } from "drizzle-orm"
+import { posts, series } from "@/core/db/schema"
 import { adminProcedure } from "@/core/trpc/base/procedures/admin-procedure"
 import {
   seriesGetOptionsInputSchema,
@@ -9,12 +9,29 @@ import {
 export const seriesGetOptionsProcedure = adminProcedure
   .input(seriesGetOptionsInputSchema)
   .output(seriesGetOptionsOutputSchema)
-  .query(async ({ ctx }) =>
-    ctx.db.query.series.findMany({
+  .query(async ({ ctx }) => {
+    const seriesRows = await ctx.db.query.series.findMany({
       columns: {
         id: true,
         title: true,
       },
+      with: {
+        posts: {
+          columns: {
+            seriesOrder: true,
+          },
+          where: eq(posts.kind, "series"),
+        },
+      },
       orderBy: [asc(series.title)],
-    }),
-  )
+    })
+
+    return seriesRows.map(({ posts: seriesPosts, ...seriesRow }) => {
+      const maxOrder = seriesPosts.reduce(
+        (max, { seriesOrder }) => Math.max(max, seriesOrder ?? 0),
+        0,
+      )
+
+      return { ...seriesRow, nextOrder: maxOrder + 1 }
+    })
+  })
