@@ -337,6 +337,18 @@
   .admin-markdown-editor [contenteditable="true"] {
     background: var(--background);
   }
+
+  /*
+   * source mode(CodeMirror)의 드래그 선택 하이라이트.
+   * cm6-theme-basic-light 테마의 기본 선택색(#eceff4)이 --background와
+   * 대비가 거의 없어 보이지 않으므로 테마 토큰으로 재정의한다.
+   * basicLight가 EditorView.theme로 주입한 규칙을 이기려면 !important가 필요하다.
+   */
+  .admin-markdown-editor .cm-selectionBackground,
+  .admin-markdown-editor .cm-focused .cm-selectionBackground,
+  .admin-markdown-editor .cm-content ::selection {
+    background-color: color-mix(in oklch, var(--chart-1) 28%, var(--background)) !important;
+  }
 }
 
 @keyframes rise-in {
