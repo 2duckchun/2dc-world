@@ -4,5 +4,6 @@ export const seriesGetOptionsFixture = [
   {
     id: "series_fixture_1",
     title: "시리즈 예시",
+    nextOrder: 1,
   },
 ] satisfies SeriesGetOptionsOutput
