@@ -1,6 +1,6 @@
-import { ArrowUpRight, CalendarDays } from "lucide-react"
 import Link from "next/link"
 import { postKindLabels } from "@/domain/content/types"
+import { TagLabel } from "@/shared/ui/tag-chip"
 import type { HomeContentPost } from "@/views/home/sections/home-content-explorer-section/components/home-content-explorer"
 
 type HomeContentListProps = {
@@ -18,64 +18,51 @@ export function HomeContentList({
   ariaLabel,
   emptyMessage,
 }: HomeContentListProps) {
-  return (
-    <section aria-label={ariaLabel}>
-      {posts.length > 0 ? (
-        <div className="divide-y divide-border/80">
-          {posts.map((post) => {
-            const displayDate = dateFormatter.format(
-              new Date(post.publishedAt ?? post.createdAt),
-            )
+  if (posts.length === 0) {
+    return (
+      <p className="py-16 text-center text-muted-foreground">{emptyMessage}</p>
+    )
+  }
 
-            return (
-              <Link
-                key={post.id}
-                href={post.href}
-                className="group block p-5 transition-colors hover:bg-muted/45 sm:p-6"
+  return (
+    <ul aria-label={ariaLabel} className="divide-y divide-border">
+      {posts.map((post) => {
+        const publishedAt = new Date(post.publishedAt ?? post.createdAt)
+
+        return (
+          <li key={post.id}>
+            {/* sm 이상에서는 왼쪽 1칸을 hover 커서(▶) 자리로 비워 둔다. hover가 없는 모바일에서는 두지 않는다. */}
+            <Link
+              href={post.href}
+              className="group grid gap-x-2 py-4 sm:grid-cols-[1rem_1fr]"
+            >
+              <span
+                aria-hidden="true"
+                className="invisible hidden text-point group-hover:visible group-focus-visible:visible sm:col-start-1 sm:row-start-2 sm:block"
               >
-                <article className="grid gap-3">
-                  <div className="flex flex-wrap items-center gap-3 text-muted-foreground text-sm">
-                    <span className="rounded-md border border-border bg-background px-2 py-0.5 font-medium text-foreground">
-                      {postKindLabels[post.kind]}
-                    </span>
-                    <span className="inline-flex items-center gap-1.5">
-                      <CalendarDays className="size-4" />
-                      {displayDate}
-                    </span>
-                    {post.tags.length > 0 ? (
-                      <span className="flex min-w-0 flex-wrap gap-1.5">
-                        {post.tags.map((tag) => (
-                          <span
-                            key={tag.id}
-                            className="inline-flex max-w-40 items-center rounded-md border border-border bg-background px-2 py-0.5 text-muted-foreground"
-                          >
-                            <span className="truncate">#{tag.name}</span>
-                          </span>
-                        ))}
-                      </span>
-                    ) : null}
-                  </div>
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="grid gap-2">
-                      <h2 className="font-bold text-2xl leading-snug transition-colors group-hover:text-chart-3">
-                        {post.title}
-                      </h2>
-                      <p className="max-w-3xl text-muted-foreground leading-7">
-                        {post.subtitle ?? "요약이 준비 중입니다."}
-                      </p>
-                    </div>
-                    <ArrowUpRight className="mt-1 size-5 shrink-0 text-muted-foreground transition-transform group-hover:-translate-y-1 group-hover:translate-x-1 group-hover:text-foreground" />
-                  </div>
-                </article>
-              </Link>
-            )
-          })}
-        </div>
-      ) : (
-        <div className="flex min-h-72 items-center p-5 text-muted-foreground sm:p-7">
-          {emptyMessage}
-        </div>
-      )}
-    </section>
+                ▶
+              </span>
+              <p className="sm:col-start-2 flex flex-wrap gap-x-3 gap-y-1 text-muted-foreground">
+                <span className="text-foreground uppercase">
+                  [{postKindLabels[post.kind]}]
+                </span>
+                <time dateTime={publishedAt.toISOString()}>
+                  {dateFormatter.format(publishedAt)}
+                </time>
+                {post.tags.map((tag) => (
+                  <TagLabel key={tag.id}>#{tag.name}</TagLabel>
+                ))}
+              </p>
+              <h3 className="sm:col-start-2 group-hover:text-point">
+                {post.title}
+              </h3>
+              <p className="sm:col-start-2 text-muted-foreground">
+                {post.subtitle ?? "요약이 준비 중입니다."}
+              </p>
+            </Link>
+          </li>
+        )
+      })}
+    </ul>
   )
 }

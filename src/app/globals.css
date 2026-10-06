@@ -13,6 +13,10 @@
   --font-mono: var(--font-neodgm-code), ui-monospace, monospace;
   --font-heading: var(--font-neodgm), ui-sans-serif, system-ui, sans-serif;
   --color-desktop: var(--desktop);
+  --color-desktop-foreground: var(--desktop-foreground);
+  --color-desktop-muted-foreground: var(--desktop-muted-foreground);
+  --color-tag: var(--tag);
+  --color-tag-foreground: var(--tag-foreground);
   --color-point: var(--point);
   --color-point-foreground: var(--point-foreground);
   --shadow-pixel: 4px 4px 0 0 var(--shadow-color);
@@ -77,11 +81,29 @@
   --text-3xl--line-height: 1.25;
   --text-5xl: 3rem;
   --text-5xl--line-height: calc(7 / 6);
+
+  /* 텍스트 커서처럼 반은 켜지고 반은 꺼진다. 중간 프레임 없이 뚝 끊어지게 step-end를 쓴다. */
+  --animate-blink: blink 1s step-end infinite;
+
+  @keyframes blink {
+    50% {
+      opacity: 0;
+    }
+  }
 }
 
 :root {
-  /* 창(본문) 바깥의 바탕색. 본문 글자는 항상 --background(종이) 위에 놓인다. */
-  --desktop: oklch(0.925 0.017 242.4);
+  /*
+   * 창(본문) 바깥의 바탕. 진한 틸이 크림색 종이와 밝기 차이가 커서 창이 또렷하게 뜬다.
+   * 본문 글자는 항상 --background(종이) 위에 놓이고, 데스크톱 위 글자는 desktop-foreground를 쓴다.
+   * 포인트 빨강은 틸 위에서 대비가 1.4:1이라 데스크톱 위에서는 쓰지 않는다.
+   */
+  --desktop: oklch(0.444 0.051 186.4);
+  --desktop-foreground: oklch(0.958 0.012 91.5);
+  --desktop-muted-foreground: oklch(0.87 0.017 178.2);
+  /* 창 안에서 태그를 구분하는 블록. 데스크톱과 같은 틸 계열이다. */
+  --tag: oklch(0.918 0.014 155.6);
+  --tag-foreground: oklch(0.405 0.051 186);
   --background: oklch(0.958 0.012 91.5);
   --foreground: oklch(0.222 0.004 84.6);
   --card: oklch(0.982 0.008 91.5);
@@ -120,7 +142,11 @@
 }
 
 .dark {
-  --desktop: oklch(0.218 0.024 251.5);
+  --desktop: oklch(0.223 0.024 186.4);
+  --desktop-foreground: oklch(0.925 0.022 89.8);
+  --desktop-muted-foreground: oklch(0.694 0.021 87.5);
+  --tag: oklch(0.308 0.031 185.7);
+  --tag-foreground: oklch(0.828 0.056 181.7);
   --background: oklch(0.195 0.002 106.6);
   --foreground: oklch(0.925 0.022 89.8);
   --card: oklch(0.23 0.004 106.7);
@@ -141,7 +167,7 @@
   --ring: oklch(0.708 0.185 30.1);
   --point: oklch(0.708 0.185 30.1);
   --point-foreground: oklch(0.195 0.002 106.6);
-  --shadow-color: oklch(0.147 0.013 252.4);
+  --shadow-color: oklch(0.15 0.015 186.4);
   --chart-1: oklch(0.768 0.083 207.4);
   --chart-2: oklch(0.799 0.121 134.6);
   --chart-3: oklch(0.763 0.098 257.3);

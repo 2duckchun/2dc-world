@@ -25,7 +25,7 @@ export const MainHeader = async ({ width = "reading" }: MainHeaderProps) => {
   const user = session?.user
 
   return (
-    <header>
+    <header className="text-desktop-foreground">
       {user?.role === "admin" ? (
         <div className="bg-foreground text-background">
           <nav
@@ -56,8 +56,8 @@ export const MainHeader = async ({ width = "reading" }: MainHeaderProps) => {
         )}
       >
         <a href={AppRoutes.home()} className="justify-self-start">
-          <span className="bg-foreground px-1 text-background">2DC</span> Tech
-          Blog
+          <span className="bg-desktop-foreground px-1 text-desktop">2DC</span>{" "}
+          Tech Blog
         </a>
 
         <MainNav className="col-span-2 row-start-2 sm:col-span-1 sm:col-start-2 sm:row-start-1" />
@@ -66,7 +66,7 @@ export const MainHeader = async ({ width = "reading" }: MainHeaderProps) => {
           <ThemeToggle />
           {user ? (
             <>
-              <span className="max-w-32 truncate text-muted-foreground sm:max-w-40">
+              <span className="max-w-32 truncate text-desktop-muted-foreground sm:max-w-40">
                 {user.githubUsername ? `@${user.githubUsername}` : user.role}
               </span>
               <form action={signOutCurrentUser}>

@@ -11,7 +11,7 @@ const layoutWidthClassName = {
 export const getLayoutContainerClassName = (width: LayoutWidth) =>
   cn("mx-auto w-full px-3 sm:px-6", layoutWidthClassName[width])
 
-// 데스크톱(창 바깥) 위에 놓이는 텍스트 링크. 라이트 모드에서 포인트색은 바탕 대비가
-// 4.5:1에 못 미치므로 글자색은 그대로 두고 밑줄에만 포인트색을 쓴다.
+// 데스크톱(창 바깥) 위에 놓이는 텍스트 링크. 포인트 빨강은 틸 바탕에서 보이지 않으므로
+// 밑줄은 글자색(currentColor)을 따른다. 관리자 스트립처럼 바탕이 달라져도 그대로 맞는다.
 export const desktopLinkClassName =
-  "cursor-pointer decoration-2 decoration-point underline-offset-4 hover:underline focus-visible:underline"
+  "cursor-pointer decoration-2 decoration-current underline-offset-4 hover:underline focus-visible:underline"

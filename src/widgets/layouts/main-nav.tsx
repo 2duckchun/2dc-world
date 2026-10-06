@@ -38,10 +38,7 @@ export const MainNav = ({ className }: MainNavProps) => {
             {/* 자리를 항상 차지하게 두어 커서가 나타나도 메뉴가 밀리지 않게 한다. */}
             <span
               aria-hidden="true"
-              className={cn(
-                "text-point",
-                isActive ? "visible" : "invisible group-hover:visible",
-              )}
+              className={isActive ? "visible" : "invisible group-hover:visible"}
             >
               ▶
             </span>

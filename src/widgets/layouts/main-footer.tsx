@@ -19,7 +19,7 @@ export const MainFooter = ({ width = "reading" }: MainFooterProps) => {
       <div
         className={cn(
           getLayoutContainerClassName(width),
-          "flex flex-col items-center justify-between gap-2 py-8 text-muted-foreground sm:flex-row",
+          "flex flex-col items-center justify-between gap-2 py-8 text-desktop-muted-foreground sm:flex-row",
         )}
       >
         <p>

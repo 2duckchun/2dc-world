@@ -1,5 +1,4 @@
-import { Hash, Layers2 } from "lucide-react"
-import { Button } from "@/shared/ui/button"
+import { TagFilterButton } from "@/shared/ui/tag-chip"
 import type { HomeContentTag } from "@/views/home/sections/home-content-explorer-section/components/home-content-explorer"
 
 export type HomeTagOption = HomeContentTag & {
@@ -27,49 +26,37 @@ export function HomeTagFilter({
       : (tags.find((tag) => tag.slug === selectedTagSlug) ?? null)
 
   return (
-    <section
-      aria-label="홈 콘텐츠 태그 필터"
-      className="grid gap-3 border-border border-t bg-card/70 p-4 sm:p-5"
-    >
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-2 font-medium text-sm">
-          <Hash className="size-4 text-chart-3" />
-          <span>Tags</span>
-        </div>
-        <p className="text-muted-foreground text-sm">
+    <section aria-label="홈 콘텐츠 태그 필터" className="grid gap-2">
+      <div className="flex flex-wrap items-center justify-between gap-2 text-muted-foreground">
+        <span>TAGS</span>
+        <p>
           {selectedTag
-            ? `${selectedTag.name} ${filteredCount.toLocaleString("ko-KR")}개`
+            ? `#${selectedTag.name} ${filteredCount.toLocaleString("ko-KR")}개`
             : `전체 ${totalCount.toLocaleString("ko-KR")}개`}
         </p>
       </div>
 
       <div className="flex flex-wrap gap-2">
-        <Button
-          type="button"
-          variant={selectedTagSlug === null ? "secondary" : "outline"}
-          size="sm"
-          aria-pressed={selectedTagSlug === null}
+        <TagFilterButton
+          isSelected={selectedTagSlug === null}
           onClick={() => onTagChange(null)}
         >
-          <Layers2 data-icon="inline-start" className="size-3.5" />
           전체
-        </Button>
-        {tags.map((tag) => (
-          <Button
-            key={tag.slug}
-            type="button"
-            variant={selectedTagSlug === tag.slug ? "secondary" : "outline"}
-            size="sm"
-            aria-pressed={selectedTagSlug === tag.slug}
-            onClick={() => onTagChange(tag.slug)}
-          >
-            <Hash data-icon="inline-start" className="size-3.5" />
-            {tag.name}
-            <span className="text-muted-foreground tabular-nums">
-              {tag.count}
-            </span>
-          </Button>
-        ))}
+        </TagFilterButton>
+        {tags.map((tag) => {
+          const isSelected = selectedTagSlug === tag.slug
+
+          return (
+            <TagFilterButton
+              key={tag.slug}
+              isSelected={isSelected}
+              onClick={() => onTagChange(tag.slug)}
+            >
+              #{tag.name}
+              <span className="tabular-nums">{tag.count}</span>
+            </TagFilterButton>
+          )
+        })}
       </div>
     </section>
   )
