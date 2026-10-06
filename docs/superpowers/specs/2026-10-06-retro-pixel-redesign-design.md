@@ -18,6 +18,7 @@
 | 팔레트 | 종이+잉크. 미색 배경, 먹색 텍스트, 포인트 1색(패미컴 레드 계열) |
 | 장식 강도 | 절제된 8비트. 각진 모서리, 2px 테두리, 블러 없는 오프셋 그림자. hover 시 ▶ 커서 정도만 |
 | 다크모드 | 라이트/다크 둘 다 유지하고 첫 화면 깜빡임(FOUC)도 함께 수정 |
+| 배경 색 (Step 1 리뷰 후 추가) | 하늘색 데스크톱 위에 종이색 창 하나. 본문 글자는 항상 창(종이) 안에 둬서 가독성을 지킨다 |
 
 확인된 제약 (출처: neodgm.dalgona.dev/guides, github.com/neodgm):
 - Neo둥근모는 **16px 배수(16/32/48)에서만 선명**합니다. **굵게와 기울임은 쓰지 않도록** 권고합니다.
@@ -30,7 +31,8 @@
 
 | 토큰 | Light | Dark |
 |---|---|---|
-| background | #F4F1E8 (종이) | #151514 |
+| **desktop** (신규, 창 바깥 바탕) | #DDE8F1 (하늘) | #121B25 (남색) |
+| background (창 안, 본문 바탕) | #F4F1E8 (종이) | #151514 |
 | foreground / primary | #1C1B19 (먹) | #ECE6D6 |
 | card | #FBF9F3 (불투명. 기존 86% 알파 제거) | #1D1D1B |
 | muted / muted-foreground | #E8E3D6 / #6B665C | #272623 / #A29C8E |
@@ -40,10 +42,12 @@
 | chart-1~5 (코드 하이라이트 전용) | 청록, 초록, 보라, 주황, 레드 계열의 차분한 레트로 톤 | 같은 계열의 밝은 톤 |
 
 - `point` 토큰을 새로 추가하고 `@theme`에 `--color-point`로 매핑합니다. 쓰는 곳은 활성 메뉴, ▶ 커서, 링크 hover, `::selection`, 포커스 링입니다.
+- `desktop` 토큰은 `body`와 헤더·푸터 바탕에만 씁니다. shadcn 컴포넌트가 기대하는 `--background`는 창 안 바탕(종이)으로 남겨 두어, 창 안의 입력창·버튼 색이 바뀌지 않게 합니다.
+- 라이트 모드에서 포인트 빨강은 하늘색 바탕 대비가 4.21:1이라 데스크톱 위에서는 글자색으로 쓰지 않고 ▶와 밑줄에만 씁니다.
 
 **형태**
 - `--radius: 0`으로 둡니다. 모든 `rounded-*`가 각지게 바뀌므로 shadcn primitive와 admin도 자동으로 따라옵니다.
-- `@theme`에 `--shadow-pixel: 4px 4px 0 0 var(--shadow-color)`를 추가합니다. `--shadow-color`는 테마별로 정의합니다(라이트는 먹색, 다크는 어두운 border 톤).
+- `@theme`에 `--shadow-pixel: 4px 4px 0 0 var(--shadow-color)`를 추가합니다. `--shadow-color`는 테마별로 정의합니다(라이트는 먹색, 다크는 데스크톱보다 어두운 남색).
   - 사용처는 버튼, 시리즈 카드, 썸네일 프레임처럼 "물체"인 요소로 한정합니다.
 - 프레임은 `border-2 border-foreground`, 구분선은 `border-border`(1px)로 나눕니다.
 - 제거: `.blog-surface`, `.logo-mark`, `.animate-rise`, `@keyframes rise-in`, 모든 `backdrop-blur`와 반투명 배경, `shadow-sm` 계열
@@ -53,7 +57,7 @@
   - `--font-sans`와 `--font-heading`에는 NeoDunggeunmo를 연결합니다.
   - `--font-mono`에는 NeoDunggeunmo Code를 연결합니다.
 - `html`에 `font-synthesis: none`을 지정해 가짜 굵게와 가짜 기울임을 막습니다.
-- **크기 단계를 3개로 제한합니다.** 별도 `@theme` 블록에서 `--text-*: initial`로 기본 단계를 리셋하고 세 단계만 정의합니다. 이름은 Tailwind 기본값과 같거나 가장 가까운 것을 써서 tailwind-merge가 그대로 인식하게 합니다.
+- **크기 단계를 3개로 제한합니다.** 별도 `@theme` 블록에서 필요 없는 기본 단계를 `initial`로 하나씩 지우고 세 단계만 남깁니다(`--text-*: initial` 한 줄 방식은 Biome 2.2 CSS 파서가 읽지 못함). 이름은 Tailwind 기본값과 같거나 가장 가까운 것을 써서 tailwind-merge가 그대로 인식하게 합니다.
 
   | 클래스 | 크기 | line-height |
   |---|---|---|
@@ -70,6 +74,7 @@
 
 **레이아웃**
 - 공개 페이지는 단일 컬럼 `max-w-3xl`(768px)로 통일합니다. 헤더와 푸터의 내부 폭도 같은 값으로 맞춥니다.
+- 하늘색 데스크톱 위에 헤더와 푸터를 두고, 그 사이에 종이색 창(`border-2 border-foreground` + `shadow-pixel`) 하나를 둡니다. 창 안에서는 카드를 겹치지 않습니다.
 - admin은 편집 화면 폭이 필요하므로 넓은 폭을 유지합니다. 아래 Step 2에서 route group을 분리합니다.
 
 **아이콘**
@@ -104,22 +109,25 @@
   - **확인 필요**: React 19/Next 16에서 next-themes의 inline script 경고가 나는지 봅니다. 문제가 있으면 `<head>`에 직접 inline script를 넣는 방식으로 바꿉니다.
 - `cspell.json`의 words에 `neodgm`, `Dunggeunmo`, `NeoDunggeunmo`를 추가합니다.
 
-### Step 2. 레이아웃 셸: 헤더, 푸터, 폭
-- `src/widgets/layouts/main-header.tsx`: 정적 헤더로 바꿉니다(sticky 해제). 불투명 배경에 하단 2px 먹선을 둡니다.
-  - 왼쪽: `SITE_NAME` 워드마크
-  - 가운데/오른쪽: `POST · LOG · SERIES` 텍스트 내비, 테마 토글, `로그인` 또는 `@user · 로그아웃`
+### Step 2. 레이아웃 셸: 데스크톱, 창, 헤더, 푸터, 폭
+- `src/app/globals.css`: `--desktop` 토큰을 추가하고 `body` 바탕을 `bg-desktop`으로 바꿉니다.
+- 신규 `src/widgets/layouts/layout-styles.ts`: 헤더·창·푸터가 공유하는 폭(`reading`/`wide`)과 좌우 여백, 데스크톱 위 텍스트 링크 스타일을 한곳에 둡니다.
+- 신규 `src/widgets/layouts/site-layout.tsx`: 헤더, 창, 푸터를 조합합니다. 두 route group 레이아웃이 함께 씁니다.
+- `src/widgets/layouts/main-header.tsx`: 정적 헤더로 바꿉니다(sticky 해제). 데스크톱 위에 바로 놓습니다.
+  - 왼쪽: `2DC`(먹색 반전 블록) + `Tech Blog` 워드마크
+  - 가운데/오른쪽: `POST · LOG · SERIES` 텍스트 내비, 테마 토글, `LOGIN` 또는 `@user · LOGOUT`
   - 모바일: 1행에 워드마크, 토글, 로그인을 두고 2행에 내비를 둡니다.
   - 반복되던 `border bg-background/75 shadow-sm backdrop-blur` 클래스 6개를 제거합니다.
 - 신규 `src/widgets/layouts/main-nav.tsx`("use client")
   - `usePathname`으로 활성 메뉴에 `aria-current="page"`를 붙이고 포인트색과 ▶로 표시합니다.
   - 링크는 `AppRoutes`(`src/shared/utils/app-routes.ts`)를 재사용합니다.
-- 관리자 링크(글 관리, 시리즈 관리, 새 글)는 admin에게만 보이는 얇은 `bg-muted` 스트립으로 헤더 위에 분리합니다. 일반 방문자 헤더를 단순하게 유지하기 위해서입니다.
-- `src/widgets/layouts/main-footer.tsx`: 상단 2px 선, 불투명 배경, `max-w-3xl`로 바꿉니다.
-- `src/widgets/layouts/main-content.tsx`: `width: "reading" | "wide"` prop을 추가합니다. 기본값은 reading(`max-w-3xl`)입니다.
+- 관리자 링크(글 관리, 시리즈 관리, 새 글)는 admin에게만 보이는 얇은 먹색 반전 스트립으로 헤더 위에 분리합니다. 일반 방문자 헤더를 단순하게 유지하기 위해서입니다.
+- `src/widgets/layouts/main-footer.tsx`: 데스크톱 위에 바로 놓고 폭을 헤더와 맞춥니다.
+- `src/widgets/layouts/main-content.tsx`: 종이색 창을 그립니다. `width: "reading" | "wide"` prop을 받고 기본값은 reading(`max-w-3xl`)입니다.
 - route group 분리
   - `git mv "src/app/(default)/admin" "src/app/(admin)/admin"`으로 옮깁니다. URL은 바뀌지 않습니다.
-  - 신규 `src/app/(admin)/layout.tsx`는 같은 헤더와 푸터를 쓰고 `MainContent width="wide"`로 둡니다.
-- `src/app/(default)/layout.tsx`: `blog-surface`를 제거합니다.
+  - 신규 `src/app/(admin)/layout.tsx`는 `SiteLayout width="wide"`를 씁니다.
+- `src/app/(default)/layout.tsx`: `SiteLayout`(reading 폭)을 씁니다.
 
 ### Step 3. 홈
 - `src/views/home/sections/hero-section/index.tsx`

@@ -1,104 +1,77 @@
-import {
-  FileText,
-  Home,
-  Layers3,
-  LogIn,
-  LogOut,
-  PenLine,
-  ShieldCheck,
-  User,
-} from "lucide-react"
 import { auth } from "@/auth"
 import { signInWithGitHub, signOutCurrentUser } from "@/core/auth/actions"
 import { cn } from "@/shared/lib/utils"
-import { buttonVariants } from "@/shared/ui/button"
 import { ThemeToggle } from "@/shared/ui/theme-toggle"
+import { AppRoutes } from "@/shared/utils/app-routes"
+import {
+  desktopLinkClassName,
+  getLayoutContainerClassName,
+  type LayoutWidth,
+} from "@/widgets/layouts/layout-styles"
+import { MainNav } from "@/widgets/layouts/main-nav"
 
-export const MainHeader = async () => {
+const adminLinks = [
+  { label: "글 관리", href: AppRoutes.admin.posts.list() },
+  { label: "시리즈 관리", href: AppRoutes.admin.series.list() },
+  { label: "새 글", href: AppRoutes.admin.posts.new() },
+] as const
+
+type MainHeaderProps = {
+  width?: LayoutWidth
+}
+
+export const MainHeader = async ({ width = "reading" }: MainHeaderProps) => {
   const session = await auth()
+  const user = session?.user
 
   return (
-    <header className="sticky top-0 z-20 border-border/70 border-b bg-background/78 backdrop-blur-xl">
-      <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-5 sm:px-8">
-        <a
-          href="/"
-          className="group inline-flex items-center gap-2 text-sm font-semibold"
-        >
-          <span className="flex size-8 items-center justify-center rounded-lg border border-border bg-card shadow-sm transition-transform group-hover:-translate-y-0.5">
-            <Home className="size-4" />
-          </span>
-          home
+    <header>
+      {user?.role === "admin" ? (
+        <div className="bg-foreground text-background">
+          <nav
+            aria-label="관리자 메뉴"
+            className={cn(
+              getLayoutContainerClassName(width),
+              "flex flex-wrap items-center gap-x-4",
+            )}
+          >
+            <span>ADMIN</span>
+            {adminLinks.map((link) => (
+              <a
+                key={link.href}
+                href={link.href}
+                className={desktopLinkClassName}
+              >
+                {link.label}
+              </a>
+            ))}
+          </nav>
+        </div>
+      ) : null}
+
+      <div
+        className={cn(
+          getLayoutContainerClassName(width),
+          "grid grid-cols-[1fr_auto] items-center gap-x-6 gap-y-1 py-4 sm:grid-cols-[auto_1fr_auto]",
+        )}
+      >
+        <a href={AppRoutes.home()} className="justify-self-start">
+          <span className="bg-foreground px-1 text-background">2DC</span> Tech
+          Blog
         </a>
 
-        <nav className="flex items-center gap-2" aria-label="상단 메뉴">
+        <MainNav className="col-span-2 row-start-2 sm:col-span-1 sm:col-start-2 sm:row-start-1" />
+
+        <div className="flex items-center gap-3 justify-self-end">
           <ThemeToggle />
-          {session?.user ? (
+          {user ? (
             <>
-              {session.user.role === "admin" ? (
-                <>
-                  <a
-                    href="/admin/posts"
-                    className={cn(
-                      buttonVariants({ variant: "ghost", size: "icon" }),
-                      "border border-border bg-background/75 shadow-sm backdrop-blur hover:bg-muted/80",
-                    )}
-                    aria-label="게시글 관리"
-                    title="게시글 관리"
-                  >
-                    <FileText className="size-4" />
-                  </a>
-                  <a
-                    href="/admin/series"
-                    className={cn(
-                      buttonVariants({ variant: "ghost", size: "icon" }),
-                      "border border-border bg-background/75 shadow-sm backdrop-blur hover:bg-muted/80",
-                    )}
-                    aria-label="시리즈 관리"
-                    title="시리즈 관리"
-                  >
-                    <Layers3 className="size-4" />
-                  </a>
-                  <a
-                    href="/admin/posts/new"
-                    className={cn(
-                      buttonVariants({ variant: "ghost", size: "icon" }),
-                      "border border-border bg-background/75 shadow-sm backdrop-blur hover:bg-muted/80",
-                    )}
-                    aria-label="새 글 작성"
-                    title="새 글 작성"
-                  >
-                    <PenLine className="size-4" />
-                  </a>
-                </>
-              ) : null}
-              <span
-                className={cn(
-                  buttonVariants({ variant: "ghost" }),
-                  "border border-border bg-background/75 shadow-sm backdrop-blur",
-                )}
-              >
-                {session.user.role === "admin" ? (
-                  <ShieldCheck data-icon="inline-start" className="size-4" />
-                ) : (
-                  <User data-icon="inline-start" className="size-4" />
-                )}
-                <span className="max-w-28 truncate sm:max-w-40">
-                  {session.user.githubUsername
-                    ? `@${session.user.githubUsername}`
-                    : session.user.role}
-                </span>
+              <span className="max-w-32 truncate text-muted-foreground sm:max-w-40">
+                {user.githubUsername ? `@${user.githubUsername}` : user.role}
               </span>
               <form action={signOutCurrentUser}>
-                <button
-                  type="submit"
-                  className={cn(
-                    buttonVariants({ variant: "ghost", size: "icon" }),
-                    "border border-border bg-background/75 shadow-sm backdrop-blur hover:bg-muted/80",
-                  )}
-                  aria-label="로그아웃"
-                  title="로그아웃"
-                >
-                  <LogOut className="size-4" />
+                <button type="submit" className={desktopLinkClassName}>
+                  LOGOUT
                 </button>
               </form>
             </>
@@ -106,17 +79,14 @@ export const MainHeader = async () => {
             <form action={signInWithGitHub}>
               <button
                 type="submit"
-                className={cn(
-                  buttonVariants({ variant: "ghost" }),
-                  "border border-border bg-background/75 shadow-sm backdrop-blur hover:bg-muted/80",
-                )}
+                title="GitHub 계정으로 로그인"
+                className={desktopLinkClassName}
               >
-                <LogIn data-icon="inline-start" className="size-4" />
-                login
+                LOGIN
               </button>
             </form>
           )}
-        </nav>
+        </div>
       </div>
     </header>
   )

@@ -12,6 +12,7 @@
   --font-sans: var(--font-neodgm), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-neodgm-code), ui-monospace, monospace;
   --font-heading: var(--font-neodgm), ui-sans-serif, system-ui, sans-serif;
+  --color-desktop: var(--desktop);
   --color-point: var(--point);
   --color-point-foreground: var(--point-foreground);
   --shadow-pixel: 4px 4px 0 0 var(--shadow-color);
@@ -79,6 +80,8 @@
 }
 
 :root {
+  /* 창(본문) 바깥의 바탕색. 본문 글자는 항상 --background(종이) 위에 놓인다. */
+  --desktop: oklch(0.925 0.017 242.4);
   --background: oklch(0.958 0.012 91.5);
   --foreground: oklch(0.222 0.004 84.6);
   --card: oklch(0.982 0.008 91.5);
@@ -117,6 +120,7 @@
 }
 
 .dark {
+  --desktop: oklch(0.218 0.024 251.5);
   --background: oklch(0.195 0.002 106.6);
   --foreground: oklch(0.925 0.022 89.8);
   --card: oklch(0.23 0.004 106.7);
@@ -137,7 +141,7 @@
   --ring: oklch(0.708 0.185 30.1);
   --point: oklch(0.708 0.185 30.1);
   --point-foreground: oklch(0.195 0.002 106.6);
-  --shadow-color: oklch(0.341 0.009 88.7);
+  --shadow-color: oklch(0.147 0.013 252.4);
   --chart-1: oklch(0.768 0.083 207.4);
   --chart-2: oklch(0.799 0.121 134.6);
   --chart-3: oklch(0.763 0.098 257.3);
@@ -165,7 +169,7 @@
   }
 
   body {
-    @apply bg-background text-base text-foreground;
+    @apply bg-desktop text-base text-foreground;
   }
 
   ::selection {
