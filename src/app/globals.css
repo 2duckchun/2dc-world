@@ -9,15 +9,12 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans:
-    ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
-    sans-serif;
-  --font-mono:
-    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
-    monospace;
-  --font-heading:
-    ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
-    sans-serif;
+  --font-sans: var(--font-neodgm), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-neodgm-code), ui-monospace, monospace;
+  --font-heading: var(--font-neodgm), ui-sans-serif, system-ui, sans-serif;
+  --color-point: var(--point);
+  --color-point-foreground: var(--point-foreground);
+  --shadow-pixel: 4px 4px 0 0 var(--shadow-color);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -56,73 +53,104 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
+/*
+ * Neo둥근모는 16px 배수에서만 픽셀이 선명하게 찍힌다.
+ * Tailwind 기본 글자 크기 단계 중 16/32/48px(base, 3xl, 5xl)만 남기고 나머지는 지운다.
+ * 지운 text-sm, text-xs 같은 클래스는 CSS가 생성되지 않으므로 16px을 그대로 상속한다.
+ * (`--text-*: initial` 한 줄로도 지울 수 있지만 Biome CSS 파서가 해당 문법을 읽지 못한다.)
+ */
+@theme {
+  --text-xs: initial;
+  --text-sm: initial;
+  --text-lg: initial;
+  --text-xl: initial;
+  --text-2xl: initial;
+  --text-4xl: initial;
+  --text-6xl: initial;
+  --text-7xl: initial;
+  --text-8xl: initial;
+  --text-9xl: initial;
+  --text-base: 1rem;
+  --text-base--line-height: 1.75;
+  --text-3xl: 2rem;
+  --text-3xl--line-height: 1.25;
+  --text-5xl: 3rem;
+  --text-5xl--line-height: calc(7 / 6);
+}
+
 :root {
-  --background: oklch(0.983 0.014 84.6);
-  --foreground: oklch(0.188 0.019 248.3);
-  --card: oklch(0.998 0.006 84.6 / 86%);
-  --card-foreground: oklch(0.188 0.019 248.3);
-  --popover: oklch(0.998 0.006 84.6);
-  --popover-foreground: oklch(0.188 0.019 248.3);
-  --primary: oklch(0.267 0.035 241.6);
-  --primary-foreground: oklch(0.988 0.012 84.6);
-  --secondary: oklch(0.928 0.027 174.5);
-  --secondary-foreground: oklch(0.248 0.032 223.8);
-  --muted: oklch(0.934 0.018 90.2);
-  --muted-foreground: oklch(0.476 0.031 244.6);
-  --accent: oklch(0.906 0.039 44.3);
-  --accent-foreground: oklch(0.245 0.031 240.7);
+  --background: oklch(0.958 0.012 91.5);
+  --foreground: oklch(0.222 0.004 84.6);
+  --card: oklch(0.982 0.008 91.5);
+  --card-foreground: oklch(0.222 0.004 84.6);
+  --popover: oklch(0.982 0.008 91.5);
+  --popover-foreground: oklch(0.222 0.004 84.6);
+  --primary: oklch(0.222 0.004 84.6);
+  --primary-foreground: oklch(0.958 0.012 91.5);
+  --secondary: oklch(0.916 0.018 89.4);
+  --secondary-foreground: oklch(0.222 0.004 84.6);
+  --muted: oklch(0.916 0.018 89.4);
+  --muted-foreground: oklch(0.512 0.017 84.6);
+  --accent: oklch(0.916 0.018 89.4);
+  --accent-foreground: oklch(0.222 0.004 84.6);
   --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.846 0.019 87.4);
-  --input: oklch(0.846 0.019 87.4);
-  --ring: oklch(0.662 0.121 178.6);
-  --chart-1: oklch(0.652 0.126 178.3);
-  --chart-2: oklch(0.561 0.152 155.4);
-  --chart-3: oklch(0.554 0.151 255.1);
-  --chart-4: oklch(0.684 0.157 54.2);
-  --chart-5: oklch(0.612 0.175 17.8);
-  --radius: 0.45rem;
-  --sidebar: oklch(0.97 0.015 84.6);
-  --sidebar-foreground: oklch(0.188 0.019 248.3);
-  --sidebar-primary: oklch(0.267 0.035 241.6);
-  --sidebar-primary-foreground: oklch(0.988 0.012 84.6);
-  --sidebar-accent: oklch(0.928 0.027 174.5);
-  --sidebar-accent-foreground: oklch(0.248 0.032 223.8);
-  --sidebar-border: oklch(0.846 0.019 87.4);
-  --sidebar-ring: oklch(0.662 0.121 178.6);
+  --border: oklch(0.834 0.023 87.2);
+  --input: oklch(0.834 0.023 87.2);
+  --ring: oklch(0.553 0.178 30.2);
+  --point: oklch(0.553 0.178 30.2);
+  --point-foreground: oklch(0.958 0.012 91.5);
+  --shadow-color: oklch(0.222 0.004 84.6);
+  --chart-1: oklch(0.471 0.064 217.5);
+  --chart-2: oklch(0.476 0.108 140.8);
+  --chart-3: oklch(0.479 0.132 259.1);
+  --chart-4: oklch(0.5 0.109 60.8);
+  --chart-5: oklch(0.528 0.167 29.8);
+  --radius: 0;
+  --sidebar: oklch(0.982 0.008 91.5);
+  --sidebar-foreground: oklch(0.222 0.004 84.6);
+  --sidebar-primary: oklch(0.222 0.004 84.6);
+  --sidebar-primary-foreground: oklch(0.958 0.012 91.5);
+  --sidebar-accent: oklch(0.916 0.018 89.4);
+  --sidebar-accent-foreground: oklch(0.222 0.004 84.6);
+  --sidebar-border: oklch(0.834 0.023 87.2);
+  --sidebar-ring: oklch(0.553 0.178 30.2);
 }
 
 .dark {
-  --background: oklch(0.172 0.019 248.9);
-  --foreground: oklch(0.958 0.014 87.7);
-  --card: oklch(0.218 0.024 248.5 / 86%);
-  --card-foreground: oklch(0.958 0.014 87.7);
-  --popover: oklch(0.218 0.024 248.5);
-  --popover-foreground: oklch(0.958 0.014 87.7);
-  --primary: oklch(0.829 0.102 178.1);
-  --primary-foreground: oklch(0.162 0.019 248.9);
-  --secondary: oklch(0.282 0.035 224.2);
-  --secondary-foreground: oklch(0.943 0.018 86.8);
-  --muted: oklch(0.285 0.029 247.7);
-  --muted-foreground: oklch(0.731 0.033 88.1);
-  --accent: oklch(0.314 0.049 47.7);
-  --accent-foreground: oklch(0.956 0.019 86.6);
+  --background: oklch(0.195 0.002 106.6);
+  --foreground: oklch(0.925 0.022 89.8);
+  --card: oklch(0.23 0.004 106.7);
+  --card-foreground: oklch(0.925 0.022 89.8);
+  --popover: oklch(0.23 0.004 106.7);
+  --popover-foreground: oklch(0.925 0.022 89.8);
+  --primary: oklch(0.925 0.022 89.8);
+  --primary-foreground: oklch(0.195 0.002 106.6);
+  --secondary: oklch(0.269 0.006 91.6);
+  --secondary-foreground: oklch(0.925 0.022 89.8);
+  --muted: oklch(0.269 0.006 91.6);
+  --muted-foreground: oklch(0.694 0.021 87.5);
+  --accent: oklch(0.269 0.006 91.6);
+  --accent-foreground: oklch(0.925 0.022 89.8);
   --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(0.958 0.014 87.7 / 13%);
-  --input: oklch(0.958 0.014 87.7 / 16%);
-  --ring: oklch(0.746 0.121 178.6);
-  --chart-1: oklch(0.748 0.131 178.3);
-  --chart-2: oklch(0.72 0.154 153.2);
-  --chart-3: oklch(0.73 0.129 253.9);
-  --chart-4: oklch(0.778 0.148 57.1);
-  --chart-5: oklch(0.719 0.163 18.6);
-  --sidebar: oklch(0.218 0.024 248.5);
-  --sidebar-foreground: oklch(0.958 0.014 87.7);
-  --sidebar-primary: oklch(0.829 0.102 178.1);
-  --sidebar-primary-foreground: oklch(0.162 0.019 248.9);
-  --sidebar-accent: oklch(0.282 0.035 224.2);
-  --sidebar-accent-foreground: oklch(0.943 0.018 86.8);
-  --sidebar-border: oklch(0.958 0.014 87.7 / 13%);
-  --sidebar-ring: oklch(0.746 0.121 178.6);
+  --border: oklch(0.341 0.009 88.7);
+  --input: oklch(0.341 0.009 88.7);
+  --ring: oklch(0.708 0.185 30.1);
+  --point: oklch(0.708 0.185 30.1);
+  --point-foreground: oklch(0.195 0.002 106.6);
+  --shadow-color: oklch(0.341 0.009 88.7);
+  --chart-1: oklch(0.768 0.083 207.4);
+  --chart-2: oklch(0.799 0.121 134.6);
+  --chart-3: oklch(0.763 0.098 257.3);
+  --chart-4: oklch(0.774 0.12 67.6);
+  --chart-5: oklch(0.731 0.166 30.3);
+  --sidebar: oklch(0.23 0.004 106.7);
+  --sidebar-foreground: oklch(0.925 0.022 89.8);
+  --sidebar-primary: oklch(0.925 0.022 89.8);
+  --sidebar-primary-foreground: oklch(0.195 0.002 106.6);
+  --sidebar-accent: oklch(0.269 0.006 91.6);
+  --sidebar-accent-foreground: oklch(0.925 0.022 89.8);
+  --sidebar-border: oklch(0.341 0.009 88.7);
+  --sidebar-ring: oklch(0.708 0.185 30.1);
 }
 
 @layer base {
@@ -132,91 +160,140 @@
 
   html {
     @apply font-sans;
+    /* 픽셀 폰트에는 굵게·기울임 글꼴이 없다. 브라우저가 흉내 내면 픽셀이 뭉개진다. */
+    font-synthesis: none;
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-base text-foreground;
+  }
+
+  ::selection {
+    background-color: var(--point);
+    color: var(--point-foreground);
   }
 }
 
 @layer utilities {
-  .blog-surface {
-    background-image:
-      linear-gradient(
-        to right,
-        color-mix(in oklch, var(--border) 45%, transparent) 1px,
-        transparent 1px
-      ),
-      linear-gradient(
-        to bottom,
-        color-mix(in oklch, var(--border) 42%, transparent) 1px,
-        transparent 1px
-      ),
-      linear-gradient(
-        135deg,
-        color-mix(in oklch, var(--chart-1) 10%, var(--background)) 0%,
-        var(--background) 43%,
-        color-mix(in oklch, var(--chart-4) 12%, var(--background)) 100%
-      );
-    background-position:
-      center top,
-      center top,
-      center;
-    background-size:
-      36px 36px,
-      36px 36px,
-      cover;
-  }
-
-  .logo-mark {
-    background-image: conic-gradient(
-      from 215deg,
-      var(--chart-1),
-      var(--chart-4),
-      var(--chart-5),
-      var(--chart-2),
-      var(--chart-1)
-    );
-  }
-
-  .animate-rise {
-    animation: rise-in 700ms cubic-bezier(0.22, 1, 0.36, 1) both;
-    animation-delay: var(--delay, 0ms);
-  }
-
+  /*
+   * typography 플러그인은 em 기반으로 14~36px 사이 크기를 쓰고 굵기·기울임으로 강조한다.
+   * Neo둥근모 규칙(16/32px, 굵기·기울임 없음)에 맞게 크기와 강조 방식을 덮어쓴다.
+   */
   .prose-blog {
     --tw-prose-body: var(--foreground);
     --tw-prose-headings: var(--foreground);
     --tw-prose-lead: var(--muted-foreground);
-    --tw-prose-links: var(--chart-3);
+    --tw-prose-links: var(--foreground);
     --tw-prose-bold: var(--foreground);
     --tw-prose-counters: var(--muted-foreground);
-    --tw-prose-bullets: var(--chart-1);
+    --tw-prose-bullets: var(--point);
     --tw-prose-hr: var(--border);
-    --tw-prose-quotes: var(--foreground);
-    --tw-prose-quote-borders: var(--chart-1);
+    --tw-prose-quotes: var(--muted-foreground);
+    --tw-prose-quote-borders: var(--foreground);
     --tw-prose-captions: var(--muted-foreground);
     --tw-prose-code: var(--foreground);
-    --tw-prose-pre-code: var(--background);
-    --tw-prose-pre-bg: var(--foreground);
-    --tw-prose-th-borders: var(--border);
+    --tw-prose-pre-code: var(--foreground);
+    --tw-prose-pre-bg: color-mix(
+      in oklch,
+      var(--foreground) 6%,
+      var(--background)
+    );
+    --tw-prose-th-borders: var(--foreground);
     --tw-prose-td-borders: var(--border);
     --tw-prose-invert-body: var(--foreground);
     --tw-prose-invert-headings: var(--foreground);
     --tw-prose-invert-lead: var(--muted-foreground);
-    --tw-prose-invert-links: var(--chart-1);
+    --tw-prose-invert-links: var(--foreground);
     --tw-prose-invert-bold: var(--foreground);
     --tw-prose-invert-counters: var(--muted-foreground);
-    --tw-prose-invert-bullets: var(--chart-1);
+    --tw-prose-invert-bullets: var(--point);
     --tw-prose-invert-hr: var(--border);
-    --tw-prose-invert-quotes: var(--foreground);
-    --tw-prose-invert-quote-borders: var(--chart-1);
+    --tw-prose-invert-quotes: var(--muted-foreground);
+    --tw-prose-invert-quote-borders: var(--foreground);
     --tw-prose-invert-captions: var(--muted-foreground);
     --tw-prose-invert-code: var(--foreground);
-    --tw-prose-invert-pre-code: var(--background);
-    --tw-prose-invert-pre-bg: var(--foreground);
-    --tw-prose-invert-th-borders: var(--border);
+    --tw-prose-invert-pre-code: var(--foreground);
+    --tw-prose-invert-pre-bg: color-mix(
+      in oklch,
+      var(--foreground) 6%,
+      var(--background)
+    );
+    --tw-prose-invert-th-borders: var(--foreground);
     --tw-prose-invert-td-borders: var(--border);
+    font-size: 1rem;
+    line-height: 1.75;
+  }
+
+  .prose-blog :where(h1, h2, h3, h4, h5, h6, strong, b, a, th, dt) {
+    font-weight: 400;
+  }
+
+  .prose-blog :where(h1, h2) {
+    margin-top: 3rem;
+    margin-bottom: 1rem;
+    font-size: 2rem;
+    line-height: 1.25;
+  }
+
+  .prose-blog :where(h3, h4, h5, h6) {
+    margin-top: 2rem;
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+    line-height: 1.75;
+  }
+
+  .prose-blog :where(h3)::before {
+    content: "▶ ";
+    color: var(--point);
+  }
+
+  .prose-blog :where(h4, h5, h6) {
+    color: var(--muted-foreground);
+  }
+
+  .prose-blog :where(strong, b) {
+    background: color-mix(in oklch, var(--point) 18%, transparent);
+    padding-inline: 2px;
+  }
+
+  .prose-blog :where(em, i) {
+    font-style: normal;
+    color: var(--point);
+  }
+
+  .prose-blog :where(a) {
+    text-decoration-line: underline;
+    text-decoration-color: var(--point);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 4px;
+  }
+
+  .prose-blog :where(a):hover {
+    color: var(--point);
+  }
+
+  .prose-blog :where(ul) {
+    list-style-type: square;
+  }
+
+  .prose-blog
+    :where(code, pre, table, thead th, figcaption, small, kbd, blockquote) {
+    font-size: 1rem;
+  }
+
+  .prose-blog :where(blockquote) {
+    font-style: normal;
+    font-weight: 400;
+    border-inline-start-width: 4px;
+  }
+
+  .prose-blog :where(blockquote p:first-of-type)::before,
+  .prose-blog :where(blockquote p:last-of-type)::after {
+    content: none;
+  }
+
+  .prose-blog :where(thead) {
+    border-bottom-width: 2px;
   }
 
   .prose-blog :where(pre) {
@@ -225,9 +302,11 @@
     min-width: 0;
     overflow-x: auto;
     overscroll-behavior-x: contain;
-    border: 1px solid var(--border);
-    background: color-mix(in oklch, var(--foreground) 7%, var(--background));
+    border: 2px solid var(--foreground);
+    border-radius: 0;
+    background: var(--tw-prose-pre-bg);
     color: var(--foreground);
+    line-height: 1.5;
     scrollbar-width: thin;
     scrollbar-color: color-mix(in oklch, var(--foreground) 28%, transparent)
       transparent;
@@ -244,12 +323,10 @@
   }
 
   .prose-blog :where(code):not(:where(pre code)) {
-    border: 1px solid color-mix(in oklch, var(--chart-3) 35%, var(--border));
-    border-radius: 0.35rem;
-    background: color-mix(in oklch, var(--chart-3) 10%, var(--background));
-    padding: 0.12rem 0.32rem;
-    color: var(--chart-3);
-    font-weight: 600;
+    background: color-mix(in oklch, var(--foreground) 8%, var(--background));
+    padding-inline: 4px;
+    color: var(--foreground);
+    font-weight: 400;
   }
 
   .prose-blog :where(code):not(:where(pre code))::before,
@@ -264,7 +341,6 @@
 
   .prose-blog :where(.hljs-comment, .hljs-quote) {
     color: var(--muted-foreground);
-    font-style: italic;
   }
 
   .prose-blog
@@ -348,25 +424,5 @@
   .admin-markdown-editor .cm-focused .cm-selectionBackground,
   .admin-markdown-editor .cm-content ::selection {
     background-color: color-mix(in oklch, var(--chart-1) 28%, var(--background)) !important;
-  }
-}
-
-@keyframes rise-in {
-  from {
-    opacity: 0;
-    transform: translateY(14px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .animate-rise {
-    animation: none;
-    opacity: 1;
-    transform: translateY(0);
   }
 }

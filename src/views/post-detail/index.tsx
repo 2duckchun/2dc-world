@@ -79,7 +79,7 @@ export function PostDetailView({ post, isAuthenticated }: PostDetailViewProps) {
       </header>
 
       <section className="min-w-0 rounded-lg border border-border bg-card p-5 shadow-sm sm:p-8">
-        <MarkdownContent markdown={post.content} className="prose-lg" />
+        <MarkdownContent markdown={post.content} />
       </section>
 
       <div className="flex justify-center">

@@ -1,65 +1,30 @@
 "use client"
 
-import { Moon, Sun } from "lucide-react"
-import { useEffect, useState } from "react"
-import { cn } from "@/shared/lib/utils"
+import { useTheme } from "next-themes"
 import { Button } from "@/shared/ui/button"
-
-type Theme = "light" | "dark"
-
-const themeStorageKey = "2dc-world-theme"
-
-function getSystemTheme(): Theme {
-  return window.matchMedia("(prefers-color-scheme: dark)").matches
-    ? "dark"
-    : "light"
-}
-
-function applyTheme(theme: Theme) {
-  document.documentElement.classList.toggle("dark", theme === "dark")
-  document.documentElement.style.colorScheme = theme
-}
+import { PixelIcon } from "@/shared/ui/pixel-icon"
 
 type ThemeToggleProps = {
   className?: string
 }
 
 export function ThemeToggle({ className }: ThemeToggleProps) {
-  const [theme, setTheme] = useState<Theme>("light")
+  const { resolvedTheme, setTheme } = useTheme()
 
-  useEffect(() => {
-    const storedTheme = window.localStorage.getItem(themeStorageKey)
-    const nextTheme =
-      storedTheme === "dark" || storedTheme === "light"
-        ? storedTheme
-        : getSystemTheme()
-
-    setTheme(nextTheme)
-    applyTheme(nextTheme)
-  }, [])
-
-  const isDark = theme === "dark"
-
+  // resolvedTheme은 서버 렌더링 시점에 알 수 없으므로 아이콘 전환은 dark: variant로 처리하고,
+  // 라벨도 테마와 무관한 문구로 고정해 hydration 불일치를 피한다.
   return (
     <Button
       type="button"
       variant="ghost"
-      size="icon-lg"
-      aria-label={isDark ? "라이트 모드로 전환" : "다크 모드로 전환"}
-      aria-pressed={isDark}
-      className={cn(
-        "relative border border-border bg-background/75 shadow-sm backdrop-blur hover:bg-muted/80",
-        className,
-      )}
-      onClick={() => {
-        const nextTheme = isDark ? "light" : "dark"
-        setTheme(nextTheme)
-        applyTheme(nextTheme)
-        window.localStorage.setItem(themeStorageKey, nextTheme)
-      }}
+      size="icon"
+      aria-label="라이트/다크 모드 전환"
+      title="라이트/다크 모드 전환"
+      className={className}
+      onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
     >
-      <Sun className="scale-100 rotate-0 opacity-100 transition-all dark:scale-75 dark:-rotate-45 dark:opacity-0" />
-      <Moon className="absolute scale-75 rotate-45 opacity-0 transition-all dark:scale-100 dark:rotate-0 dark:opacity-100" />
+      <PixelIcon name="sun" className="dark:hidden" />
+      <PixelIcon name="moon" className="hidden dark:block" />
     </Button>
   )
 }
