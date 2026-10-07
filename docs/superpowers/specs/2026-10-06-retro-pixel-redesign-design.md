@@ -14,7 +14,7 @@
 사용자와 확정한 결정:
 | 항목 | 결정 |
 |---|---|
-| 폰트 범위 | 전부 Neo둥근모. 본문, 제목, UI 모두 적용하고 코드는 Neo둥근모 Code |
+| 폰트 범위 | 화면 장식(헤더·제목·소제목·탭·태그·날짜·버튼·푸터)은 Neo둥근모, 오래 읽는 문장(글 본문·목록 요약·댓글·시리즈 설명)은 Pretendard, 코드는 D2Coding. 처음엔 전부 Neo둥근모였으나 긴 글 가독성 피드백으로 나눴다 |
 | 팔레트 | 종이+잉크. 미색 배경, 먹색 텍스트, 포인트 1색(패미컴 레드 계열) |
 | 배경 맵 (Step 3 리뷰 후 추가) | 창 바깥에 게임보이 어드밴스 RPG 필드 같은 알록달록한 마을 맵(집, 연못, 길, 가로수, 울타리, 풀숲, 꽃, 앉아 있는 강아지·고양이)을 깔고 화면에 고정한다. 그림은 직접 그린 원본 도트이며 실제 게임 에셋은 쓰지 않는다. 처음엔 옅은 풀숲 무늬만 깔았으나 "안 보이고 풀밖에 없다"는 피드백으로 바꿨다. 처음 넣은 걸어다니는 사람은 동물(황구·백구·치즈·고등어)로 바꿨다 |
 | 장식 강도 | 절제된 8비트. 각진 모서리, 2px 테두리, 블러 없는 오프셋 그림자. hover 시 ▶ 커서 정도만 |
@@ -66,9 +66,10 @@
 - 제거: `.blog-surface`, `.logo-mark`, `.animate-rise`, `@keyframes rise-in`, 모든 `backdrop-blur`와 반투명 배경, `shadow-sm` 계열
 
 **타이포**
-- `next/font/local`로 두 폰트를 로드하고 CSS 변수로 연결합니다.
-  - `--font-sans`와 `--font-heading`에는 NeoDunggeunmo를 연결합니다.
-  - `--font-mono`에는 NeoDunggeunmo Code를 연결합니다.
+- 폰트는 세 가지를 역할별로 씁니다.
+  - `--font-sans`·`--font-heading`: Neo둥근모(`next/font/local`). 화면 장식용 도트 폰트입니다.
+  - `--font-reading`: Pretendard(`pretendard` 패키지의 dynamic subset CSS). 한글 웹폰트라 필요한 글자 묶음만 내려받습니다. `next/font/local`은 이 분할을 지원하지 않아 CSS를 import합니다.
+  - `--font-mono`: D2Coding(`d2coding` 패키지의 full CSS). 한글 폭이 영문의 정확히 2배라 한글이 섞인 다이어그램도 줄이 맞습니다. 패키지의 subset 파일은 공백·`{`·`}`·`]`가 빠져 있어 쓸 수 없고, 예약 폰트명(D2Coding) 조항 때문에 직접 잘라 쓰지 않고 원본 전체판(약 1.5MB)을 씁니다. 코드블록이 있는 페이지에서만 내려받습니다.
 - `html`에 `font-synthesis: none`을 지정해 가짜 굵게와 가짜 기울임을 막습니다.
 - **크기 단계를 3개로 제한합니다.** 별도 `@theme` 블록에서 필요 없는 기본 단계를 `initial`로 하나씩 지우고 세 단계만 남깁니다(`--text-*: initial` 한 줄 방식은 Biome 2.2 CSS 파서가 읽지 못함). 이름은 Tailwind 기본값과 같거나 가장 가까운 것을 써서 tailwind-merge가 그대로 인식하게 합니다.
 
@@ -80,9 +81,10 @@
 
   - 남아 있는 `text-sm`/`text-xs` 등은 CSS를 만들지 않으므로 16px을 상속합니다. 의도한 동작이며, 이유를 주석으로 남깁니다.
   - `button.tsx`의 `text-[0.8rem]` 같은 임의 크기는 제거합니다.
+  - 위 규칙은 도트 폰트 요소에만 적용합니다. Pretendard 문장용으로 `text-reading`(17px / 1.8)과 `text-reading-sm`(15px / 1.7)을 따로 둡니다. tailwind-merge가 이 이름을 글자색으로 오인해 색 클래스를 지우지 않도록 `shared/lib/utils.ts`의 `cn`에서 `extendTailwindMerge`로 크기로 등록합니다.
 - 강조
-  - `strong`: 굵게 대신 포인트색 15% 배경을 깔아 마커처럼 표시합니다.
-  - `em`: 기울임 대신 포인트색으로 표시합니다.
+  - `strong`: 포인트색 18% 배경을 깔아 마커처럼 표시합니다. 본문이 Pretendard라 굵게(700)도 함께 씁니다.
+  - `em`: Pretendard에 기울임 글꼴이 없어 기울임 대신 포인트색으로 표시합니다.
   - 헤딩 위계는 크기, 색, ▶ 접두로 표현합니다.
 
 **레이아웃**

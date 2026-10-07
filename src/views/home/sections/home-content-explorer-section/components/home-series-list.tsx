@@ -41,7 +41,7 @@ export function HomeSeriesList({ series }: HomeSeriesListProps) {
             ) : null}
             <article className="grid flex-1 content-start gap-2 p-4">
               <h3 className="group-hover:text-point">{seriesItem.title}</h3>
-              <p className="text-muted-foreground">
+              <p className="font-reading text-muted-foreground text-reading-sm">
                 {seriesItem.description ?? "시리즈 설명이 준비 중입니다."}
               </p>
               <p className="flex flex-wrap gap-x-3 text-muted-foreground">

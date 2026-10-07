@@ -27,7 +27,7 @@ export const PostListHeader = ({
         <h1 className="text-balance font-black text-4xl leading-tight sm:text-5xl">
           {title}
         </h1>
-        <p className="max-w-3xl text-muted-foreground text-lg leading-8">
+        <p className="max-w-3xl font-reading text-muted-foreground text-reading">
           {description}
         </p>
       </div>

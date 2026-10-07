@@ -70,7 +70,7 @@ export function PostDetailView({ post, isAuthenticated }: PostDetailViewProps) {
               {post.title}
             </h1>
             {post.subtitle ? (
-              <p className="max-w-3xl text-muted-foreground text-lg leading-8">
+              <p className="max-w-3xl font-reading text-muted-foreground text-reading">
                 {post.subtitle}
               </p>
             ) : null}

@@ -10,8 +10,13 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-neodgm), ui-sans-serif, system-ui, sans-serif;
-  --font-mono: var(--font-neodgm-code), ui-monospace, monospace;
   --font-heading: var(--font-neodgm), ui-sans-serif, system-ui, sans-serif;
+  /* 글 본문, 목록 요약, 댓글처럼 오래 읽는 문장은 도트 폰트 대신 Pretendard로 쓴다. */
+  --font-reading:
+    "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont,
+    system-ui, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  /* 코드는 D2Coding. 서브셋에 없는 드문 한글만 Pretendard로 이어 받는다. */
+  --font-mono: "D2Coding", "Pretendard Variable", ui-monospace, monospace;
   --color-desktop: var(--desktop);
   --color-tag: var(--tag);
   --color-tag-foreground: var(--tag-foreground);
@@ -79,6 +84,15 @@
   --text-3xl--line-height: 1.25;
   --text-5xl: 3rem;
   --text-5xl--line-height: calc(7 / 6);
+
+  /*
+   * 오래 읽는 문장(font-reading) 전용 크기. 도트 폰트가 아니라서 16px 배수 규칙을 따르지 않는다.
+   * 도트 폰트 요소에는 쓰지 않는다. cn()이 크기로 인식하도록 shared/lib/utils.ts에 등록되어 있다.
+   */
+  --text-reading: 1.0625rem;
+  --text-reading--line-height: 1.8;
+  --text-reading-sm: 0.9375rem;
+  --text-reading-sm--line-height: 1.7;
 
   /* 텍스트 커서처럼 반은 켜지고 반은 꺼진다. 중간 프레임 없이 뚝 끊어지게 step-end를 쓴다. */
   --animate-blink: blink 1s step-end infinite;
@@ -292,10 +306,11 @@
   }
 
   /*
-   * typography 플러그인은 em 기반으로 14~36px 사이 크기를 쓰고 굵기·기울임으로 강조한다.
-   * Neo둥근모 규칙(16/32px, 굵기·기울임 없음)에 맞게 크기와 강조 방식을 덮어쓴다.
+   * 글 본문. 문장은 읽기 편한 Pretendard(font-reading), 소제목은 도트 폰트(Neo둥근모), 코드는 JetBrains Mono다.
+   * typography 플러그인의 em 기반 크기·굵기 중 도트 폰트 규칙(16/32px, 굵기 없음)과 맞지 않는 부분을 덮어쓴다.
    */
   .prose-blog {
+    @apply font-reading text-reading;
     --tw-prose-body: var(--foreground);
     --tw-prose-headings: var(--foreground);
     --tw-prose-lead: var(--muted-foreground);
@@ -309,8 +324,12 @@
     --tw-prose-captions: var(--muted-foreground);
     --tw-prose-code: var(--foreground);
     --tw-prose-pre-code: var(--foreground);
+    /*
+     * 먹색·종이색처럼 채도가 거의 없는 색끼리 oklch로 섞으면 색상(hue)이 none으로 계산되어
+     * 분홍빛이 돈다. 무채색끼리 섞을 때는 색상 개념이 없는 srgb 공간을 쓴다.
+     */
     --tw-prose-pre-bg: color-mix(
-      in oklch,
+      in srgb,
       var(--foreground) 6%,
       var(--background)
     );
@@ -330,17 +349,17 @@
     --tw-prose-invert-code: var(--foreground);
     --tw-prose-invert-pre-code: var(--foreground);
     --tw-prose-invert-pre-bg: color-mix(
-      in oklch,
+      in srgb,
       var(--foreground) 6%,
       var(--background)
     );
     --tw-prose-invert-th-borders: var(--foreground);
     --tw-prose-invert-td-borders: var(--border);
-    font-size: 1rem;
-    line-height: 1.75;
   }
 
-  .prose-blog :where(h1, h2, h3, h4, h5, h6, strong, b, a, th, dt) {
+  /* 소제목은 도트 폰트로 남겨 레트로 분위기를 잇는다. 도트 폰트에는 굵은 글꼴이 없다. */
+  .prose-blog :where(h1, h2, h3, h4, h5, h6) {
+    font-family: var(--font-heading);
     font-weight: 400;
   }
 
@@ -370,8 +389,10 @@
   .prose-blog :where(strong, b) {
     background: color-mix(in oklch, var(--point) 18%, transparent);
     padding-inline: 2px;
+    font-weight: 700;
   }
 
+  /* Pretendard에는 기울임 글꼴이 없으므로 기울이는 대신 포인트색으로 강조한다. */
   .prose-blog :where(em, i) {
     font-style: normal;
     color: var(--point);
@@ -392,9 +413,12 @@
     list-style-type: square;
   }
 
-  .prose-blog
-    :where(code, pre, table, thead th, figcaption, small, kbd, blockquote) {
-    font-size: 1rem;
+  .prose-blog :where(table, figcaption, small) {
+    font-size: 0.9375rem;
+  }
+
+  .prose-blog :where(code, kbd):not(:where(pre code)) {
+    font-size: 0.875em;
   }
 
   .prose-blog :where(blockquote) {
@@ -422,9 +446,10 @@
     border-radius: 0;
     background: var(--tw-prose-pre-bg);
     color: var(--foreground);
-    line-height: 1.5;
+    font-size: 0.875rem;
+    line-height: 1.7;
     scrollbar-width: thin;
-    scrollbar-color: color-mix(in oklch, var(--foreground) 28%, transparent)
+    scrollbar-color: color-mix(in srgb, var(--foreground) 28%, transparent)
       transparent;
   }
 
@@ -439,7 +464,7 @@
   }
 
   .prose-blog :where(code):not(:where(pre code)) {
-    background: color-mix(in oklch, var(--foreground) 8%, var(--background));
+    background: color-mix(in srgb, var(--foreground) 8%, var(--background));
     padding-inline: 4px;
     color: var(--foreground);
     font-weight: 400;
@@ -510,8 +535,8 @@
     --baseBase: var(--card);
     --baseBgSubtle: var(--muted);
     --baseBg: var(--muted);
-    --baseBgHover: color-mix(in oklch, var(--muted) 75%, var(--foreground));
-    --baseBgActive: color-mix(in oklch, var(--muted) 88%, var(--foreground));
+    --baseBgHover: color-mix(in srgb, var(--muted) 75%, var(--foreground));
+    --baseBgActive: color-mix(in srgb, var(--muted) 88%, var(--foreground));
     --baseLine: var(--border);
     --baseBorder: var(--border);
     --baseBorderHover: var(--ring);

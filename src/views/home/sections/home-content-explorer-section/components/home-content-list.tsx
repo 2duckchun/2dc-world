@@ -56,7 +56,7 @@ export function HomeContentList({
               <h3 className="sm:col-start-2 group-hover:text-point">
                 {post.title}
               </h3>
-              <p className="sm:col-start-2 text-muted-foreground">
+              <p className="font-reading text-muted-foreground text-reading-sm sm:col-start-2">
                 {post.subtitle ?? "요약이 준비 중입니다."}
               </p>
             </Link>

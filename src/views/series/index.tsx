@@ -72,7 +72,7 @@ export function SeriesView() {
                     <h2 className="font-bold text-2xl leading-snug transition-colors group-hover:text-chart-3">
                       {seriesItem.title}
                     </h2>
-                    <p className="text-muted-foreground leading-7">
+                    <p className="font-reading text-muted-foreground text-reading-sm">
                       {seriesItem.description ?? "시리즈 설명이 준비 중입니다."}
                     </p>
                   </div>
