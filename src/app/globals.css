@@ -13,8 +13,6 @@
   --font-mono: var(--font-neodgm-code), ui-monospace, monospace;
   --font-heading: var(--font-neodgm), ui-sans-serif, system-ui, sans-serif;
   --color-desktop: var(--desktop);
-  --color-desktop-foreground: var(--desktop-foreground);
-  --color-desktop-muted-foreground: var(--desktop-muted-foreground);
   --color-tag: var(--tag);
   --color-tag-foreground: var(--tag-foreground);
   --color-point: var(--point);
@@ -94,16 +92,14 @@
 
 :root {
   /*
-   * 창(본문) 바깥의 바탕. 진한 틸이 크림색 종이와 밝기 차이가 커서 창이 또렷하게 뜬다.
-   * 본문 글자는 항상 --background(종이) 위에 놓이고, 데스크톱 위 글자는 desktop-foreground를 쓴다.
-   * 포인트 빨강은 틸 위에서 대비가 1.4:1이라 데스크톱 위에서는 쓰지 않는다.
+   * 창 바깥에는 필드 맵(public/assets/desktop-map.svg)이 깔린다. --desktop은 맵의 잔디색으로,
+   * 맵이 닿지 않는 넓은 화면 가장자리와 스크롤 끝 반동 영역을 채운다.
+   * 맵 위에는 글자를 직접 올리지 않고 헤더·본문·푸터 모두 종이 박스 안에 둔다.
    */
-  --desktop: oklch(0.444 0.051 186.4);
-  --desktop-foreground: oklch(0.958 0.012 91.5);
-  --desktop-muted-foreground: oklch(0.87 0.017 178.2);
-  /* 창 안에서 태그를 구분하는 블록. 데스크톱과 같은 틸 계열이다. */
-  --tag: oklch(0.918 0.014 155.6);
-  --tag-foreground: oklch(0.405 0.051 186);
+  --desktop: oklch(0.781 0.144 137.1);
+  /* 창 안에서 태그를 구분하는 블록. 맵의 잔디와 같은 초록 계열이다. */
+  --tag: oklch(0.92 0.052 134);
+  --tag-foreground: oklch(0.47 0.107 145);
   --background: oklch(0.958 0.012 91.5);
   --foreground: oklch(0.222 0.004 84.6);
   --card: oklch(0.982 0.008 91.5);
@@ -142,11 +138,10 @@
 }
 
 .dark {
-  --desktop: oklch(0.223 0.024 186.4);
-  --desktop-foreground: oklch(0.925 0.022 89.8);
-  --desktop-muted-foreground: oklch(0.694 0.021 87.5);
-  --tag: oklch(0.308 0.031 185.7);
-  --tag-foreground: oklch(0.828 0.056 181.7);
+  /* 다크 모드의 맵은 필터로 어둡게 눌러 밤 장면으로 쓴다. 이 값은 그 결과와 비슷한 잔디색이다. */
+  --desktop: oklch(0.438 0.054 136.5);
+  --tag: oklch(0.309 0.047 140.2);
+  --tag-foreground: oklch(0.838 0.114 135.4);
   --background: oklch(0.195 0.002 106.6);
   --foreground: oklch(0.925 0.022 89.8);
   --card: oklch(0.23 0.004 106.7);
@@ -167,7 +162,7 @@
   --ring: oklch(0.708 0.185 30.1);
   --point: oklch(0.708 0.185 30.1);
   --point-foreground: oklch(0.195 0.002 106.6);
-  --shadow-color: oklch(0.15 0.015 186.4);
+  --shadow-color: oklch(0.12 0.01 136.5);
   --chart-1: oklch(0.768 0.083 207.4);
   --chart-2: oklch(0.799 0.121 134.6);
   --chart-3: oklch(0.763 0.098 257.3);
@@ -205,6 +200,56 @@
 }
 
 @layer utilities {
+  /*
+   * 창 바깥에 깔리는 필드 맵(widgets/layouts/desktop-map). 화면에 고정해 두고 본문 창만 그 위로 스크롤된다.
+   * iOS Safari는 background-attachment: fixed를 무시하므로 position: fixed 레이어로 깐다.
+   * 맵 장면은 가운데 정렬하고, 창이 가운데를 덮으므로 볼거리는 장면의 좌우에 배치되어 있다.
+   */
+  .desktop-map {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    overflow: hidden;
+    pointer-events: none;
+    background-color: var(--desktop);
+  }
+
+  /* 다크 모드는 같은 맵을 어둡게 눌러 밤 장면으로 쓴다. */
+  :where(.dark) .desktop-map {
+    filter: brightness(0.45) saturate(0.7);
+  }
+
+  .desktop-map-scene {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    translate: -50% 0;
+    background: url("/assets/desktop-map.svg") 0 0 / 100% 100% no-repeat;
+  }
+
+  /*
+   * 맵 위를 걷는 사람. 스프라이트 시트(public/assets/map-npcs.svg)는 가로가 걷기 프레임 2개,
+   * 세로가 옷 색 변형이다. 이동은 transform만 바꿔 큰 맵을 다시 그리지 않게 한다.
+   * 위치·거리·속도·변형은 컴포넌트가 CSS 변수로 넘긴다.
+   */
+  .map-npc {
+    position: absolute;
+    width: 32px;
+    height: 32px;
+    background:
+      url("/assets/map-npcs.svg") 0 calc(var(--npc-variant) * -32px) / 64px auto
+      no-repeat;
+    animation:
+      map-npc-step 0.4s steps(2) infinite,
+      map-npc-walk var(--npc-duration) steps(var(--npc-steps)) infinite;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .map-npc {
+      animation: none;
+    }
+  }
+
   /*
    * typography 플러그인은 em 기반으로 14~36px 사이 크기를 쓰고 굵기·기울임으로 강조한다.
    * Neo둥근모 규칙(16/32px, 굵기·기울임 없음)에 맞게 크기와 강조 방식을 덮어쓴다.
@@ -454,5 +499,31 @@
   .admin-markdown-editor .cm-focused .cm-selectionBackground,
   .admin-markdown-editor .cm-content ::selection {
     background-color: color-mix(in oklch, var(--chart-1) 28%, var(--background)) !important;
+  }
+}
+
+/* 걷기 프레임 2개를 번갈아 보여준다. */
+@keyframes map-npc-step {
+  to {
+    background-position-x: -64px;
+  }
+}
+
+/* 오른쪽으로 걸어간 뒤 몸을 돌려 제자리로 돌아온다. 스프라이트는 오른쪽을 보고 그려져 있다. */
+@keyframes map-npc-walk {
+  0% {
+    transform: translateX(0) scaleX(1);
+  }
+
+  49.99% {
+    transform: translateX(var(--npc-distance)) scaleX(1);
+  }
+
+  50% {
+    transform: translateX(var(--npc-distance)) scaleX(-1);
+  }
+
+  100% {
+    transform: translateX(0) scaleX(-1);
   }
 }

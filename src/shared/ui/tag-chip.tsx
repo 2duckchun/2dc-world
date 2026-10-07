@@ -1,6 +1,6 @@
 import { cn } from "@/shared/lib/utils"
 
-// 글자만으로는 날짜·종류와 섞여 보이므로 태그는 테마색(틸) 블록으로 구분한다.
+// 글자만으로는 날짜·종류와 섞여 보이므로 태그는 맵 잔디와 같은 초록 블록으로 구분한다.
 const tagChipBaseClassName =
   "inline-flex items-center gap-1 bg-tag px-1.5 text-tag-foreground"
 
@@ -19,7 +19,7 @@ type TagFilterButtonProps = Omit<
   isSelected: boolean
 }
 
-// 태그 필터 버튼. 선택된 칩은 진한 틸로 반전한다.
+// 태그 필터 버튼. 선택된 칩은 진한 초록으로 반전한다.
 export function TagFilterButton({
   isSelected,
   className,

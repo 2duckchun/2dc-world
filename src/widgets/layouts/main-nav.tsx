@@ -3,7 +3,7 @@
 import { usePathname } from "next/navigation"
 import { cn } from "@/shared/lib/utils"
 import { AppRoutes } from "@/shared/utils/app-routes"
-import { desktopLinkClassName } from "@/widgets/layouts/layout-styles"
+import { layoutLinkClassName } from "@/widgets/layouts/layout-styles"
 
 const navItems = [
   { label: "POST", href: AppRoutes.posts.list() },
@@ -30,7 +30,7 @@ export const MainNav = ({ className }: MainNavProps) => {
             href={item.href}
             aria-current={isActive ? "page" : undefined}
             className={cn(
-              desktopLinkClassName,
+              layoutLinkClassName,
               "group inline-flex items-center pr-4",
               isActive && "underline",
             )}
@@ -38,7 +38,10 @@ export const MainNav = ({ className }: MainNavProps) => {
             {/* 자리를 항상 차지하게 두어 커서가 나타나도 메뉴가 밀리지 않게 한다. */}
             <span
               aria-hidden="true"
-              className={isActive ? "visible" : "invisible group-hover:visible"}
+              className={cn(
+                "text-point",
+                isActive ? "visible" : "invisible group-hover:visible",
+              )}
             >
               ▶
             </span>
