@@ -212,6 +212,8 @@
     overflow: hidden;
     pointer-events: none;
     background-color: var(--desktop);
+    /* 패럴랙스 이동 거리를 화면 높이(100cqh) 기준으로 계산하기 위한 크기 컨테이너 */
+    container-type: size;
   }
 
   /* 다크 모드는 같은 맵을 어둡게 눌러 밤 장면으로 쓴다. */
@@ -225,6 +227,21 @@
     left: 50%;
     translate: -50% 0;
     background: url("/assets/desktop-map.svg") 0 0 / 100% 100% no-repeat;
+  }
+
+  /*
+   * 스크롤 패럴랙스: 페이지 맨 위에서는 맵 위쪽이, 맨 아래에서는 맵 아래쪽이 보이도록
+   * 스크롤 진행률에 맞춰 맵을 천천히 올린다. 긴 페이지일수록 더 천천히 움직인다.
+   * scroll-driven animation을 지원하지 않는 브라우저(Firefox 등)와 움직임 줄이기 설정에서는 고정 배경으로 남는다.
+   * animation 단축 속성이 animation-timeline을 초기화하므로 timeline은 반드시 그 뒤에 선언한다.
+   */
+  @supports (animation-timeline: scroll()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .desktop-map-scene {
+        animation: map-parallax linear both;
+        animation-timeline: scroll(root block);
+      }
+    }
   }
 
   /*
@@ -499,6 +516,17 @@
   .admin-markdown-editor .cm-focused .cm-selectionBackground,
   .admin-markdown-editor .cm-content ::selection {
     background-color: color-mix(in oklch, var(--chart-1) 28%, var(--background)) !important;
+  }
+}
+
+/* 화면이 맵보다 크면 이동 거리가 0이 되도록 min(0px, …)으로 막는다. */
+@keyframes map-parallax {
+  from {
+    translate: -50% 0;
+  }
+
+  to {
+    translate: -50% min(0px, calc(100cqh - var(--map-height)));
   }
 }
 

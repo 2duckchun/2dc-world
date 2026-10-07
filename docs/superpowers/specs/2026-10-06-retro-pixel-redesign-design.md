@@ -58,6 +58,9 @@
   - 화면에서는 2배(2048x1152px)로 그리고 가운데 정렬합니다. 본문 창이 가운데를 덮으므로 볼거리는 장면 좌우에 둡니다. 1280px 화면 기준 창 좌우로 보이는 타일은 12~19, 45~52번입니다.
   - 사람은 맵 그림과 분리한 작은 요소로 두고 `transform`만 바꿔 움직입니다(큰 맵을 다시 그리지 않음). 스프라이트 1픽셀(화면 2px) 단위로 끊어 움직여 도트가 번지지 않게 하고, `prefers-reduced-motion`이면 멈춥니다.
   - 다크 모드는 같은 맵에 `brightness(0.45) saturate(0.7)` 필터를 걸어 밤 장면으로 씁니다.
+  - 스크롤 패럴랙스: CSS scroll-driven animation(`animation-timeline: scroll(root)`)으로 페이지 맨 위에서는 맵 위쪽, 맨 아래에서는 맵 아래쪽이 보이도록 진행률에 맞춰 맵을 올립니다. 이동 거리는 `맵 높이 - 화면 높이`(크기 컨테이너의 `100cqh`)이고, 화면이 맵보다 크면 0입니다. JS 없이 transform 계열(`translate`)만 바꿉니다.
+    - 지원: Chrome·Edge 115+, Safari 26+. Firefox는 미리보기 버전만 지원해서(MDN browser-compat-data 기준) 고정 배경으로 남습니다. `@supports`로 감싸 깨지지 않게 합니다.
+    - `prefers-reduced-motion: reduce`이면 끕니다.
   - iOS Safari가 `background-attachment: fixed`를 무시해서 `position: fixed` 레이어로 구현합니다.
 - 제거: `.blog-surface`, `.logo-mark`, `.animate-rise`, `@keyframes rise-in`, 모든 `backdrop-blur`와 반투명 배경, `shadow-sm` 계열
 

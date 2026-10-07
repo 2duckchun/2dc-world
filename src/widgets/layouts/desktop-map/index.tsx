@@ -8,14 +8,20 @@ const tilePx = scene.tileSize * MAP_SCALE
 
 // 화면 뒤에 고정되는 장식 레이어. 본문 창만 그 위로 스크롤된다.
 export const DesktopMap = () => {
+  const mapHeight = scene.height * tilePx
+
   return (
     <div aria-hidden="true" className="desktop-map">
       <div
         className="desktop-map-scene"
-        style={{
-          width: scene.width * tilePx,
-          height: scene.height * tilePx,
-        }}
+        style={
+          {
+            width: scene.width * tilePx,
+            height: mapHeight,
+            // 스크롤 패럴랙스가 맵 끝까지 움직일 거리를 계산할 때 쓴다.
+            "--map-height": `${mapHeight}px`,
+          } as CSSProperties
+        }
       >
         {scene.npcs.map((npc) => {
           const distancePx = npc.distance * tilePx
