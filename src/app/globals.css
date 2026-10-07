@@ -221,12 +221,26 @@
     filter: brightness(0.45) saturate(0.7);
   }
 
+  /*
+   * 맵이 본문보다 눈에 띄지 않도록 살짝 흐리게(블러 1px) 하고,
+   * 그 위에 종이색 막(::after, 20%)을 한 겹 씌워 색을 한 단계 물린다. 동물도 함께 흐려진다.
+   */
   .desktop-map-scene {
     position: absolute;
     top: 0;
     left: 50%;
     translate: -50% 0;
     background: url("/assets/desktop-map.svg") 0 0 / 100% 100% no-repeat;
+    filter: blur(1px);
+  }
+
+  /* color-mix 대신 opacity를 쓴다. color-mix 미지원 브라우저용 대체 규칙이 불투명한 막으로 맵을 가리지 않게 한다. */
+  .desktop-map::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-color: var(--background);
+    opacity: 0.2;
   }
 
   /*
