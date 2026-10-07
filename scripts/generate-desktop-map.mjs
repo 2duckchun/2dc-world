@@ -1,9 +1,9 @@
-// 데스크톱 배경 맵과 맵 위를 걷는 사람 스프라이트를 SVG로 생성한다.
+// 데스크톱 배경 맵과 맵 위에 앉아 있는 동물 스프라이트를 SVG로 생성한다.
 //
 //   node scripts/generate-desktop-map.mjs
 //
 // 장면 배치(길, 연못, 집, 나무 등)는 desktop-map-scene.json에서 읽는다.
-// 같은 JSON을 화면 컴포넌트가 사람 이동 경로로 쓰므로, 배치를 바꾸면 이 스크립트를 다시 실행한다.
+// 같은 JSON을 화면 컴포넌트가 동물 위치로 쓰므로, 배치를 바꾸면 이 스크립트를 다시 실행한다.
 // 그림은 게임보이 어드밴스 RPG 필드 분위기를 참고해 직접 그린 원본 도트이며 실제 게임 에셋은 쓰지 않는다.
 //
 // 픽셀 격자 문자열이 많아 이 파일은 맞춤법 검사에서 뺀다.
@@ -61,9 +61,6 @@ const color = {
   yellow: "#F8D840",
   white: "#FFFFFF",
   pollen: "#F0A020",
-  skin: "#F6C49A",
-  shoe: "#4A3A2A",
-  pants: "#3E4E8C",
 }
 
 const roofs = {
@@ -71,13 +68,6 @@ const roofs = {
   blue: { R: "#4C7BD2", D: "#2F5AA8", L: "#82A9EE" },
   green: { R: "#4FA463", D: "#357A47", L: "#82CF8F" },
 }
-
-// 사람 옷·머리 색 변형. 순서가 스프라이트 시트의 행 순서이자 scene.json의 variant 번호다.
-const npcVariants = [
-  { a: "#E0483C", A: "#A8302B", h: "#6A3A1E" },
-  { a: "#4C7BD2", A: "#2F5AA8", h: "#2A2A3A" },
-  { a: "#4FA463", A: "#357A47", h: "#C8682A" },
-]
 
 // 문자 격자를 색별 path로 바꾼다. 가로로 이어진 같은 문자는 한 줄로 합쳐 파일 크기를 줄인다.
 const gridToPaths = (rows, legend) => {
@@ -293,37 +283,287 @@ const lilyPad = [
 
 const lilyLegend = { l: color.lily, L: color.lilyLight }
 
-// 옆모습 사람. A는 다리를 모은 프레임, B는 벌린 프레임이다.
-const npcTop = [
-  "......kkkkk.....",
-  ".....khhhhhk....",
-  "....khhhhhhhk...",
-  "....khhhhsssk...",
-  "....khhhssesk...",
-  "....khhhsssssk..",
-  ".....khhssssk...",
-  "......kssssk....",
-  ".....kaaaaak....",
-  "....kaaaaaaak...",
-  "....kaAaaasak...",
-  "....kaAaaaask...",
-  ".....kpppppk....",
-]
-const npcFrames = [
-  [...npcTop, ".....kppkppk....", ".....kpk.kpk....", ".....kok.kok...."],
-  [...npcTop, "....kppk.kppk...", "...kpk....kpk...", "...kok....kok..."],
+// 앉아 있는 동물 옆모습(오른쪽을 봄). 24x16 격자이고 오른쪽 끝은 소리 표시 자리다.
+// 첫 프레임은 가만히 있는 모습, 둘째 프레임은 고개를 들고 입을 벌려 짖거나 우는 모습이다.
+const PET_WIDTH = 24
+const PET_HEIGHT = 16
+const padPet = (rows) => rows.map((row) => row.padEnd(PET_WIDTH, "."))
+
+// 진돗개: 등 위로 말린 꼬리
+const dogFrames = [
+  padPet([
+    "",
+    "...........k...k",
+    "..........kbk.kbk",
+    "..........kbbkbbbk",
+    "..........kbbbbbbk",
+    "..........kbbbbbebk",
+    "..........kbbbbbbbnk",
+    "..kkk.....kbbbbllkk",
+    ".kbbbk...kbbbllk",
+    ".kbkbk..kbbbbllk",
+    ".kbbk..kbbbbbllk",
+    "..kbkkkbbbbbbllk",
+    "...kbbbbbbbbkllk",
+    "...kbbdbbbbkbllk",
+    "...kbbdbbbbkbllk",
+    "...kkkkkkkkkkkkk",
+  ]),
+  padPet([
+    "...........k...k",
+    "..........kbk.kbk",
+    "..........kbbkbbbk",
+    "..........kbbbbbbk....w",
+    "..........kbbbbbebk....w",
+    "..........kbbbbbbbnk",
+    "...kkk....kbbbbkmmk...w",
+    "..kbbbk...kbbbllkk...w",
+    "..kbkbk..kbbbllk",
+    "..kbbk..kbbbbllk",
+    "...kbk.kbbbbbllk",
+    "...kbkkbbbbbbllk",
+    "...kbbbbbbbbkllk",
+    "...kbbdbbbbkbllk",
+    "...kbbdbbbbkbllk",
+    "...kkkkkkkkkkkkk",
+  ]),
 ]
 
-const npcLegend = (variant) => ({
-  k: color.line,
-  h: variant.h,
-  s: color.skin,
-  e: color.line,
-  a: variant.a,
-  A: variant.A,
-  p: color.pants,
-  o: color.shoe,
-})
+// 고양이: 바닥을 따라 앞으로 감은 꼬리, s는 줄무늬
+const catFrames = [
+  padPet([
+    "",
+    "...........k..k",
+    "..........kbkkbk",
+    "..........kbsbbbk",
+    "..........kbbbbebk",
+    "..........kbbbbbbnk",
+    "..........kbbbllkk",
+    "..........kbbllk",
+    ".........kbsbllk",
+    "........kbsbbllk",
+    ".......kbsbbbllk",
+    "......kbbbbbbllk",
+    "......kbsbbkbllk",
+    "..kkk.kbbbbkbllk",
+    ".kbsbkkbbbbkbllk",
+    "..kkkkkkkkkkkkkk",
+  ]),
+  padPet([
+    "...........k..k",
+    "..........kbkkbk",
+    "..........kbsbbbk",
+    "..........kbbbbebk....w",
+    "..........kbbbbbbnk..w",
+    "..........kbbbbkmk",
+    "..........kbbllkk.....w",
+    "..........kbbllk....w",
+    ".........kbsbllk",
+    "........kbsbbllk",
+    ".......kbsbbbllk",
+    "......kbbbbbbllk",
+    "......kbsbbkbllk",
+    "...kk.kbbbbkbllk",
+    "..kbskkbbbbkbllk",
+    "..kkkkkkkkkkkkkk",
+  ]),
+]
+
+// 정면 모습. 좌우 대칭이라 왼쪽 절반(가운데 열 포함 8칸)만 그리고 오른쪽은 거울로 복사한다.
+// 15칸 너비 그림을 24칸 캔버스 가운데에 두고, 꼬리와 소리 표시처럼 대칭이 아닌 부분은 좌표로 덧그린다.
+const mirrorPet = (halves) =>
+  padPet(
+    halves.map((half) => {
+      const left = half.padEnd(8, ".")
+      return `....${left}${[...left.slice(0, -1)].reverse().join("")}`
+    }),
+  )
+
+const overlayPet = (rows, marks) => {
+  const grid = rows.map((row) => [...row])
+  for (const [x, y, char] of marks) grid[y][x] = char
+  return grid.map((row) => row.join(""))
+}
+
+// 진돗개 말린 꼬리(정면에서는 오른쪽 등 뒤로 보인다). 짖을 때는 한 칸 위·오른쪽으로 흔든다.
+const dogFrontTail = [
+  [17, 9, "k"],
+  [18, 9, "k"],
+  [16, 10, "k"],
+  [17, 10, "b"],
+  [18, 10, "b"],
+  [19, 10, "k"],
+  [17, 11, "k"],
+  [18, 11, "b"],
+  [19, 11, "k"],
+  [18, 12, "k"],
+]
+const dogFrontTailWag = [
+  [18, 8, "k"],
+  [19, 8, "k"],
+  [16, 9, "k"],
+  [18, 9, "b"],
+  [19, 9, "b"],
+  [20, 9, "k"],
+  [18, 10, "k"],
+  [19, 10, "b"],
+  [20, 10, "k"],
+  [19, 11, "k"],
+]
+
+const dogFrontFrames = [
+  overlayPet(
+    mirrorPet([
+      "...k",
+      "..kbk",
+      "..kbbk",
+      "..kbbbkk",
+      ".kbbbbbb",
+      ".kbbebbb",
+      ".kbbbbll",
+      "..kbblll",
+      "...kbbln",
+      "...kbbll",
+      "..kbbbll",
+      "..kbbbll",
+      "..kbbbll",
+      "..kbdbll",
+      "..kbdblk",
+      "..kkkkkk",
+    ]),
+    dogFrontTail,
+  ),
+  overlayPet(
+    mirrorPet([
+      "..k",
+      "..kbk",
+      "..kbbk",
+      "..kbbbkk",
+      ".kbbbbbb",
+      ".kbbebbb",
+      ".kbbbbll",
+      "..kbblll",
+      "...kbbln",
+      "...kbbkm",
+      "..kbbblk",
+      "..kbbbll",
+      "..kbbbll",
+      "..kbdbll",
+      "..kbdblk",
+      "..kkkkkk",
+    ]),
+    [...dogFrontTailWag, [1, 6, "w"], [0, 8, "w"], [22, 6, "w"], [23, 8, "w"]],
+  ),
+]
+
+// 고양이 꼬리(정면에서는 오른쪽 발 옆으로 감긴다)
+const catFrontTail = [
+  [17, 13, "k"],
+  [18, 13, "k"],
+  [19, 12, "k"],
+  [17, 14, "s"],
+  [18, 14, "b"],
+  [19, 14, "k"],
+  [19, 13, "b"],
+  [20, 12, "k"],
+  [20, 13, "k"],
+]
+
+const catFrontFrames = [
+  overlayPet(
+    mirrorPet([
+      "..k",
+      "..kk",
+      "..kbk",
+      "..kbbkkk",
+      ".kbbbbsb",
+      ".kbbebbb",
+      ".kbbbbbn",
+      "..kbblll",
+      "...kklll",
+      "...kbsll",
+      "..kbbsll",
+      "..kbbbll",
+      "..kbsbll",
+      "..kbbblk",
+      "..kbbblk",
+      "..kkkkkk",
+    ]),
+    catFrontTail,
+  ),
+  overlayPet(
+    mirrorPet([
+      "..k",
+      "..kk",
+      "..kbk",
+      "..kbbkkk",
+      ".kbbbbsb",
+      ".kbbebbb",
+      ".kbbbbbn",
+      "..kbblkm",
+      "...kklll",
+      "...kbsll",
+      "..kbbsll",
+      "..kbbbll",
+      "..kbsbll",
+      "..kbbblk",
+      "..kbbblk",
+      "..kkkkkk",
+    ]),
+    [...catFrontTail, [1, 5, "w"], [0, 7, "w"], [22, 5, "w"], [23, 7, "w"]],
+  ),
+]
+
+// 동물 종류별 그림과 색. scene.json의 petKinds 순서가 스프라이트 시트의 행 순서다.
+const pets = {
+  hwanggu: {
+    frames: [...dogFrames, ...dogFrontFrames],
+    legend: {
+      k: "#4A2E1A",
+      b: "#D99A4E",
+      l: "#F6D6A6",
+      d: "#A8682E",
+      e: "#2A1A10",
+      n: "#2A1A10",
+    },
+  },
+  baekgu: {
+    frames: [...dogFrames, ...dogFrontFrames],
+    legend: {
+      k: "#5A5048",
+      b: "#F4F0E6",
+      l: "#FFFFFF",
+      d: "#CFC6B5",
+      e: "#2A2420",
+      n: "#2A2420",
+    },
+  },
+  cheese: {
+    frames: [...catFrames, ...catFrontFrames],
+    legend: {
+      k: "#5A3418",
+      b: "#F0A040",
+      s: "#C8742A",
+      l: "#FFF0D6",
+      e: "#2A1A10",
+      n: "#E07878",
+    },
+  },
+  godeungeo: {
+    frames: [...catFrames, ...catFrontFrames],
+    legend: {
+      k: "#2E2A26",
+      b: "#9A9488",
+      s: "#4E4A44",
+      l: "#F4F1EA",
+      e: "#2A2420",
+      n: "#E07878",
+    },
+  },
+}
+
+// 벌린 입(m)과 소리 표시(w)는 모든 동물이 같은 색을 쓴다.
+const petCommonLegend = { m: "#B8423A", w: color.white }
 
 const patterns = `
 <pattern id="grass" width="32" height="32" patternUnits="userSpaceOnUse">
@@ -540,24 +780,29 @@ ${objects}
 </svg>
 `
 
-// 사람 스프라이트 시트: 가로는 걷기 프레임 2개, 세로는 옷 색 변형.
-const npcSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 ${16 * npcVariants.length}" width="32" height="${16 * npcVariants.length}" shape-rendering="crispEdges">
+// 동물 스프라이트 시트: 가로는 프레임 4개(옆모습 가만히·짖기, 정면 가만히·짖기),
+// 세로는 scene.petKinds 순서의 동물 종류.
+const petSheetWidth = PET_WIDTH * 4
+const petSheetHeight = PET_HEIGHT * scene.petKinds.length
+const petSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${petSheetWidth} ${petSheetHeight}" width="${petSheetWidth}" height="${petSheetHeight}" shape-rendering="crispEdges">
 <!-- scripts/generate-desktop-map.mjs가 생성한 파일이다. -->
-${npcVariants
-  .map((variant, row) =>
-    npcFrames
+${scene.petKinds
+  .map((kind, row) => {
+    const pet = pets[kind]
+    if (!pet) throw new Error(`알 수 없는 동물 종류: ${kind}`)
+    return pet.frames
       .map(
         (frame, col) =>
-          `<g transform="translate(${col * 16} ${row * 16})">${gridToPaths(frame, npcLegend(variant))}</g>`,
+          `<g transform="translate(${col * PET_WIDTH} ${row * PET_HEIGHT})">${gridToPaths(frame, { ...pet.legend, ...petCommonLegend })}</g>`,
       )
-      .join(""),
-  )
+      .join("")
+  })
   .join("\n")}
 </svg>
 `
 
 writeFileSync(resolve(root, "public/assets/desktop-map.svg"), mapSvg)
-writeFileSync(resolve(root, "public/assets/map-npcs.svg"), npcSvg)
+writeFileSync(resolve(root, "public/assets/map-pets.svg"), petSvg)
 console.log(
-  `desktop-map.svg ${(mapSvg.length / 1024).toFixed(1)}KB, map-npcs.svg ${(npcSvg.length / 1024).toFixed(1)}KB`,
+  `desktop-map.svg ${(mapSvg.length / 1024).toFixed(1)}KB, map-pets.svg ${(petSvg.length / 1024).toFixed(1)}KB`,
 )

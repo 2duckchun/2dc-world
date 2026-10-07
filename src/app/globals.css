@@ -245,24 +245,34 @@
   }
 
   /*
-   * 맵 위를 걷는 사람. 스프라이트 시트(public/assets/map-npcs.svg)는 가로가 걷기 프레임 2개,
-   * 세로가 옷 색 변형이다. 이동은 transform만 바꿔 큰 맵을 다시 그리지 않게 한다.
-   * 위치·거리·속도·변형은 컴포넌트가 CSS 변수로 넘긴다.
+   * 맵 위에 앉아 있는 강아지·고양이. 스프라이트 시트(public/assets/map-pets.svg)는
+   * 가로가 프레임 4개(옆모습 가만히·짖기, 정면 가만히·짖기), 세로가 동물 종류(scene.json의 petKinds 순서)다.
+   * --pet-pose-x는 자세(옆모습/정면)의 첫 프레임 위치이고, 짖을 때는 그 오른쪽 칸으로 넘어간다.
+   * 행 번호와 짖는 주기·시작 시점은 컴포넌트가 CSS 변수로 넘긴다.
+   * 옆모습 그림은 오른쪽을 보고 있으므로 왼쪽을 볼 때는 좌우로 뒤집는다.
    */
-  .map-npc {
+  .map-pet {
+    --pet-pose-x: 0px;
     position: absolute;
-    width: 32px;
+    width: 48px;
     height: 32px;
     background:
-      url("/assets/map-npcs.svg") 0 calc(var(--npc-variant) * -32px) / 64px auto
-      no-repeat;
-    animation:
-      map-npc-step 0.4s steps(2) infinite,
-      map-npc-walk var(--npc-duration) steps(var(--npc-steps)) infinite;
+      url("/assets/map-pets.svg") var(--pet-pose-x) calc(var(--pet-row) * -32px)
+      / 192px auto no-repeat;
+    animation: map-pet-bark var(--pet-duration) step-end infinite;
+    animation-delay: var(--pet-delay);
+  }
+
+  .map-pet[data-facing="front"] {
+    --pet-pose-x: -96px;
+  }
+
+  .map-pet[data-facing="left"] {
+    scale: -1 1;
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .map-npc {
+    .map-pet {
       animation: none;
     }
   }
@@ -530,28 +540,30 @@
   }
 }
 
-/* 걷기 프레임 2개를 번갈아 보여준다. */
-@keyframes map-npc-step {
-  to {
-    background-position-x: -64px;
-  }
-}
-
-/* 오른쪽으로 걸어간 뒤 몸을 돌려 제자리로 돌아온다. 스프라이트는 오른쪽을 보고 그려져 있다. */
-@keyframes map-npc-walk {
-  0% {
-    transform: translateX(0) scaleX(1);
+/*
+ * 대부분은 가만히 있다가 주기 끝 무렵에 "멍멍"처럼 두 번 짧게 짖는다.
+ * step-end라서 프레임 사이에 중간값 없이 뚝 끊어 바뀐다.
+ */
+@keyframes map-pet-bark {
+  0%,
+  70% {
+    background-position-x: var(--pet-pose-x);
   }
 
-  49.99% {
-    transform: translateX(var(--npc-distance)) scaleX(1);
+  73% {
+    background-position-x: calc(var(--pet-pose-x) - 48px);
   }
 
-  50% {
-    transform: translateX(var(--npc-distance)) scaleX(-1);
+  77% {
+    background-position-x: var(--pet-pose-x);
   }
 
+  80% {
+    background-position-x: calc(var(--pet-pose-x) - 48px);
+  }
+
+  84%,
   100% {
-    transform: translateX(0) scaleX(-1);
+    background-position-x: var(--pet-pose-x);
   }
 }
