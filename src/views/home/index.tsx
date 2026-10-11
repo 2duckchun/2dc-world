@@ -3,7 +3,7 @@ import { HomeContentExplorerSection } from "@/views/home/sections/home-content-e
 
 export function HomeView() {
   return (
-    <div className="flex w-full flex-col gap-8">
+    <div className="flex w-full flex-col gap-12">
       <HeroSection />
       <HomeContentExplorerSection />
     </div>

@@ -91,7 +91,7 @@ export function CommentItem({
               autoFocus
             />
           ) : (
-            <p className="whitespace-pre-wrap break-words text-sm">
+            <p className="whitespace-pre-wrap break-words font-reading text-reading-sm">
               {comment.body}
             </p>
           )}

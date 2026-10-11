@@ -9,15 +9,20 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans:
-    ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
-    sans-serif;
-  --font-mono:
-    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
-    monospace;
-  --font-heading:
-    ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
-    sans-serif;
+  --font-sans: var(--font-neodgm), ui-sans-serif, system-ui, sans-serif;
+  --font-heading: var(--font-neodgm), ui-sans-serif, system-ui, sans-serif;
+  /* 글 본문, 목록 요약, 댓글처럼 오래 읽는 문장은 도트 폰트 대신 Pretendard로 쓴다. */
+  --font-reading:
+    "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont,
+    system-ui, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  /* 코드는 D2Coding. 서브셋에 없는 드문 한글만 Pretendard로 이어 받는다. */
+  --font-mono: "D2Coding", "Pretendard Variable", ui-monospace, monospace;
+  --color-desktop: var(--desktop);
+  --color-tag: var(--tag);
+  --color-tag-foreground: var(--tag-foreground);
+  --color-point: var(--point);
+  --color-point-foreground: var(--point-foreground);
+  --shadow-pixel: 4px 4px 0 0 var(--shadow-color);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -56,73 +61,135 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
+/*
+ * Neo둥근모는 16px 배수에서만 픽셀이 선명하게 찍힌다.
+ * Tailwind 기본 글자 크기 단계 중 16/32/48px(base, 3xl, 5xl)만 남기고 나머지는 지운다.
+ * 지운 text-sm, text-xs 같은 클래스는 CSS가 생성되지 않으므로 16px을 그대로 상속한다.
+ * (`--text-*: initial` 한 줄로도 지울 수 있지만 Biome CSS 파서가 해당 문법을 읽지 못한다.)
+ */
+@theme {
+  --text-xs: initial;
+  --text-sm: initial;
+  --text-lg: initial;
+  --text-xl: initial;
+  --text-2xl: initial;
+  --text-4xl: initial;
+  --text-6xl: initial;
+  --text-7xl: initial;
+  --text-8xl: initial;
+  --text-9xl: initial;
+  --text-base: 1rem;
+  --text-base--line-height: 1.75;
+  --text-3xl: 2rem;
+  --text-3xl--line-height: 1.25;
+  --text-5xl: 3rem;
+  --text-5xl--line-height: calc(7 / 6);
+
+  /*
+   * 오래 읽는 문장(font-reading) 전용 크기. 도트 폰트가 아니라서 16px 배수 규칙을 따르지 않는다.
+   * 도트 폰트 요소에는 쓰지 않는다. cn()이 크기로 인식하도록 shared/lib/utils.ts에 등록되어 있다.
+   */
+  --text-reading: 1.0625rem;
+  --text-reading--line-height: 1.8;
+  --text-reading-sm: 0.9375rem;
+  --text-reading-sm--line-height: 1.7;
+
+  /* 텍스트 커서처럼 반은 켜지고 반은 꺼진다. 중간 프레임 없이 뚝 끊어지게 step-end를 쓴다. */
+  --animate-blink: blink 1s step-end infinite;
+
+  @keyframes blink {
+    50% {
+      opacity: 0;
+    }
+  }
+}
+
 :root {
-  --background: oklch(0.983 0.014 84.6);
-  --foreground: oklch(0.188 0.019 248.3);
-  --card: oklch(0.998 0.006 84.6 / 86%);
-  --card-foreground: oklch(0.188 0.019 248.3);
-  --popover: oklch(0.998 0.006 84.6);
-  --popover-foreground: oklch(0.188 0.019 248.3);
-  --primary: oklch(0.267 0.035 241.6);
-  --primary-foreground: oklch(0.988 0.012 84.6);
-  --secondary: oklch(0.928 0.027 174.5);
-  --secondary-foreground: oklch(0.248 0.032 223.8);
-  --muted: oklch(0.934 0.018 90.2);
-  --muted-foreground: oklch(0.476 0.031 244.6);
-  --accent: oklch(0.906 0.039 44.3);
-  --accent-foreground: oklch(0.245 0.031 240.7);
+  /*
+   * 창 바깥에는 필드 맵(public/assets/desktop-map.svg)이 깔린다. --desktop은 맵의 잔디색으로,
+   * 맵이 닿지 않는 넓은 화면 가장자리와 스크롤 끝 반동 영역을 채운다.
+   * 맵 위에는 글자를 직접 올리지 않고 헤더·본문·푸터 모두 종이 박스 안에 둔다.
+   */
+  --desktop: oklch(0.781 0.144 137.1);
+  /* 창 안에서 태그를 구분하는 블록. 맵의 잔디와 같은 초록 계열이다. */
+  --tag: oklch(0.92 0.052 134);
+  --tag-foreground: oklch(0.47 0.107 145);
+  --background: oklch(0.958 0.012 91.5);
+  --foreground: oklch(0.222 0.004 84.6);
+  --card: oklch(0.982 0.008 91.5);
+  --card-foreground: oklch(0.222 0.004 84.6);
+  --popover: oklch(0.982 0.008 91.5);
+  --popover-foreground: oklch(0.222 0.004 84.6);
+  --primary: oklch(0.222 0.004 84.6);
+  --primary-foreground: oklch(0.958 0.012 91.5);
+  --secondary: oklch(0.916 0.018 89.4);
+  --secondary-foreground: oklch(0.222 0.004 84.6);
+  --muted: oklch(0.916 0.018 89.4);
+  --muted-foreground: oklch(0.512 0.017 84.6);
+  --accent: oklch(0.916 0.018 89.4);
+  --accent-foreground: oklch(0.222 0.004 84.6);
   --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.846 0.019 87.4);
-  --input: oklch(0.846 0.019 87.4);
-  --ring: oklch(0.662 0.121 178.6);
-  --chart-1: oklch(0.652 0.126 178.3);
-  --chart-2: oklch(0.561 0.152 155.4);
-  --chart-3: oklch(0.554 0.151 255.1);
-  --chart-4: oklch(0.684 0.157 54.2);
-  --chart-5: oklch(0.612 0.175 17.8);
-  --radius: 0.45rem;
-  --sidebar: oklch(0.97 0.015 84.6);
-  --sidebar-foreground: oklch(0.188 0.019 248.3);
-  --sidebar-primary: oklch(0.267 0.035 241.6);
-  --sidebar-primary-foreground: oklch(0.988 0.012 84.6);
-  --sidebar-accent: oklch(0.928 0.027 174.5);
-  --sidebar-accent-foreground: oklch(0.248 0.032 223.8);
-  --sidebar-border: oklch(0.846 0.019 87.4);
-  --sidebar-ring: oklch(0.662 0.121 178.6);
+  --border: oklch(0.834 0.023 87.2);
+  --input: oklch(0.834 0.023 87.2);
+  --ring: oklch(0.553 0.178 30.2);
+  --point: oklch(0.553 0.178 30.2);
+  --point-foreground: oklch(0.958 0.012 91.5);
+  --shadow-color: oklch(0.222 0.004 84.6);
+  --chart-1: oklch(0.471 0.064 217.5);
+  --chart-2: oklch(0.476 0.108 140.8);
+  --chart-3: oklch(0.479 0.132 259.1);
+  --chart-4: oklch(0.5 0.109 60.8);
+  --chart-5: oklch(0.528 0.167 29.8);
+  --radius: 0;
+  --sidebar: oklch(0.982 0.008 91.5);
+  --sidebar-foreground: oklch(0.222 0.004 84.6);
+  --sidebar-primary: oklch(0.222 0.004 84.6);
+  --sidebar-primary-foreground: oklch(0.958 0.012 91.5);
+  --sidebar-accent: oklch(0.916 0.018 89.4);
+  --sidebar-accent-foreground: oklch(0.222 0.004 84.6);
+  --sidebar-border: oklch(0.834 0.023 87.2);
+  --sidebar-ring: oklch(0.553 0.178 30.2);
 }
 
 .dark {
-  --background: oklch(0.172 0.019 248.9);
-  --foreground: oklch(0.958 0.014 87.7);
-  --card: oklch(0.218 0.024 248.5 / 86%);
-  --card-foreground: oklch(0.958 0.014 87.7);
-  --popover: oklch(0.218 0.024 248.5);
-  --popover-foreground: oklch(0.958 0.014 87.7);
-  --primary: oklch(0.829 0.102 178.1);
-  --primary-foreground: oklch(0.162 0.019 248.9);
-  --secondary: oklch(0.282 0.035 224.2);
-  --secondary-foreground: oklch(0.943 0.018 86.8);
-  --muted: oklch(0.285 0.029 247.7);
-  --muted-foreground: oklch(0.731 0.033 88.1);
-  --accent: oklch(0.314 0.049 47.7);
-  --accent-foreground: oklch(0.956 0.019 86.6);
+  /* 다크 모드의 맵은 필터로 어둡게 눌러 밤 장면으로 쓴다. 이 값은 그 결과와 비슷한 잔디색이다. */
+  --desktop: oklch(0.438 0.054 136.5);
+  --tag: oklch(0.309 0.047 140.2);
+  --tag-foreground: oklch(0.838 0.114 135.4);
+  --background: oklch(0.195 0.002 106.6);
+  --foreground: oklch(0.925 0.022 89.8);
+  --card: oklch(0.23 0.004 106.7);
+  --card-foreground: oklch(0.925 0.022 89.8);
+  --popover: oklch(0.23 0.004 106.7);
+  --popover-foreground: oklch(0.925 0.022 89.8);
+  --primary: oklch(0.925 0.022 89.8);
+  --primary-foreground: oklch(0.195 0.002 106.6);
+  --secondary: oklch(0.269 0.006 91.6);
+  --secondary-foreground: oklch(0.925 0.022 89.8);
+  --muted: oklch(0.269 0.006 91.6);
+  --muted-foreground: oklch(0.694 0.021 87.5);
+  --accent: oklch(0.269 0.006 91.6);
+  --accent-foreground: oklch(0.925 0.022 89.8);
   --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(0.958 0.014 87.7 / 13%);
-  --input: oklch(0.958 0.014 87.7 / 16%);
-  --ring: oklch(0.746 0.121 178.6);
-  --chart-1: oklch(0.748 0.131 178.3);
-  --chart-2: oklch(0.72 0.154 153.2);
-  --chart-3: oklch(0.73 0.129 253.9);
-  --chart-4: oklch(0.778 0.148 57.1);
-  --chart-5: oklch(0.719 0.163 18.6);
-  --sidebar: oklch(0.218 0.024 248.5);
-  --sidebar-foreground: oklch(0.958 0.014 87.7);
-  --sidebar-primary: oklch(0.829 0.102 178.1);
-  --sidebar-primary-foreground: oklch(0.162 0.019 248.9);
-  --sidebar-accent: oklch(0.282 0.035 224.2);
-  --sidebar-accent-foreground: oklch(0.943 0.018 86.8);
-  --sidebar-border: oklch(0.958 0.014 87.7 / 13%);
-  --sidebar-ring: oklch(0.746 0.121 178.6);
+  --border: oklch(0.341 0.009 88.7);
+  --input: oklch(0.341 0.009 88.7);
+  --ring: oklch(0.708 0.185 30.1);
+  --point: oklch(0.708 0.185 30.1);
+  --point-foreground: oklch(0.195 0.002 106.6);
+  --shadow-color: oklch(0.12 0.01 136.5);
+  --chart-1: oklch(0.768 0.083 207.4);
+  --chart-2: oklch(0.799 0.121 134.6);
+  --chart-3: oklch(0.763 0.098 257.3);
+  --chart-4: oklch(0.774 0.12 67.6);
+  --chart-5: oklch(0.731 0.166 30.3);
+  --sidebar: oklch(0.23 0.004 106.7);
+  --sidebar-foreground: oklch(0.925 0.022 89.8);
+  --sidebar-primary: oklch(0.925 0.022 89.8);
+  --sidebar-primary-foreground: oklch(0.195 0.002 106.6);
+  --sidebar-accent: oklch(0.269 0.006 91.6);
+  --sidebar-accent-foreground: oklch(0.925 0.022 89.8);
+  --sidebar-border: oklch(0.341 0.009 88.7);
+  --sidebar-ring: oklch(0.708 0.185 30.1);
 }
 
 @layer base {
@@ -132,91 +199,241 @@
 
   html {
     @apply font-sans;
+    /* 픽셀 폰트에는 굵게·기울임 글꼴이 없다. 브라우저가 흉내 내면 픽셀이 뭉개진다. */
+    font-synthesis: none;
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-desktop text-base text-foreground;
+  }
+
+  ::selection {
+    background-color: var(--point);
+    color: var(--point-foreground);
   }
 }
 
 @layer utilities {
-  .blog-surface {
-    background-image:
-      linear-gradient(
-        to right,
-        color-mix(in oklch, var(--border) 45%, transparent) 1px,
-        transparent 1px
-      ),
-      linear-gradient(
-        to bottom,
-        color-mix(in oklch, var(--border) 42%, transparent) 1px,
-        transparent 1px
-      ),
-      linear-gradient(
-        135deg,
-        color-mix(in oklch, var(--chart-1) 10%, var(--background)) 0%,
-        var(--background) 43%,
-        color-mix(in oklch, var(--chart-4) 12%, var(--background)) 100%
-      );
-    background-position:
-      center top,
-      center top,
-      center;
-    background-size:
-      36px 36px,
-      36px 36px,
-      cover;
+  /*
+   * 창 바깥에 깔리는 필드 맵(widgets/layouts/desktop-map). 화면에 고정해 두고 본문 창만 그 위로 스크롤된다.
+   * iOS Safari는 background-attachment: fixed를 무시하므로 position: fixed 레이어로 깐다.
+   * 맵 장면은 가운데 정렬하고, 창이 가운데를 덮으므로 볼거리는 장면의 좌우에 배치되어 있다.
+   */
+  .desktop-map {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    overflow: hidden;
+    pointer-events: none;
+    background-color: var(--desktop);
+    /* 패럴랙스 이동 거리를 화면 높이(100cqh) 기준으로 계산하기 위한 크기 컨테이너 */
+    container-type: size;
   }
 
-  .logo-mark {
-    background-image: conic-gradient(
-      from 215deg,
-      var(--chart-1),
-      var(--chart-4),
-      var(--chart-5),
-      var(--chart-2),
-      var(--chart-1)
-    );
+  /* 다크 모드는 같은 맵을 어둡게 눌러 밤 장면으로 쓴다. */
+  :where(.dark) .desktop-map {
+    filter: brightness(0.45) saturate(0.7);
   }
 
-  .animate-rise {
-    animation: rise-in 700ms cubic-bezier(0.22, 1, 0.36, 1) both;
-    animation-delay: var(--delay, 0ms);
+  /*
+   * 맵이 본문보다 눈에 띄지 않도록 살짝 흐리게(블러 1px) 하고,
+   * 그 위에 종이색 막(::after, 20%)을 한 겹 씌워 색을 한 단계 물린다. 동물도 함께 흐려진다.
+   */
+  .desktop-map-scene {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    translate: -50% 0;
+    background: url("/assets/desktop-map.svg") 0 0 / 100% 100% no-repeat;
+    filter: blur(1px);
   }
 
+  /* color-mix 대신 opacity를 쓴다. color-mix 미지원 브라우저용 대체 규칙이 불투명한 막으로 맵을 가리지 않게 한다. */
+  .desktop-map::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-color: var(--background);
+    opacity: 0.2;
+  }
+
+  /*
+   * 스크롤 패럴랙스: 페이지 맨 위에서는 맵 위쪽이, 맨 아래에서는 맵 아래쪽이 보이도록
+   * 스크롤 진행률에 맞춰 맵을 천천히 올린다. 긴 페이지일수록 더 천천히 움직인다.
+   * scroll-driven animation을 지원하지 않는 브라우저(Firefox 등)와 움직임 줄이기 설정에서는 고정 배경으로 남는다.
+   * animation 단축 속성이 animation-timeline을 초기화하므로 timeline은 반드시 그 뒤에 선언한다.
+   */
+  @supports (animation-timeline: scroll()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .desktop-map-scene {
+        animation: map-parallax linear both;
+        animation-timeline: scroll(root block);
+      }
+    }
+  }
+
+  /*
+   * 맵 위에 앉아 있는 강아지·고양이. 스프라이트 시트(public/assets/map-pets.svg)는
+   * 가로가 프레임 4개(옆모습 가만히·짖기, 정면 가만히·짖기), 세로가 동물 종류(scene.json의 petKinds 순서)다.
+   * --pet-pose-x는 자세(옆모습/정면)의 첫 프레임 위치이고, 짖을 때는 그 오른쪽 칸으로 넘어간다.
+   * 행 번호와 짖는 주기·시작 시점은 컴포넌트가 CSS 변수로 넘긴다.
+   * 옆모습 그림은 오른쪽을 보고 있으므로 왼쪽을 볼 때는 좌우로 뒤집는다.
+   */
+  .map-pet {
+    --pet-pose-x: 0px;
+    position: absolute;
+    width: 48px;
+    height: 32px;
+    background:
+      url("/assets/map-pets.svg") var(--pet-pose-x) calc(var(--pet-row) * -32px)
+      / 192px auto no-repeat;
+    animation: map-pet-bark var(--pet-duration) step-end infinite;
+    animation-delay: var(--pet-delay);
+  }
+
+  .map-pet[data-facing="front"] {
+    --pet-pose-x: -96px;
+  }
+
+  .map-pet[data-facing="left"] {
+    scale: -1 1;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .map-pet {
+      animation: none;
+    }
+  }
+
+  /*
+   * 글 본문. 문장은 읽기 편한 Pretendard(font-reading), 소제목은 도트 폰트(Neo둥근모), 코드는 JetBrains Mono다.
+   * typography 플러그인의 em 기반 크기·굵기 중 도트 폰트 규칙(16/32px, 굵기 없음)과 맞지 않는 부분을 덮어쓴다.
+   */
   .prose-blog {
+    @apply font-reading text-reading;
     --tw-prose-body: var(--foreground);
     --tw-prose-headings: var(--foreground);
     --tw-prose-lead: var(--muted-foreground);
-    --tw-prose-links: var(--chart-3);
+    --tw-prose-links: var(--foreground);
     --tw-prose-bold: var(--foreground);
     --tw-prose-counters: var(--muted-foreground);
-    --tw-prose-bullets: var(--chart-1);
+    --tw-prose-bullets: var(--point);
     --tw-prose-hr: var(--border);
-    --tw-prose-quotes: var(--foreground);
-    --tw-prose-quote-borders: var(--chart-1);
+    --tw-prose-quotes: var(--muted-foreground);
+    --tw-prose-quote-borders: var(--foreground);
     --tw-prose-captions: var(--muted-foreground);
     --tw-prose-code: var(--foreground);
-    --tw-prose-pre-code: var(--background);
-    --tw-prose-pre-bg: var(--foreground);
-    --tw-prose-th-borders: var(--border);
+    --tw-prose-pre-code: var(--foreground);
+    /*
+     * 먹색·종이색처럼 채도가 거의 없는 색끼리 oklch로 섞으면 색상(hue)이 none으로 계산되어
+     * 분홍빛이 돈다. 무채색끼리 섞을 때는 색상 개념이 없는 srgb 공간을 쓴다.
+     */
+    --tw-prose-pre-bg: color-mix(
+      in srgb,
+      var(--foreground) 6%,
+      var(--background)
+    );
+    --tw-prose-th-borders: var(--foreground);
     --tw-prose-td-borders: var(--border);
     --tw-prose-invert-body: var(--foreground);
     --tw-prose-invert-headings: var(--foreground);
     --tw-prose-invert-lead: var(--muted-foreground);
-    --tw-prose-invert-links: var(--chart-1);
+    --tw-prose-invert-links: var(--foreground);
     --tw-prose-invert-bold: var(--foreground);
     --tw-prose-invert-counters: var(--muted-foreground);
-    --tw-prose-invert-bullets: var(--chart-1);
+    --tw-prose-invert-bullets: var(--point);
     --tw-prose-invert-hr: var(--border);
-    --tw-prose-invert-quotes: var(--foreground);
-    --tw-prose-invert-quote-borders: var(--chart-1);
+    --tw-prose-invert-quotes: var(--muted-foreground);
+    --tw-prose-invert-quote-borders: var(--foreground);
     --tw-prose-invert-captions: var(--muted-foreground);
     --tw-prose-invert-code: var(--foreground);
-    --tw-prose-invert-pre-code: var(--background);
-    --tw-prose-invert-pre-bg: var(--foreground);
-    --tw-prose-invert-th-borders: var(--border);
+    --tw-prose-invert-pre-code: var(--foreground);
+    --tw-prose-invert-pre-bg: color-mix(
+      in srgb,
+      var(--foreground) 6%,
+      var(--background)
+    );
+    --tw-prose-invert-th-borders: var(--foreground);
     --tw-prose-invert-td-borders: var(--border);
+  }
+
+  /* 소제목은 도트 폰트로 남겨 레트로 분위기를 잇는다. 도트 폰트에는 굵은 글꼴이 없다. */
+  .prose-blog :where(h1, h2, h3, h4, h5, h6) {
+    font-family: var(--font-heading);
+    font-weight: 400;
+  }
+
+  .prose-blog :where(h1, h2) {
+    margin-top: 3rem;
+    margin-bottom: 1rem;
+    font-size: 2rem;
+    line-height: 1.25;
+  }
+
+  .prose-blog :where(h3, h4, h5, h6) {
+    margin-top: 2rem;
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+    line-height: 1.75;
+  }
+
+  .prose-blog :where(h3)::before {
+    content: "▶ ";
+    color: var(--point);
+  }
+
+  .prose-blog :where(h4, h5, h6) {
+    color: var(--muted-foreground);
+  }
+
+  .prose-blog :where(strong, b) {
+    background: color-mix(in oklch, var(--point) 18%, transparent);
+    padding-inline: 2px;
+    font-weight: 700;
+  }
+
+  /* Pretendard에는 기울임 글꼴이 없으므로 기울이는 대신 포인트색으로 강조한다. */
+  .prose-blog :where(em, i) {
+    font-style: normal;
+    color: var(--point);
+  }
+
+  .prose-blog :where(a) {
+    text-decoration-line: underline;
+    text-decoration-color: var(--point);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 4px;
+  }
+
+  .prose-blog :where(a):hover {
+    color: var(--point);
+  }
+
+  .prose-blog :where(ul) {
+    list-style-type: square;
+  }
+
+  .prose-blog :where(table, figcaption, small) {
+    font-size: 0.9375rem;
+  }
+
+  .prose-blog :where(code, kbd):not(:where(pre code)) {
+    font-size: 0.875em;
+  }
+
+  .prose-blog :where(blockquote) {
+    font-style: normal;
+    font-weight: 400;
+    border-inline-start-width: 4px;
+  }
+
+  .prose-blog :where(blockquote p:first-of-type)::before,
+  .prose-blog :where(blockquote p:last-of-type)::after {
+    content: none;
+  }
+
+  .prose-blog :where(thead) {
+    border-bottom-width: 2px;
   }
 
   .prose-blog :where(pre) {
@@ -225,11 +442,14 @@
     min-width: 0;
     overflow-x: auto;
     overscroll-behavior-x: contain;
-    border: 1px solid var(--border);
-    background: color-mix(in oklch, var(--foreground) 7%, var(--background));
+    border: 2px solid var(--foreground);
+    border-radius: 0;
+    background: var(--tw-prose-pre-bg);
     color: var(--foreground);
+    font-size: 0.875rem;
+    line-height: 1.7;
     scrollbar-width: thin;
-    scrollbar-color: color-mix(in oklch, var(--foreground) 28%, transparent)
+    scrollbar-color: color-mix(in srgb, var(--foreground) 28%, transparent)
       transparent;
   }
 
@@ -244,12 +464,10 @@
   }
 
   .prose-blog :where(code):not(:where(pre code)) {
-    border: 1px solid color-mix(in oklch, var(--chart-3) 35%, var(--border));
-    border-radius: 0.35rem;
-    background: color-mix(in oklch, var(--chart-3) 10%, var(--background));
-    padding: 0.12rem 0.32rem;
-    color: var(--chart-3);
-    font-weight: 600;
+    background: color-mix(in srgb, var(--foreground) 8%, var(--background));
+    padding-inline: 4px;
+    color: var(--foreground);
+    font-weight: 400;
   }
 
   .prose-blog :where(code):not(:where(pre code))::before,
@@ -264,7 +482,6 @@
 
   .prose-blog :where(.hljs-comment, .hljs-quote) {
     color: var(--muted-foreground);
-    font-style: italic;
   }
 
   .prose-blog
@@ -318,8 +535,8 @@
     --baseBase: var(--card);
     --baseBgSubtle: var(--muted);
     --baseBg: var(--muted);
-    --baseBgHover: color-mix(in oklch, var(--muted) 75%, var(--foreground));
-    --baseBgActive: color-mix(in oklch, var(--muted) 88%, var(--foreground));
+    --baseBgHover: color-mix(in srgb, var(--muted) 75%, var(--foreground));
+    --baseBgActive: color-mix(in srgb, var(--muted) 88%, var(--foreground));
     --baseLine: var(--border);
     --baseBorder: var(--border);
     --baseBorderHover: var(--ring);
@@ -351,22 +568,41 @@
   }
 }
 
-@keyframes rise-in {
+/* 화면이 맵보다 크면 이동 거리가 0이 되도록 min(0px, …)으로 막는다. */
+@keyframes map-parallax {
   from {
-    opacity: 0;
-    transform: translateY(14px);
+    translate: -50% 0;
   }
 
   to {
-    opacity: 1;
-    transform: translateY(0);
+    translate: -50% min(0px, calc(100cqh - var(--map-height)));
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .animate-rise {
-    animation: none;
-    opacity: 1;
-    transform: translateY(0);
+/*
+ * 대부분은 가만히 있다가 주기 끝 무렵에 "멍멍"처럼 두 번 짧게 짖는다.
+ * step-end라서 프레임 사이에 중간값 없이 뚝 끊어 바뀐다.
+ */
+@keyframes map-pet-bark {
+  0%,
+  70% {
+    background-position-x: var(--pet-pose-x);
+  }
+
+  73% {
+    background-position-x: calc(var(--pet-pose-x) - 48px);
+  }
+
+  77% {
+    background-position-x: var(--pet-pose-x);
+  }
+
+  80% {
+    background-position-x: calc(var(--pet-pose-x) - 48px);
+  }
+
+  84%,
+  100% {
+    background-position-x: var(--pet-pose-x);
   }
 }

@@ -67,7 +67,7 @@ export const PostList = ({ posts, ariaLabel, emptyMessage }: PostListProps) => {
                       <h2 className="font-bold text-2xl leading-snug transition-colors group-hover:text-chart-3">
                         {post.title}
                       </h2>
-                      <p className="max-w-3xl text-muted-foreground leading-7">
+                      <p className="max-w-3xl font-reading text-muted-foreground text-reading-sm">
                         {post.subtitle ?? "요약이 준비 중입니다."}
                       </p>
                     </div>

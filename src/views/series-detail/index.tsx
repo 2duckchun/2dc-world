@@ -86,7 +86,7 @@ export function SeriesDetailView({ series }: SeriesDetailViewProps) {
               {series.title}
             </h1>
             {series.description ? (
-              <p className="max-w-3xl text-muted-foreground text-lg leading-8">
+              <p className="max-w-3xl font-reading text-muted-foreground text-reading">
                 {series.description}
               </p>
             ) : null}

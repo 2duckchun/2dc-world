@@ -22,7 +22,7 @@ export function HomeContentTabs({
     <div
       role="tablist"
       aria-label="홈 콘텐츠 유형"
-      className="grid grid-cols-2 bg-card sm:grid-cols-4"
+      className="flex flex-wrap items-end gap-1 border-foreground border-b-2"
     >
       {tabs.map((tab) => {
         const isActive = activeTab === tab.value
@@ -35,23 +35,17 @@ export function HomeContentTabs({
             role="tab"
             aria-selected={isActive}
             aria-controls={`home-content-panel-${tab.value}`}
+            // 폴더 탭: 선택된 탭은 아래 선을 2px 덮어 본문과 이어진 것처럼 보이게 한다.
             className={cn(
-              "flex min-h-16 cursor-pointer items-center justify-center gap-2 border-border border-t px-3 font-bold text-base transition-colors first:border-t-0 odd:border-r sm:border-t-0 sm:border-r sm:first:border-l-0 sm:last:border-r-0",
+              "inline-flex cursor-pointer items-center gap-2 border-2 border-foreground border-b-0 px-2 pt-1 uppercase sm:px-3",
               isActive
-                ? "bg-background text-foreground"
-                : "bg-card text-muted-foreground hover:bg-muted/55 hover:text-foreground",
+                ? "-mb-0.5 bg-background pb-1.5 text-foreground"
+                : "bg-muted pb-1 text-muted-foreground hover:text-foreground",
             )}
             onClick={() => onTabChange(tab.value)}
           >
             <span>{tab.label}</span>
-            <span
-              className={cn(
-                "rounded-md px-1.5 py-0.5 font-mono text-xs tabular-nums",
-                isActive
-                  ? "bg-primary text-primary-foreground"
-                  : "bg-muted text-muted-foreground",
-              )}
-            >
+            <span className={cn("tabular-nums", isActive && "text-point")}>
               {tab.count.toLocaleString("ko-KR")}
             </span>
           </button>

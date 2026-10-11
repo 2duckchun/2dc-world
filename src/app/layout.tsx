@@ -1,9 +1,20 @@
 import { GoogleTagManager } from "@next/third-parties/google"
 import type { Metadata } from "next"
+import localFont from "next/font/local"
 import "@mdxeditor/editor/style.css"
+// 글 본문 등 긴 문장용 폰트(Pretendard, SIL OFL 1.1).
+// 한글 웹폰트라 필요한 글자 묶음만 내려받는 dynamic subset CSS를 쓴다(next/font/local은 이 분할을 지원하지 않는다).
+import "pretendard/dist/web/variable/pretendardvariable-dynamic-subset.css"
+// 코드블록용 고정폭 폰트(D2Coding, SIL OFL 1.1). 한글 폭이 영문의 정확히 2배라 한글이 섞인 다이어그램도 줄이 맞는다.
+// 패키지의 subset 파일은 공백·괄호({ } ])가 빠져 있어 전체판을 쓴다(약 1.5MB).
+// 코드블록이 있는 페이지에서 처음 한 번만 내려받고, 도착 전에도 글은 먼저 보인다(font-display: swap).
+// 예약 폰트명(D2Coding) 조항 때문에 직접 잘라 쓰지 않고 원본 그대로 쓴다.
+import "d2coding/d2coding-full.css"
 import "./globals.css"
-import { Toaster } from "sonner"
 import { TrpcTanstackQueryProvider } from "@/core/trpc/client/providers/trpc-tanstack-query-provider"
+import { cn } from "@/shared/lib/utils"
+import { Toaster } from "@/shared/ui/sonner"
+import { ThemeProvider } from "@/shared/ui/theme-provider"
 import { isProductionEnv } from "@/shared/utils/env"
 import {
   GTM_CONTAINER_ID,
@@ -12,6 +23,14 @@ import {
   SITE_NAME,
   SITE_URL,
 } from "@/shared/utils/metadata"
+
+// 헤더·제목·탭·태그 같은 화면 장식용 도트 폰트. Neo둥근모 (SIL OFL 1.1, 라이선스 원문은 ./fonts/OFL.txt)
+const neodgm = localFont({
+  src: "./fonts/neodgm.woff2",
+  weight: "400",
+  style: "normal",
+  variable: "--font-neodgm",
+})
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -38,13 +57,19 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="ko" className="h-full antialiased" suppressHydrationWarning>
+    <html
+      lang="ko"
+      className={cn(neodgm.variable, "h-full antialiased")}
+      suppressHydrationWarning
+    >
       {isProductionEnv ? <GoogleTagManager gtmId={GTM_CONTAINER_ID} /> : null}
       <body className="min-h-full font-sans">
-        <TrpcTanstackQueryProvider>
-          {children}
-          <Toaster />
-        </TrpcTanstackQueryProvider>
+        <ThemeProvider>
+          <TrpcTanstackQueryProvider>
+            {children}
+            <Toaster />
+          </TrpcTanstackQueryProvider>
+        </ThemeProvider>
       </body>
     </html>
   )

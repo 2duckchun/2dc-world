@@ -2,7 +2,6 @@
 
 import { useMemo, useRef } from "react"
 import type { PostKind } from "@/domain/content/types"
-import { animationDelay } from "@/shared/lib/animation"
 import { HomeContentList } from "@/views/home/sections/home-content-explorer-section/components/home-content-list"
 import {
   type HomeContentTabItem,
@@ -185,8 +184,7 @@ export function HomeContentExplorer({
   return (
     <section
       ref={sectionRef}
-      className="animate-rise overflow-hidden rounded-lg border border-border bg-card shadow-sm"
-      style={animationDelay(130)}
+      className="grid scroll-mt-6 gap-6"
       aria-labelledby="home-content-explorer-title"
     >
       <h2 id="home-content-explorer-title" className="sr-only">
@@ -213,7 +211,7 @@ export function HomeContentExplorer({
         id={`home-content-panel-${activeTab}`}
         role="tabpanel"
         aria-labelledby={`home-content-tab-${activeTab}`}
-        className="border-border border-t bg-card"
+        className="grid gap-8"
       >
         {isSeriesTab ? (
           <HomeSeriesList series={pagedSeries} />
@@ -226,13 +224,11 @@ export function HomeContentExplorer({
         )}
 
         {listLength > 0 ? (
-          <div className="border-border border-t p-4 sm:p-5">
-            <HomePagination
-              currentPage={effectivePage}
-              totalPages={totalPages}
-              onPageChange={handlePageChange}
-            />
-          </div>
+          <HomePagination
+            currentPage={effectivePage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+          />
         ) : null}
       </div>
     </section>
