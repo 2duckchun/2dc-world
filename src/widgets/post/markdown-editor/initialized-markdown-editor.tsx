@@ -109,6 +109,7 @@ export default function InitializedMarkdownEditor({
             bash: "Bash",
             sql: "SQL",
             md: "Markdown",
+            mermaid: "Mermaid",
           },
         }),
         imagePlugin({ imageUploadHandler: uploadImage }),
