@@ -66,7 +66,8 @@ export function PostDetailView({ post, isAuthenticated }: PostDetailViewProps) {
             </time>
           </div>
           <div className="grid gap-3">
-            <h1 className="text-balance font-black text-4xl leading-tight sm:text-5xl">
+            {/* 48px은 너무 커서 40px을 쓴다. 16px 배수가 아니지만 레티나(2x)에서는 픽셀이 선명하게 찍힌다. */}
+            <h1 className="text-balance break-keep font-black text-3xl leading-tight sm:text-[2.5rem]">
               {post.title}
             </h1>
             {post.subtitle ? (

@@ -306,8 +306,8 @@
   }
 
   /*
-   * 글 본문. 문장은 읽기 편한 Pretendard(font-reading), 소제목은 도트 폰트(Neo둥근모), 코드는 JetBrains Mono다.
-   * typography 플러그인의 em 기반 크기·굵기 중 도트 폰트 규칙(16/32px, 굵기 없음)과 맞지 않는 부분을 덮어쓴다.
+   * 글 본문. 문장과 소제목은 읽기 편한 Pretendard(font-reading), 코드는 D2Coding(font-mono)이다.
+   * typography 플러그인의 em 기반 크기·굵기 중 블로그 톤과 맞지 않는 부분을 덮어쓴다.
    */
   .prose-blog {
     @apply font-reading text-reading;
@@ -357,24 +357,38 @@
     --tw-prose-invert-td-borders: var(--border);
   }
 
-  /* 소제목은 도트 폰트로 남겨 레트로 분위기를 잇는다. 도트 폰트에는 굵은 글꼴이 없다. */
+  /* 소제목도 본문과 같은 Pretendard를 이어 받는다. 크기 단계는 본문(17px)에서 위로 쌓는다. */
   .prose-blog :where(h1, h2, h3, h4, h5, h6) {
-    font-family: var(--font-heading);
-    font-weight: 400;
+    font-weight: 700;
   }
 
   .prose-blog :where(h1, h2) {
     margin-top: 3rem;
     margin-bottom: 1rem;
-    font-size: 2rem;
-    line-height: 1.25;
+    line-height: 1.35;
+  }
+
+  .prose-blog :where(h1) {
+    font-size: 1.75rem;
+  }
+
+  .prose-blog :where(h2) {
+    font-size: 1.5rem;
   }
 
   .prose-blog :where(h3, h4, h5, h6) {
     margin-top: 2rem;
     margin-bottom: 0.5rem;
-    font-size: 1rem;
-    line-height: 1.75;
+    font-size: 1.0625rem;
+    line-height: 1.5;
+  }
+
+  .prose-blog :where(h3) {
+    font-size: 1.25rem;
+  }
+
+  .prose-blog :where(h4) {
+    font-size: 1.125rem;
   }
 
   .prose-blog :where(h3)::before {
